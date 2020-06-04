@@ -5,22 +5,18 @@ import sys
 import shutil
 
 
-VERSIONS = (
-    (3, 6),
-    (3, 7),
-    (3, 8),
-    (3, 9),
+PYTHONS = (
+    "python3.6",
+    "python3.7",
+    "python3.8",
+    "python3.9",
+    "python3",
+    "python3-debug",
 )
 
 
-def test_python(version, run_tests):
-    python = "python%s.%s" % version
-    executable = shutil.which(python)
-    if not executable:
-        print(f"Ignore missing {python}")
-        return
-
-    cmd = [executable, run_tests]
+def test_python(python, run_tests):
+    cmd = [python, run_tests]
     proc = subprocess.Popen(cmd)
     proc.wait()
     exitcode = proc.returncode
@@ -30,8 +26,21 @@ def test_python(version, run_tests):
 
 def main():
     run_tests = os.path.join(os.path.dirname(__file__), "run_tests.py")
-    for version in VERSIONS:
-        test_python(version, run_tests)
+    tested = set()
+    for python in PYTHONS:
+        executable = shutil.which(python)
+        if not executable:
+            print(f"Ignore missing: {python}")
+            return
+        executable = os.path.realpath(executable)
+        if executable is tested:
+            continue
+
+        test_python(executable, run_tests)
+        tested.add(executable)
+
+    print()
+    print(f"Tested: {len(tested)} Python executables")
 
 
 if __name__ == "__main__":
