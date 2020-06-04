@@ -63,13 +63,10 @@ def import_tests():
     return test_pythoncapi_compat
 
 
-def _run_tests(testmod, verbose):
-    for name in dir(testmod):
-        if not name.startswith("test"):
-            continue
+def _run_tests(tests, verbose):
+    for name, test_func in tests:
         if verbose:
             print(f"{name}()", flush=True)
-        test_func = getattr(testmod, name)
         test_func()
 
 
@@ -88,8 +85,12 @@ def run_tests(testmod):
 
     check_refleak = hasattr(sys, 'gettotalrefcount')
 
+    tests = [(name, getattr(testmod, name))
+             for name in dir(testmod)
+             if name.startswith("test")]
+
     def test_func():
-        _run_tests(testmod, VERBOSE)
+        _run_tests(tests, VERBOSE)
 
     if check_refleak:
         _check_refleak(test_func)
@@ -101,7 +102,8 @@ def run_tests(testmod):
 
     ver = sys.version_info
     build = 'debug' if hasattr(sys, 'gettotalrefcount') else 'release'
-    msg = f"Python {ver.major}.{ver.minor} ({build} build): TESTS OK!"
+    msg = f"{len(tests)} tests succeeded!"
+    msg = f"Python {ver.major}.{ver.minor} ({build} build): {msg}"
     if check_refleak:
         msg = f"{msg} (no reference leak detected)"
     print(msg)
