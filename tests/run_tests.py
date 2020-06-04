@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Run tests suite.
+Run the test suite.
 
 Usage::
 

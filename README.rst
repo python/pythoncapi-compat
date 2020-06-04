@@ -70,7 +70,9 @@ Run tests
 Run the command::
 
     python3 tests/test_matrix.py
+    # add -v option for verbose mode
 
 To test one specific Python executable::
 
     python3.6 tests/run_tests.py
+    # add -v option for verbose mode
