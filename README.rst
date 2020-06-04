@@ -15,10 +15,6 @@ This project is distributed under the MIT license.
 This project is covered by the `PSF Code of Conduct
 <https://www.python.org/psf/codeofconduct/>`_.
 
-This project is guided by evolution of the C API described in:
-`PEP xxx: Modify the C API to hide implementation details
-<https://github.com/vstinner/misc/blob/master/cpython/pep-opaque-c-api.rst>`_
-(draft).
 
 Usage
 =====
@@ -26,6 +22,7 @@ Usage
 Copy the header file in your project and include it using::
 
     #include "pythoncapi_compat.h"
+
 
 Functions
 =========
