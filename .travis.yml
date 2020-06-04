@@ -7,8 +7,9 @@ jobs:
     - python: '3.6'
     - python: '3.7'
     - python: '3.8'
-    - python: '3.9'
+    - python: '3.9-dev'
     - python: nightly
 
 script:
+    - python -VV
     - python tests/run_tests.py -v
