@@ -20,7 +20,7 @@ test_set_funcs(PyObject *self, PyObject *ignored)
 {
     PyObject *obj = PyList_New(0);
     if (obj == NULL) {
-        return -1;
+        return NULL;
     }
 
     // test Py_SET_REFCNT
@@ -108,7 +108,7 @@ static struct PyMethodDef methods[] = {
     {"test_frame", test_frame, METH_NOARGS},
     {"test_thread_state", test_thread_state, METH_NOARGS},
     {"test_interpreter", test_interpreter, METH_NOARGS},
-    {NULL,       NULL}          /* sentinel */
+    {NULL, NULL}
 };
 
 
