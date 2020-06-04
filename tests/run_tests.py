@@ -43,7 +43,10 @@ def build_ext():
         run_command(cmd)
         print()
     else:
-        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        proc = subprocess.run(cmd,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT,
+                              universal_newlines=True)
         if proc.returncode:
             print(proc.stdout.rstrip())
             sys.exit(proc.returncode)
@@ -65,7 +68,7 @@ def _run_tests(testmod, verbose):
         if not name.startswith("test"):
             continue
         if verbose:
-            print(f"{name}()")
+            print(f"{name}()", flush=True)
         test_func = getattr(testmod, name)
         test_func()
 
