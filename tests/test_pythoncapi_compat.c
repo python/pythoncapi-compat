@@ -11,7 +11,7 @@ ASSERT_FAILED(const char *err_msg)
 }
 
 static PyObject *
-test_set_funcs(PyObject *self, PyObject *ignored)
+test_object(PyObject *self, PyObject *ignored)
 {
     PyObject *obj = PyList_New(0);
     if (obj == NULL) {
@@ -24,6 +24,9 @@ test_set_funcs(PyObject *self, PyObject *ignored)
     Py_SET_TYPE(obj, Py_TYPE(obj));
     // test Py_SET_SIZE
     Py_SET_SIZE(obj, Py_SIZE(obj));
+    // test Py_IS_TYPE()
+    int is_type = Py_IS_TYPE(obj, Py_TYPE(obj));
+    assert(is_type);
 
     Py_DECREF(obj);
     Py_RETURN_NONE;
@@ -167,7 +170,7 @@ test_module(PyObject *self, PyObject *ignored)
 
 
 static struct PyMethodDef methods[] = {
-    {"test_set_funcs", test_set_funcs, METH_NOARGS},
+    {"test_object", test_object, METH_NOARGS},
     {"test_frame", test_frame, METH_NOARGS},
     {"test_thread_state", test_thread_state, METH_NOARGS},
     {"test_interpreter", test_interpreter, METH_NOARGS},

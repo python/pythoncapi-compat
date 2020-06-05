@@ -40,6 +40,7 @@ Python 3.9
     void Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
     void Py_SET_TYPE(PyObject *ob, PyTypeObject *type)
     void Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
+    int Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type)
 
     PyObject* PyObject_CallNoArgs(PyObject *func)
 

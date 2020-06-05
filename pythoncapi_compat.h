@@ -168,6 +168,15 @@ PyObject_GC_IsFinalized(PyObject *obj)
 #endif  // PY_VERSION_HEX < 0x030900A6
 
 
+#if PY_VERSION_HEX < 0x030900A4
+static inline int
+_Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type) {
+    return ob->ob_type == type;
+}
+#define Py_IS_TYPE(ob, type) _Py_IS_TYPE((const PyObject*)(ob), type)
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif
