@@ -70,13 +70,19 @@ def _run_tests(tests, verbose):
         test_func()
 
 
-def _check_refleak(test_func):
-    for iteration in range(6):
+def _check_refleak(test_func, verbose):
+    nrun = 6
+    for i in range(1, nrun + 1):
+        if verbose:
+            if i > 1:
+                print()
+            print(f"Run {i}/{nrun}:")
+
         init_refcnt = sys.gettotalrefcount()
         test_func()
         diff = sys.gettotalrefcount() - init_refcnt;
 
-        if iteration > 3 and diff:
+        if i > 3 and diff:
             raise AssertionError(f"refcnt leak, diff: {diff}")
 
 
@@ -93,7 +99,7 @@ def run_tests(testmod):
         _run_tests(tests, VERBOSE)
 
     if check_refleak:
-        _check_refleak(test_func)
+        _check_refleak(test_func, VERBOSE)
     else:
         test_func()
 
