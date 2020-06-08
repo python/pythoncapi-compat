@@ -106,8 +106,21 @@ test_calls(PyObject *self, PyObject *ignored)
 {
     PyObject *func = (PyObject *)&PyUnicode_Type;
 
-    // test PyObject_CallNoArgs(): str() returns an empty string
+    // test PyObject_CallNoArgs(): str() returns ''
     PyObject *res = PyObject_CallNoArgs(func);
+    if (res == NULL) {
+        return NULL;
+    }
+    assert(PyUnicode_Check(res));
+    Py_DECREF(res);
+
+    // test PyObject_CallOneArg(): str(1) returns '1'
+    PyObject *arg = PyLong_FromLong(1);
+    if (arg == NULL) {
+        return NULL;
+    }
+    res = PyObject_CallOneArg(func, arg);
+    Py_DECREF(arg);
     if (res == NULL) {
         return NULL;
     }

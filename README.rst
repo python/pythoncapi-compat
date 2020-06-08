@@ -43,6 +43,7 @@ Python 3.9
     int Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type)
 
     PyObject* PyObject_CallNoArgs(PyObject *func)
+    PyObject* PyObject_CallOneArg(PyObject *func, PyObject *arg)
 
     // PyFrameObject
     PyCodeObject* PyFrame_GetCode(PyFrameObject *frame)

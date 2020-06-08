@@ -126,6 +126,15 @@ PyObject_CallNoArgs(PyObject *func)
 #endif
 
 
+#if PY_VERSION_HEX < 0x030900A4
+static inline PyObject*
+PyObject_CallOneArg(PyObject *func, PyObject *arg)
+{
+    return PyObject_CallFunctionObjArgs(func, arg, NULL);
+}
+#endif
+
+
 #if PY_VERSION_HEX < 0x030900A5
 static inline int
 PyModule_AddType(PyObject *module, PyTypeObject *type)
