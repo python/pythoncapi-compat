@@ -2,9 +2,9 @@
 Python C API compatibility
 ++++++++++++++++++++++++++
 
-.. image:: https://travis-ci.org/pythoncapi/pythoncapi_compat.svg?branch=master
+.. image:: https://travis-ci.com/pythoncapi/pythoncapi_compat.svg?branch=master
    :alt: Build status of pyperf on Travis CI
-   :target: https://travis-ci.org/pythoncapi/pythoncapi_compat
+   :target: https://travis-ci.com/github/pythoncapi/pythoncapi_compat
 
 Header file providing new functions of the Python C API for old Python versions.
 
