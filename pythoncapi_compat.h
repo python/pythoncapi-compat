@@ -15,6 +15,18 @@ extern "C" {
 #include <Python.h>
 #include "frameobject.h"          // PyFrameObject
 
+// bpo-42262 added Py_NewRef() and Py_XNewRef()
+static inline PyObject* Py_NewRef(PyObject *obj)
+{
+    Py_INCREF(obj);
+    return obj;
+}
+
+static inline PyObject* Py_XNewRef(PyObject *obj)
+{
+    Py_XINCREF(obj);
+    return obj;
+}
 
 // bpo-39573: Py_TYPE(), Py_REFCNT() and Py_SIZE() can no longer be used
 // as l-value in Python 3.10.

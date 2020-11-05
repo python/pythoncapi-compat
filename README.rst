@@ -31,6 +31,14 @@ Copy the header file in your project and include it using::
 Functions
 =========
 
+Python 3.10
+-----------
+
+::
+
+    PyObject* Py_NewRef(PyObject *obj);
+    PyObject* Py_XNewRef(PyObject *obj);
+
 Python 3.9
 ----------
 
