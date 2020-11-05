@@ -18,6 +18,7 @@ PYTHONS = (
     "python3.7",
     "python3.8",
     "python3.9",
+    "python3.10",
     "python3",
     "python3-debug",
 )
