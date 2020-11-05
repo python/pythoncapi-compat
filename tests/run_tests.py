@@ -7,6 +7,7 @@ Usage::
     python3 run_tests.py
     python3 run_tests.py -v # verbose mode
 """
+import faulthandler
 import os.path
 import shutil
 import subprocess
@@ -118,6 +119,8 @@ def run_tests(testmod):
 def main():
     global VERBOSE
     VERBOSE = "-v" in sys.argv[1:]
+
+    faulthandler.enable()
 
     src_dir = os.path.dirname(__file__)
     if src_dir:
