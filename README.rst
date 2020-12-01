@@ -38,6 +38,8 @@ Python 3.10
 
     PyObject* Py_NewRef(PyObject *obj);
     PyObject* Py_XNewRef(PyObject *obj);
+    PyObject* Py_Borrow(PyObject *obj);
+    PyObject* Py_XBorrow(PyObject *obj);
 
 Python 3.9
 ----------

@@ -39,6 +39,18 @@ test_object(PyObject *self, PyObject *ignored)
     int is_type = Py_IS_TYPE(obj, Py_TYPE(obj));
     assert(is_type);
 
+    // test _Py_Borrow()
+    Py_INCREF(obj);
+    PyObject *borrowed = _Py_Borrow(obj);
+    assert(borrowed == obj);
+    assert(Py_REFCNT(obj) == refcnt);
+
+    // test _Py_XBorrow()
+    Py_INCREF(obj);
+    PyObject *xborrowed = _Py_XBorrow(obj);
+    assert(xborrowed == obj);
+    assert(Py_REFCNT(obj) == refcnt);
+
     Py_DECREF(obj);
     Py_RETURN_NONE;
 }

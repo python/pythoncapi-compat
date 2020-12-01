@@ -32,6 +32,20 @@ static inline PyObject* Py_XNewRef(PyObject *obj)
 #endif
 
 
+// bpo-42522
+static inline PyObject* _Py_Borrow(PyObject *obj)
+{
+    Py_DECREF(obj);
+    return obj;
+}
+
+static inline PyObject* _Py_XBorrow(PyObject *obj)
+{
+    Py_XDECREF(obj);
+    return obj;
+}
+
+
 // bpo-39573: Py_TYPE(), Py_REFCNT() and Py_SIZE() can no longer be used
 // as l-value in Python 3.10.
 #if PY_VERSION_HEX < 0x030900A4
