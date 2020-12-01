@@ -41,22 +41,6 @@ static inline PyObject* Py_XNewRef(PyObject *obj)
 #endif
 
 
-// bpo-42522
-static inline PyObject* __Py_Borrow(PyObject *obj)
-{
-    Py_DECREF(obj);
-    return obj;
-}
-#define _Py_Borrow(obj) __Py_Borrow(_PyObject_CAST(obj))
-
-static inline PyObject* __Py_XBorrow(PyObject *obj)
-{
-    Py_XDECREF(obj);
-    return obj;
-}
-#define _Py_XBorrow(obj) __Py_XBorrow(_PyObject_CAST(obj))
-
-
 // bpo-39573: Py_TYPE(), Py_REFCNT() and Py_SIZE() can no longer be used
 // as l-value in Python 3.10.
 #if PY_VERSION_HEX < 0x030900A4
@@ -96,6 +80,14 @@ PyFrame_GetCode(PyFrameObject *frame)
 }
 #endif
 
+static inline PyCodeObject*
+_PyFrame_GetCodeBorrow(PyFrameObject *frame)
+{
+    PyCodeObject *code = PyFrame_GetCode(frame);
+    Py_DECREF(code);
+    return code;  // borrowed reference
+}
+
 
 #if PY_VERSION_HEX < 0x030900B1
 static inline PyFrameObject*
@@ -107,6 +99,14 @@ PyFrame_GetBack(PyFrameObject *frame)
     return back;
 }
 #endif
+
+static inline PyFrameObject*
+_PyFrame_GetBackBorrow(PyFrameObject *frame)
+{
+    PyFrameObject *back = PyFrame_GetBack(frame);
+    Py_XDECREF(back);
+    return back;  // borrowed reference
+}
 
 
 #if PY_VERSION_HEX < 0x030900A5
@@ -129,6 +129,14 @@ PyThreadState_GetFrame(PyThreadState *tstate)
     return frame;
 }
 #endif
+
+static inline PyFrameObject*
+_PyThreadState_GetFrameBorrow(PyThreadState *tstate)
+{
+    PyFrameObject *frame = PyThreadState_GetFrame(tstate);
+    Py_XDECREF(frame);
+    return frame;  // borrowed reference
+}
 
 
 #if PY_VERSION_HEX < 0x030900A5

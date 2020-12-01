@@ -39,18 +39,6 @@ test_object(PyObject *self, PyObject *ignored)
     int is_type = Py_IS_TYPE(obj, Py_TYPE(obj));
     assert(is_type);
 
-    // test _Py_Borrow()
-    Py_INCREF(obj);
-    PyObject *borrowed = _Py_Borrow(obj);
-    assert(borrowed == obj);
-    assert(Py_REFCNT(obj) == refcnt);
-
-    // test _Py_XBorrow()
-    Py_INCREF(obj);
-    PyObject *xborrowed = _Py_XBorrow(obj);
-    assert(xborrowed == obj);
-    assert(Py_REFCNT(obj) == refcnt);
-
     Py_DECREF(obj);
     Py_RETURN_NONE;
 }
@@ -67,16 +55,40 @@ test_frame(PyObject *self, PyObject *ignored)
         return ASSERT_FAILED("PyThreadState_GetFrame failed");
     }
 
+    // test _PyThreadState_GetFrameBorrow()
+    Py_ssize_t frame_refcnt = Py_REFCNT(frame);
+    PyFrameObject *frame2 = _PyThreadState_GetFrameBorrow(tstate);
+    assert(frame2 == frame);
+    assert(Py_REFCNT(frame) == frame_refcnt);
+
     // test PyFrame_GetCode()
     PyCodeObject *code = PyFrame_GetCode(frame);
     assert(code != NULL);
     assert(PyCode_Check(code));
+
+    // test _PyFrame_GetCodeBorrow()
+    Py_ssize_t code_refcnt = Py_REFCNT(code);
+    PyCodeObject *code2 = _PyFrame_GetCodeBorrow(frame);
+    assert(code2 == code);
+    assert(Py_REFCNT(code) == code_refcnt);
     Py_DECREF(code);
 
     // PyFrame_GetBack()
     PyFrameObject* back = PyFrame_GetBack(frame);
     if (back != NULL) {
         assert(PyFrame_Check(back));
+    }
+
+    // test _PyFrame_GetBackBorrow()
+    if (back != NULL) {
+        Py_ssize_t back_refcnt = Py_REFCNT(back);
+        PyCodeObject *back2 = _PyFrame_GetBackBorrow(frame);
+        assert(back2 == back);
+        assert(Py_REFCNT(back) == back_refcnt);
+    }
+    else {
+        PyCodeObject *back2 = _PyFrame_GetBackBorrow(frame);
+        assert(back2 == back);
     }
     Py_XDECREF(back);
 

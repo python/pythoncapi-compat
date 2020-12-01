@@ -35,6 +35,28 @@ Copy the header file in your project and include it using::
 Functions
 =========
 
+Borrow variant
+--------------
+
+To ease migration of C extensions to the new C API, a variant is provided
+to return borrowed references rather than strong references::
+
+    // PyThreadState_GetFrame()
+    PyFrameObject* _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
+
+    // PyFrame_GetCode()
+    PyCodeObject* _PyFrame_GetCodeBorrow(PyFrameObject *frame)
+
+    // PyFrame_GetBack()
+    PyFrameObject* _PyFrame_GetBackBorrow(PyFrameObject *frame)
+
+For example, ``tstate->frame`` can be replaced with
+``_PyThreadState_GetFrameBorrow(tstate)`` to avoid accessing directly
+``PyThreadState.frame`` member.
+
+These functions are only available in ``pythoncapi_compat.h`` and are not
+part of the Python C API.
+
 Python 3.10
 -----------
 
@@ -42,8 +64,6 @@ Python 3.10
 
     PyObject* Py_NewRef(PyObject *obj);
     PyObject* Py_XNewRef(PyObject *obj);
-    PyObject* _Py_Borrow(PyObject *obj);
-    PyObject* _Py_XBorrow(PyObject *obj);
 
 Python 3.9
 ----------
