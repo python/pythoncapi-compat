@@ -6,13 +6,17 @@ Python C API compatibility
    :alt: Build status of pyperf on Travis CI
    :target: https://travis-ci.com/github/pythoncapi/pythoncapi_compat
 
-Header file providing new functions of the Python C API for old Python versions.
+Header file providing new functions of the Python C API to Python 3.6.
 
 Python 3.6 to Python 3.10 are supported. It requires a subset of C99 like
 ``static inline`` functions:
 see `PEP 7 <https://www.python.org/dev/peps/pep-0007/>`_.
 
-Homepage: https://github.com/pythoncapi/pythoncapi_compat
+Homepage:
+https://github.com/pythoncapi/pythoncapi_compat
+
+Latest header file:
+https://raw.githubusercontent.com/pythoncapi/pythoncapi_compat/master/pythoncapi_compat.h
 
 This project is distributed under the MIT license.
 
@@ -38,8 +42,8 @@ Python 3.10
 
     PyObject* Py_NewRef(PyObject *obj);
     PyObject* Py_XNewRef(PyObject *obj);
-    PyObject* Py_Borrow(PyObject *obj);
-    PyObject* Py_XBorrow(PyObject *obj);
+    PyObject* _Py_Borrow(PyObject *obj);
+    PyObject* _Py_XBorrow(PyObject *obj);
 
 Python 3.9
 ----------
@@ -88,3 +92,9 @@ To test one specific Python executable::
 
     python3.6 tests/run_tests.py
     # add -v option for verbose mode
+
+
+Changelog
+=========
+
+* 2020-06-04: Creation of the project.
