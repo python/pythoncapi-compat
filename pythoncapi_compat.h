@@ -19,6 +19,12 @@ extern "C" {
 #include "frameobject.h"          // PyFrameObject, PyFrame_GetBack()
 
 
+// Cast argument to PyObject* type.
+#ifndef _PyObject_CAST
+#  define _PyObject_CAST(op) ((PyObject*)(op))
+#endif
+
+
 // bpo-42262 added Py_NewRef() and Py_XNewRef() to Python 3.10.0a3
 #if PY_VERSION_HEX < 0x030a00A3
 static inline PyObject* Py_NewRef(PyObject *obj)
@@ -36,17 +42,19 @@ static inline PyObject* Py_XNewRef(PyObject *obj)
 
 
 // bpo-42522
-static inline PyObject* _Py_Borrow(PyObject *obj)
+static inline PyObject* __Py_Borrow(PyObject *obj)
 {
     Py_DECREF(obj);
     return obj;
 }
+#define _Py_Borrow(obj) __Py_Borrow(_PyObject_CAST(obj))
 
-static inline PyObject* _Py_XBorrow(PyObject *obj)
+static inline PyObject* __Py_XBorrow(PyObject *obj)
 {
     Py_XDECREF(obj);
     return obj;
 }
+#define _Py_XBorrow(obj) __Py_XBorrow(_PyObject_CAST(obj))
 
 
 // bpo-39573: Py_TYPE(), Py_REFCNT() and Py_SIZE() can no longer be used
