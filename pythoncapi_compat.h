@@ -1,9 +1,10 @@
-/* Header file providing new functions of the Python C API
-   for old Python versions.
-
-   File distributed under the MIT license.
-   Homepage: https://github.com/pythoncapi/pythoncapi_compat.
-*/
+// Header file providing new functions of the Python C API to Python 3.6.
+//
+// File distributed under the MIT license.
+// Homepage: https://github.com/pythoncapi/pythoncapi_compat.
+//
+// Latest version:
+// https://raw.githubusercontent.com/pythoncapi/pythoncapi_compat/master/pythoncapi_compat.h
 
 #ifndef PYTHONCAPI_COMPAT
 #define PYTHONCAPI_COMPAT
