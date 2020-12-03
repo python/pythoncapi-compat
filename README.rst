@@ -224,23 +224,20 @@ See tests in the ``tests/`` subdirectory.
 Links
 =====
 
-* `pythoncapi_compat.h header
-  <https://github.com/pythoncapi/pythoncapi_compat>`_:
-  Header file providing new functions of the Python C API for old Python
-  versions.
-* `Py_SET_TYPE() function documentation
-  <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_TYPE>`_
-  (Python 3.9)
-* `Py_SET_SIZE() function documentation
-  <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_SIZE>`_
-  (Python 3.9)
-* `Py_SET_REFCNT() function documentation
-  <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_REFCNT>`_
-  (Python 3.9)
-* `bpo-39573: [C API] Make PyObject an opaque structure in the limited C API
-  <https://bugs.python.org/issue39573>`_
 * `PEP 620 -- Hide implementation details from the C API
   <https://www.python.org/dev/peps/pep-0620/>`_
+* Make structures opaque
+
+  * `bpo-39573: PyObject <https://bugs.python.org/issue39573>`_
+  * `bpo-40170: PyTypeObject <https://bugs.python.org/issue40170>`_
+  * `bpo-39947: PyThreadState <https://bugs.python.org/issue39947>`_
+  * `bpo-40421: PyFrameObject <https://bugs.python.org/issue40421>`_
+
+* `Python/C API Reference Manual <https://docs.python.org/dev/c-api/>`_
+* `HPy: a better API for Python
+  <https://hpy.readthedocs.io/>`_
+* `Cython: C-extensions for Python
+  <https://cython.org/>`_
 
 Changelog
 =========
