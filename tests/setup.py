@@ -3,8 +3,8 @@
 def main():
     from distutils.core import setup, Extension
 
-    ext = Extension('test_pythoncapi_compat',
-                    sources=['test_pythoncapi_compat.c'])
+    ext = Extension('test_pythoncapi_compat_cext',
+                    sources=['test_pythoncapi_compat_cext.c'])
 
     setup(name="test_pythoncapi_compat", ext_modules=[ext])
 

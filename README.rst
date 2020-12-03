@@ -6,11 +6,17 @@ Python C API compatibility
    :alt: Build status of pyperf on Travis CI
    :target: https://travis-ci.com/github/pythoncapi/pythoncapi_compat
 
-Header file providing new functions of the Python C API to Python 3.6.
+The Python C API compatibility project is made of two parts:
 
-Python 3.6 to Python 3.10 are supported. It requires a subset of C99 like
-``static inline`` functions:
-see `PEP 7 <https://www.python.org/dev/peps/pep-0007/>`_.
+* ``pythoncapi_compat.h``: Header file providing new functions of the Python C
+  API to Python 3.6.
+* ``upgrade_pythoncapi.py``: Script upgrading C extension modules to newer
+  Python API without losing support for Python 3.6. It relies on
+  ``pythoncapi_compat.h``.
+
+Python 3.6 to Python 3.10 are supported. A subset of C99 is required, like
+``static inline`` functions: see `PEP 7
+<https://www.python.org/dev/peps/pep-0007/>`_.
 
 Homepage:
 https://github.com/pythoncapi/pythoncapi_compat
@@ -27,13 +33,114 @@ This project is covered by the `PSF Code of Conduct
 Usage
 =====
 
-Copy the header file in your project and include it using::
+Run upgrade_pythoncapi.py
+-------------------------
 
-    #include "pythoncapi_compat.h"
+Upgrade ``mod.c`` file::
+
+    python3 upgrade_pythoncapi.py mod.c
+
+Upgrade all ``.c`` and ``.h`` files of a project::
+
+    python3 upgrade_pythoncapi.py directory/
+
+WARNING: files are modified in-place! If a file is modified, the original file
+is saved as ``<filename>.old``.
+
+To see command line options and list available operations, run it with no
+arguments::
+
+    python3 upgrade_pythoncapi.py
+
+For example, to only replace ``op->ob_type`` with ``Py_TYPE(op)``, use::
+
+    python3 upgrade_pythoncapi.py -o Py_TYPE mod.c
+
+Or the opposite, to apply all operations but leave ``op->ob_type`` unchanged,
+use::
+
+    python3 upgrade_pythoncapi.py -o all,-Py_TYPE mod.c
+
+Copy pythoncapi_compat.h
+------------------------
+
+Most upgrade_pythoncapi.py operations add ``#include "pythoncapi_compat.h"``.
+You may have to copy the ``pythoncapi_compat.h`` header file to your project.
+It can be copied from::
+
+    https://raw.githubusercontent.com/pythoncapi/pythoncapi_compat/master/pythoncapi_compat.h
 
 
-Functions
-=========
+Upgrade Operations
+==================
+
+``upgrade_pythoncapi.py`` implements the following operations:
+
+* ``Py_TYPE``:
+
+  * Replace ``op->ob_type`` with ``Py_TYPE(op)``.
+
+* ``Py_SIZE``:
+
+  * Replace ``op->ob_size`` with ``Py_SIZE(op)``.
+
+* ``Py_REFCNT``:
+
+  * Replace ``op->ob_refcnt`` with ``Py_REFCNT(op)``.
+
+* ``Py_SET_TYPE``:
+
+  * Replace ``obj->ob_type = type;`` with ``Py_SET_TYPE(obj, type);``.
+  * Replace ``Py_TYPE(obj) = type;`` with ``Py_SET_TYPE(obj, type);``.
+
+* ``Py_SET_SIZE``:
+
+  * Replace ``obj->ob_size = size;`` with ``Py_SET_SIZE(obj, size);``.
+  * Replace ``Py_SIZE(obj) = size;`` with ``Py_SET_SIZE(obj, size);``.
+
+* ``Py_SET_REFCNT``:
+
+  * Replace ``obj->ob_refcnt = refcnt;`` with ``Py_SET_REFCNT(obj, refcnt);``.
+  * Replace ``Py_REFCNT(obj) = refcnt;`` with ``Py_SET_REFCNT(obj, refcnt);``.
+
+* ``PyObject_NEW``:
+
+  * Replace ``PyObject_NEW(...)`` with ``PyObject_New(...)``.
+  * Replace ``PyObject_NEW_VAR(...)`` with ``PyObject_NewVar(...)``.
+
+* ``PyMem_MALLOC``:
+
+  * Replace ``PyMem_MALLOC(n)`` with ``PyMem_Malloc(n)``.
+  * Replace ``PyMem_REALLOC(ptr, n)`` with ``PyMem_Realloc(ptr, n)``.
+  * Replace ``PyMem_FREE(ptr)``, ``PyMem_DEL(ptr)`` and ``PyMem_Del(ptr)`` .
+    with ``PyMem_Free(n)``.
+
+* ``PyObject_MALLOC``:
+
+  * Replace ``PyObject_MALLOC(n)`` with ``PyObject_Malloc(n)``.
+  * Replace ``PyObject_REALLOC(ptr, n)`` with ``PyObject_Realloc(ptr, n)``.
+  * Replace ``PyObject_FREE(ptr)``, ``PyObject_DEL(ptr)``
+    and ``PyObject_Del(ptr)`` .  with ``PyObject_Free(n)``.
+
+* ``PyFrame_GetBack``:
+
+  * Replace ``frame->f_back`` with ``_PyFrame_GetBackBorrow(frame)``.
+
+* ``PyFrame_GetCode``:
+
+  * Replace ``frame->f_code`` with ``_PyFrame_GetCodeBorrow(frame)``.
+
+* ``PyThreadState_GetInterpreter``:
+
+  * Replace ``tstate->interp`` with ``PyThreadState_GetInterpreter(tstate)``.
+
+* ``PyThreadState_GetFrame``:
+
+  * Replace ``tstate->frame`` with ``_PyThreadState_GetFrameBorrow(tstate)``.
+
+
+pythoncapi_compat.h functions
+=============================
 
 Borrow variant
 --------------
@@ -105,16 +212,38 @@ Run tests
 
 Run the command::
 
-    python3 tests/test_matrix.py
-    # add -v option for verbose mode
+    python3 runtests.py
 
-To test one specific Python executable::
+Verbose mode::
 
-    python3.6 tests/run_tests.py
-    # add -v option for verbose mode
+    python3 runtests.py -v
 
+See tests in the ``tests/`` subdirectory.
+
+
+Links
+=====
+
+* `pythoncapi_compat.h header
+  <https://github.com/pythoncapi/pythoncapi_compat>`_:
+  Header file providing new functions of the Python C API for old Python
+  versions.
+* `Py_SET_TYPE() function documentation
+  <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_TYPE>`_
+  (Python 3.9)
+* `Py_SET_SIZE() function documentation
+  <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_SIZE>`_
+  (Python 3.9)
+* `Py_SET_REFCNT() function documentation
+  <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_REFCNT>`_
+  (Python 3.9)
+* `bpo-39573: [C API] Make PyObject an opaque structure in the limited C API
+  <https://bugs.python.org/issue39573>`_
+* `PEP 620 -- Hide implementation details from the C API
+  <https://www.python.org/dev/peps/pep-0620/>`_
 
 Changelog
 =========
 
-* 2020-06-04: Creation of the project.
+* 2020-11-30: Creation of the upgrade_pythoncapi.py script.
+* 2020-06-04: Creation of the pythoncapi_compat.h header file.

@@ -231,13 +231,13 @@ static struct PyMethodDef methods[] = {
 
 static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
-    .m_name = "test_pythoncapi_compat",
+    .m_name = "test_pythoncapi_compat_cext",
     .m_methods = methods,
 };
 
 
 PyMODINIT_FUNC
-PyInit_test_pythoncapi_compat(void)
+PyInit_test_pythoncapi_compat_cext(void)
 {
     return PyModuleDef_Init(&module);
 }

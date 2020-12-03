@@ -54,14 +54,16 @@ def build_ext():
 
 
 def import_tests():
-    pythonpath = ''
+    pythonpath = None
     for name in os.listdir("build"):
         if name.startswith('lib.'):
             pythonpath = os.path.join("build", name)
 
+    if not pythonpath:
+        raise Exception("Failed to find the build directory")
     sys.path.append(pythonpath)
-    import test_pythoncapi_compat
-    return test_pythoncapi_compat
+    import test_pythoncapi_compat_cext
+    return test_pythoncapi_compat_cext
 
 
 def _run_tests(tests, verbose):
