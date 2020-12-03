@@ -8,7 +8,7 @@ import unittest
 
 # Get upgrade_pythoncapi.py of the parent directory
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-import upgrade_pythoncapi
+import upgrade_pythoncapi   # noqa
 
 
 def patch(source):

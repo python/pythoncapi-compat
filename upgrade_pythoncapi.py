@@ -8,7 +8,8 @@ import sys
 FORCE_NEWREF = False
 
 
-PYTHONCAPI_COMPAT_URL = 'https://raw.githubusercontent.com/pythoncapi/pythoncapi_compat/master/pythoncapi_compat.h'
+PYTHONCAPI_COMPAT_URL = ('https://raw.githubusercontent.com/pythoncapi/'
+                         'pythoncapi_compat/master/pythoncapi_compat.h')
 PYTHONCAPI_COMPAT_H = 'pythoncapi_compat.h'
 INCLUDE_PYTHONCAPI_COMPAT = f'#include "{PYTHONCAPI_COMPAT_H}"'
 INCLUDE_PYTHONCAPI_COMPAT2 = f'#include <{PYTHONCAPI_COMPAT_H}>'
@@ -20,7 +21,7 @@ ID_REGEX = r'[a-zA-Z][a-zA-Z0-9_]*'
 SUBEXPR_REGEX = fr'{ID_REGEX}(?:\[[^]]+\])*'
 # Match a C expression like "frame", "frame.attr" or "obj->attr".
 # Don't match functions calls like "func()".
-EXPR_REGEX = f"{SUBEXPR_REGEX}(?:(?:->|\.){SUBEXPR_REGEX})*"
+EXPR_REGEX = fr"{SUBEXPR_REGEX}(?:(?:->|\.){SUBEXPR_REGEX})*"
 
 
 def get_member_regex_str(member):
@@ -131,7 +132,8 @@ class Py_SET_SIZE(Operation):
 
 class Py_SET_REFCNT(Operation):
     NAME = "Py_SET_REFCNT"
-    DOC = 'replace "Py_REFCNT(obj) = refcnt;" with "Py_SET_REFCNT(obj, refcnt);"'
+    DOC = ('replace "Py_REFCNT(obj) = refcnt;" '
+           'with "Py_SET_REFCNT(obj, refcnt);"')
     REPLACE = (
         (call_assign_regex('Py_REFCNT'), r'Py_SET_REFCNT(\1, \2);'),
         (set_member_regex('ob_refcnt'), r'Py_SET_REFCNT(\1, \2);'),
@@ -217,7 +219,8 @@ class PyFrame_GetCode(Operation):
 
 class PyThreadState_GetInterpreter(Operation):
     NAME = "PyThreadState_GetInterpreter"
-    DOC = 'replace "tstate->interp" with "PyThreadState_GetInterpreter(tstate)"'
+    DOC = ('replace "tstate->interp" '
+           'with "PyThreadState_GetInterpreter(tstate)"')
     REPLACE = (
         (get_member_regex('interp'), r'PyThreadState_GetInterpreter(\1)'),
     )
@@ -227,7 +230,8 @@ class PyThreadState_GetInterpreter(Operation):
 
 class PyThreadState_GetFrame(Operation):
     NAME = "PyThreadState_GetFrame"
-    DOC = 'replace "tstate->frame" with "_PyThreadState_GetFrameBorrow(tstate)"'
+    DOC = ('replace "tstate->frame" '
+           'with "_PyThreadState_GetFrameBorrow(tstate)"')
     REPLACE = (
         (get_member_regex('frame'), r'_PyThreadState_GetFrameBorrow(\1)'),
     )
@@ -238,7 +242,8 @@ class PyThreadState_GetFrame(Operation):
 
 class Py_INCREF_return(Operation):
     NAME = "Py_INCREF_return"
-    DOC = 'replace "Py_INCREF(obj); return (obj);" with "return Py_NewRef(obj);"'
+    DOC = ('replace "Py_INCREF(obj); return (obj);" '
+           'with "return Py_NewRef(obj);"')
     REPLACE = (
         (re.compile(r'Py_INCREF\((%s)\);\s*return \1;' % ID_REGEX),
          r'return Py_NewRef(\1);'),
@@ -449,7 +454,8 @@ class Patcher:
                                 key=lambda operation: operation.NAME):
             print("- %s: %s" % (operation.NAME, operation.DOC))
         print()
-        print("If a directory is passed, search for .c and .h files in subdirectories.")
+        print("If a directory is passed, search for .c and .h files "
+              "in subdirectories.")
 
     def _parse_options(self, args):
         parser = argparse.ArgumentParser(
@@ -467,7 +473,7 @@ class Patcher:
                  'in-place (imply quiet mode)')
         parser.add_argument(
             '-B', '--no-backup', action="store_true",
-            help=f"Don't create .old backup files")
+            help="Don't create .old backup files")
         parser.add_argument(
             '-C', '--no-compat', action="store_true",
             help=f"Don't add: {INCLUDE_PYTHONCAPI_COMPAT}")

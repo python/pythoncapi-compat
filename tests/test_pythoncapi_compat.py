@@ -37,7 +37,6 @@ def build_ext():
     display_title("Build the C extension")
     if os.path.exists("build"):
         shutil.rmtree("build")
-    include_dir = os.path.normpath(os.path.join(os.getcwd(), '..'))
     os.environ['CFLAGS'] = "-I .."
     cmd = [sys.executable, "setup.py", "build"]
     if VERBOSE:
@@ -83,7 +82,7 @@ def _check_refleak(test_func, verbose):
 
         init_refcnt = sys.gettotalrefcount()
         test_func()
-        diff = sys.gettotalrefcount() - init_refcnt;
+        diff = sys.gettotalrefcount() - init_refcnt
 
         if i > 3 and diff:
             raise AssertionError(f"refcnt leak, diff: {diff}")
