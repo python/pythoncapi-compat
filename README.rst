@@ -178,33 +178,33 @@ Python 3.9
 ::
 
     // PyObject
-    void Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
-    void Py_SET_TYPE(PyObject *ob, PyTypeObject *type)
-    void Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
-    int Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type)
+    void Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt);
+    void Py_SET_TYPE(PyObject *ob, PyTypeObject *type);
+    void Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size);
+    int Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type);
 
-    PyObject* PyObject_CallNoArgs(PyObject *func)
-    PyObject* PyObject_CallOneArg(PyObject *func, PyObject *arg)
+    PyObject* PyObject_CallNoArgs(PyObject *func);
+    PyObject* PyObject_CallOneArg(PyObject *func, PyObject *arg);
 
     // PyFrameObject
-    PyCodeObject* PyFrame_GetCode(PyFrameObject *frame)
-    PyFrameObject* PyFrame_GetBack(PyFrameObject *frame)
+    PyCodeObject* PyFrame_GetCode(PyFrameObject *frame);
+    PyFrameObject* PyFrame_GetBack(PyFrameObject *frame);
 
     // PyThreadState
-    PyFrameObject* PyThreadState_GetFrame(PyThreadState *tstate)
-    PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState *tstate)
+    PyFrameObject* PyThreadState_GetFrame(PyThreadState *tstate);
+    PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState *tstate);
     // Availability: Python 3.7+
-    uint64_t PyThreadState_GetID(PyThreadState *tstate)
+    uint64_t PyThreadState_GetID(PyThreadState *tstate);
 
     // PyInterpreterState
-    PyInterpreterState* PyInterpreterState_Get(void)
+    PyInterpreterState* PyInterpreterState_Get(void);
 
     // GC protocol
-    int PyObject_GC_IsTracked(PyObject* obj)
-    int PyObject_GC_IsFinalized(PyObject *obj)
+    int PyObject_GC_IsTracked(PyObject* obj);
+    int PyObject_GC_IsFinalized(PyObject *obj);
 
     // Module helper
-    int PyModule_AddType(PyObject *module, PyTypeObject *type)
+    int PyModule_AddType(PyObject *module, PyTypeObject *type);
 
 
 Run tests

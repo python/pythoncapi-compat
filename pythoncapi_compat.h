@@ -25,14 +25,18 @@ extern "C" {
 #endif
 
 
-// bpo-42262 added Py_NewRef() and Py_XNewRef() to Python 3.10.0a3
+// bpo-42262 added Py_NewRef() to Python 3.10.0a3
 #if PY_VERSION_HEX < 0x030a00A3
 static inline PyObject* Py_NewRef(PyObject *obj)
 {
     Py_INCREF(obj);
     return obj;
 }
+#endif
 
+
+// bpo-42262 added Py_XNewRef() to Python 3.10.0a3
+#if PY_VERSION_HEX < 0x030a00A3
 static inline PyObject* Py_XNewRef(PyObject *obj)
 {
     Py_XINCREF(obj);
@@ -41,33 +45,39 @@ static inline PyObject* Py_XNewRef(PyObject *obj)
 #endif
 
 
-// bpo-39573: Py_TYPE(), Py_REFCNT() and Py_SIZE() can no longer be used
-// as l-value in Python 3.10.
-#if PY_VERSION_HEX < 0x030900A4
+// bpo-39573 added Py_SET_REFCNT() to Python 3.9.0a4
+#if PY_VERSION_HEX < 0x030900A4 && !defined(Py_SET_REFCNT)
 static inline void _Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
 {
     ob->ob_refcnt = refcnt;
 }
 #define Py_SET_REFCNT(ob, refcnt) _Py_SET_REFCNT((PyObject*)(ob), refcnt)
+#endif
 
 
+// bpo-39573 added Py_SET_TYPE() to Python 3.9.0a4
+#if PY_VERSION_HEX < 0x030900A4 && !defined(Py_SET_TYPE)
 static inline void
 _Py_SET_TYPE(PyObject *ob, PyTypeObject *type)
 {
     ob->ob_type = type;
 }
 #define Py_SET_TYPE(ob, type) _Py_SET_TYPE((PyObject*)(ob), type)
+#endif
 
+
+// bpo-39573 added Py_SET_SIZE() to Python 3.9.0a4
+#if PY_VERSION_HEX < 0x030900A4 && !defined(Py_SET_SIZE)
 static inline void
 _Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
 {
     ob->ob_size = size;
 }
 #define Py_SET_SIZE(ob, size) _Py_SET_SIZE((PyVarObject*)(ob), size)
+#endif
 
-#endif  // PY_VERSION_HEX < 0x030900A4
 
-
+// bpo-40421 added PyFrame_GetCode() to Python 3.9.0b1
 #if PY_VERSION_HEX < 0x030900B1
 static inline PyCodeObject*
 PyFrame_GetCode(PyFrameObject *frame)
@@ -89,6 +99,7 @@ _PyFrame_GetCodeBorrow(PyFrameObject *frame)
 }
 
 
+// bpo-40421 added PyFrame_GetCode() to Python 3.9.0b1
 #if PY_VERSION_HEX < 0x030900B1
 static inline PyFrameObject*
 PyFrame_GetBack(PyFrameObject *frame)
@@ -109,6 +120,7 @@ _PyFrame_GetBackBorrow(PyFrameObject *frame)
 }
 
 
+// bpo-39947 added PyThreadState_GetInterpreter() to Python 3.9.0a5
 #if PY_VERSION_HEX < 0x030900A5
 static inline PyInterpreterState *
 PyThreadState_GetInterpreter(PyThreadState *tstate)
@@ -119,6 +131,7 @@ PyThreadState_GetInterpreter(PyThreadState *tstate)
 #endif
 
 
+// bpo-40429 added PyThreadState_GetFrame() to Python 3.9.0b1
 #if PY_VERSION_HEX < 0x030900B1
 static inline PyFrameObject*
 PyThreadState_GetFrame(PyThreadState *tstate)
@@ -139,6 +152,7 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 }
 
 
+// bpo-39947 added PyInterpreterState_Get() to Python 3.9.0a5
 #if PY_VERSION_HEX < 0x030900A5
 static inline PyInterpreterState *
 PyInterpreterState_Get(void)
@@ -156,6 +170,7 @@ PyInterpreterState_Get(void)
 #endif
 
 
+// bpo-39947 added PyInterpreterState_Get() to Python 3.9.0a6
 #if 0x030700A1 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030900A6
 static inline uint64_t
 PyThreadState_GetID(PyThreadState *tstate)
@@ -166,6 +181,7 @@ PyThreadState_GetID(PyThreadState *tstate)
 #endif
 
 
+// bpo-37194 added PyObject_CallNoArgs() to Python 3.9.0a1
 #if PY_VERSION_HEX < 0x030900A1
 static inline PyObject*
 PyObject_CallNoArgs(PyObject *func)
@@ -175,6 +191,8 @@ PyObject_CallNoArgs(PyObject *func)
 #endif
 
 
+// bpo-39245 made PyObject_CallOneArg() public (previously called
+// _PyObject_CallOneArg) in Python 3.9.0a4
 #if PY_VERSION_HEX < 0x030900A4
 static inline PyObject*
 PyObject_CallOneArg(PyObject *func, PyObject *arg)
@@ -184,6 +202,7 @@ PyObject_CallOneArg(PyObject *func, PyObject *arg)
 #endif
 
 
+// bpo-40024 added PyModule_AddType() to Python 3.9.0a5
 #if PY_VERSION_HEX < 0x030900A5
 static inline int
 PyModule_AddType(PyObject *module, PyTypeObject *type)
@@ -211,6 +230,8 @@ PyModule_AddType(PyObject *module, PyTypeObject *type)
 #endif
 
 
+// bpo-40241 added PyObject_GC_IsTracked() and PyObject_GC_IsFinalized()
+// to Python 3.9.0a6
 #if PY_VERSION_HEX < 0x030900A6
 static inline int
 PyObject_GC_IsTracked(PyObject* obj)
@@ -226,7 +247,8 @@ PyObject_GC_IsFinalized(PyObject *obj)
 #endif  // PY_VERSION_HEX < 0x030900A6
 
 
-#if PY_VERSION_HEX < 0x030900A4
+// bpo-39573 added Py_IS_TYPE() to Python 3.9.0a4
+#if PY_VERSION_HEX < 0x030900A4 && !defined(Py_IS_TYPE)
 static inline int
 _Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type) {
     return ob->ob_type == type;
