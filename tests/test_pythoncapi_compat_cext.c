@@ -17,17 +17,21 @@ test_object(PyObject *self, PyObject *ignored)
     if (obj == NULL) {
         return NULL;
     }
+    Py_ssize_t refcnt = Py_REFCNT(obj);
 
     // Py_NewRef() and Py_XNewRef()
-    Py_ssize_t refcnt = Py_REFCNT(obj);
-    PyObject *obj2 = Py_NewRef(obj);
+    PyObject *ref = Py_NewRef(obj);
+    assert(ref == obj);
     assert(Py_REFCNT(obj) == (refcnt + 1));
-    PyObject *obj3 = Py_XNewRef(obj);
-    assert(Py_REFCNT(obj) == (refcnt + 2));
+    Py_DECREF(ref);
+
+    // Py_XNewRef()
+    PyObject *xref = Py_XNewRef(obj);
+    assert(xref == obj);
+    assert(Py_REFCNT(obj) == (refcnt + 1));
+    Py_DECREF(xref);
+
     assert(Py_XNewRef(NULL) == NULL);
-    Py_DECREF(obj2);
-    Py_DECREF(obj3);
-    assert(Py_REFCNT(obj) == refcnt);
 
     // test Py_SET_REFCNT
     Py_SET_REFCNT(obj, Py_REFCNT(obj));
@@ -39,6 +43,7 @@ test_object(PyObject *self, PyObject *ignored)
     int is_type = Py_IS_TYPE(obj, Py_TYPE(obj));
     assert(is_type);
 
+    assert(Py_REFCNT(obj) == refcnt);
     Py_DECREF(obj);
     Py_RETURN_NONE;
 }
