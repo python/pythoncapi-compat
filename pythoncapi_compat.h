@@ -26,22 +26,24 @@ extern "C" {
 
 
 // bpo-42262 added Py_NewRef() to Python 3.10.0a3
-#if PY_VERSION_HEX < 0x030a00A3
-static inline PyObject* Py_NewRef(PyObject *obj)
+#if PY_VERSION_HEX < 0x030a00A3 && !defined(Py_NewRef)
+static inline PyObject* _Py_NewRef(PyObject *obj)
 {
     Py_INCREF(obj);
     return obj;
 }
+#define Py_NewRef(obj) _Py_NewRef(_PyObject_CAST(obj))
 #endif
 
 
 // bpo-42262 added Py_XNewRef() to Python 3.10.0a3
-#if PY_VERSION_HEX < 0x030a00A3
-static inline PyObject* Py_XNewRef(PyObject *obj)
+#if PY_VERSION_HEX < 0x030a00A3 && !defined(Py_XNewRef)
+static inline PyObject* _Py_XNewRef(PyObject *obj)
 {
     Py_XINCREF(obj);
     return obj;
 }
+#define Py_XNewRef(obj) _Py_XNewRef(_PyObject_CAST(obj))
 #endif
 
 
