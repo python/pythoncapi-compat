@@ -210,13 +210,18 @@ Python 3.9
 Run tests
 =========
 
-Run the command::
+Run tests::
 
     python3 runtests.py
 
-Verbose mode::
+Only test the current Python version, don't test multiple Python versions
+(``-c``, ``--current``)::
 
-    python3 runtests.py -v
+    python3 runtests.py --current
+
+Verbose mode (``-v``, ``--verbose``)::
+
+    python3 runtests.py --verbose
 
 See tests in the ``tests/`` subdirectory.
 

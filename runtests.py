@@ -7,10 +7,11 @@ Usage::
     python3 test_matrix.py
     python3 test_matrix.py -v # verbose mode
 """
+import argparse
 import os.path
+import shutil
 import subprocess
 import sys
-import shutil
 
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'tests')
@@ -56,21 +57,35 @@ def run_tests(python, verbose, tested):
     run_tests_exe(executable, verbose, tested)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', action="store_true",
+                        help='Verbose mode')
+    parser.add_argument('-c', '--current', action="store_true",
+                        help="Only test the current Python executable "
+                             "(don't test multiple Python versions)")
+    return parser.parse_args()
+
+
 def main():
-    verbose = "-v" in sys.argv[1:]
+    args = parse_args()
 
     cmd = [sys.executable, TEST_UPGRADE]
-    if verbose:
+    if args.verbose:
         cmd.append('-v')
     run_command(cmd)
+    print()
 
     tested = set()
-    for python in PYTHONS:
-        run_tests(python, verbose, tested)
-    run_tests_exe(sys.executable, verbose, tested)
+    if not args.current:
+        for python in PYTHONS:
+            run_tests(python, args.verbose, tested)
+        run_tests_exe(sys.executable, args.verbose, tested)
 
-    print()
-    print(f"Tested: {len(tested)} Python executables")
+        print()
+        print(f"Tested: {len(tested)} Python executables")
+    else:
+        run_tests_exe(sys.executable, args.verbose, tested)
 
 
 if __name__ == "__main__":

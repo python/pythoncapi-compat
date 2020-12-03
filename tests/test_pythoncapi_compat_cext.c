@@ -87,12 +87,12 @@ test_frame(PyObject *self, PyObject *ignored)
     // test _PyFrame_GetBackBorrow()
     if (back != NULL) {
         Py_ssize_t back_refcnt = Py_REFCNT(back);
-        PyCodeObject *back2 = _PyFrame_GetBackBorrow(frame);
+        PyFrameObject *back2 = _PyFrame_GetBackBorrow(frame);
         assert(back2 == back);
         assert(Py_REFCNT(back) == back_refcnt);
     }
     else {
-        PyCodeObject *back2 = _PyFrame_GetBackBorrow(frame);
+        PyFrameObject *back2 = _PyFrame_GetBackBorrow(frame);
         assert(back2 == back);
     }
     Py_XDECREF(back);

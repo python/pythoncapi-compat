@@ -12,4 +12,4 @@ jobs:
 
 script:
     - python -VV
-    - python runtests.py -v
+    - python runtests.py --current --verbose
