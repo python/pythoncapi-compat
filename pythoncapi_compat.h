@@ -84,8 +84,9 @@ _Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
 static inline PyCodeObject*
 PyFrame_GetCode(PyFrameObject *frame)
 {
+    PyCodeObject *code;
     assert(frame != NULL);
-    PyCodeObject *code = frame->f_code;
+    code = frame->f_code;
     assert(code != NULL);
     Py_INCREF(code);
     return code;
@@ -106,8 +107,9 @@ _PyFrame_GetCodeBorrow(PyFrameObject *frame)
 static inline PyFrameObject*
 PyFrame_GetBack(PyFrameObject *frame)
 {
+    PyFrameObject *back;
     assert(frame != NULL);
-    PyFrameObject *back = frame->f_back;
+    back = frame->f_back;
     Py_XINCREF(back);
     return back;
 }
@@ -138,8 +140,9 @@ PyThreadState_GetInterpreter(PyThreadState *tstate)
 static inline PyFrameObject*
 PyThreadState_GetFrame(PyThreadState *tstate)
 {
+    PyFrameObject *frame;
     assert(tstate != NULL);
-    PyFrameObject *frame = tstate->frame;
+    frame = tstate->frame;
     Py_XINCREF(frame);
     return frame;
 }
@@ -159,11 +162,14 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 static inline PyInterpreterState *
 PyInterpreterState_Get(void)
 {
-    PyThreadState *tstate = PyThreadState_GET();
+    PyThreadState *tstate;
+    PyInterpreterState *interp;
+
+    tstate = PyThreadState_GET();
     if (tstate == NULL) {
         Py_FatalError("GIL released (tstate is NULL)");
     }
-    PyInterpreterState *interp = tstate->interp;
+    interp = tstate->interp;
     if (interp == NULL) {
         Py_FatalError("no current interpreter");
     }
@@ -209,14 +215,16 @@ PyObject_CallOneArg(PyObject *func, PyObject *arg)
 static inline int
 PyModule_AddType(PyObject *module, PyTypeObject *type)
 {
+    const char *name, *dot;
+
     if (PyType_Ready(type) < 0) {
         return -1;
     }
 
     // inline _PyType_Name()
-    const char *name = type->tp_name;
+    name = type->tp_name;
     assert(name != NULL);
-    const char *dot = strrchr(name, '.');
+    dot = strrchr(name, '.');
     if (dot != NULL) {
         name = dot + 1;
     }
