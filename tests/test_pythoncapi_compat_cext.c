@@ -182,9 +182,11 @@ test_gc(PyObject *self, PyObject *ignored)
     int tracked = PyObject_GC_IsTracked(tuple);
     assert(tracked);
 
+#if PY_VERSION_HEX >= 0x030400F0
     // test PyObject_GC_IsFinalized()
     int finalized = PyObject_GC_IsFinalized(tuple);
     assert(!finalized);
+#endif
 
     Py_DECREF(tuple);
     Py_RETURN_NONE;
