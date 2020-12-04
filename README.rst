@@ -252,6 +252,10 @@ Links
   <https://hpy.readthedocs.io/>`_
 * `Cython: C-extensions for Python
   <https://cython.org/>`_
+* `Old 2to3c project <https://github.com/davidmalcolm/2to3c>`_ by David Malcolm
+  which uses `Coccinelle <https://coccinelle.gitlabpages.inria.fr/website/>`_
+  to ease migration of C extensions from Python 2 to Python 3.
+
 
 Changelog
 =========
