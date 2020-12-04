@@ -232,21 +232,25 @@ PyModule_AddType(PyObject *module, PyTypeObject *type)
 #endif
 
 
-// bpo-40241 added PyObject_GC_IsTracked() and PyObject_GC_IsFinalized()
-// to Python 3.9.0a6
+// bpo-40241 added PyObject_GC_IsTracked() to Python 3.9.0a6.
+// bpo-4688 added _PyObject_GC_IS_TRACKED() to Python 2.7.0a2.
 #if PY_VERSION_HEX < 0x030900A6
 static inline int
 PyObject_GC_IsTracked(PyObject* obj)
 {
     return (PyObject_IS_GC(obj) && _PyObject_GC_IS_TRACKED(obj));
 }
+#endif
 
+// bpo-40241 added PyObject_GC_IsFinalized() to Python 3.9.0a6.
+// bpo-18112 added _PyGCHead_FINALIZED() to Python 3.4.0 final.
+#if PY_VERSION_HEX < 0x030900A6 && PY_VERSION_HEX >= 0x030400F0
 static inline int
 PyObject_GC_IsFinalized(PyObject *obj)
 {
     return (PyObject_IS_GC(obj) && _PyGCHead_FINALIZED((PyGC_Head *)(obj)-1));
 }
-#endif  // PY_VERSION_HEX < 0x030900A6
+#endif
 
 
 // bpo-39573 added Py_IS_TYPE() to Python 3.9.0a4
