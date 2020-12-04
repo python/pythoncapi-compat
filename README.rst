@@ -9,14 +9,15 @@ Python C API compatibility
 The Python C API compatibility project is made of two parts:
 
 * ``pythoncapi_compat.h``: Header file providing new functions of the Python C
-  API to Python 3.6.
+  API to old Python versions.
 * ``upgrade_pythoncapi.py``: Script upgrading C extension modules to newer
-  Python API without losing support for Python 3.6. It relies on
+  Python API without losing support for old Python versions. It relies on
   ``pythoncapi_compat.h``.
 
-Python 3.6 to Python 3.10 are supported. A subset of C99 is required, like
+Python 2.7 to Python 3.10 are supported. A subset of C99 is required, like
 ``static inline`` functions: see `PEP 7
-<https://www.python.org/dev/peps/pep-0007/>`_.
+<https://www.python.org/dev/peps/pep-0007/>`_. ISO C90 is partially supported
+for Python 2.7.
 
 Homepage:
 https://github.com/pythoncapi/pythoncapi_compat
@@ -194,7 +195,7 @@ PyThreadState::
 
     PyFrameObject* PyThreadState_GetFrame(PyThreadState *tstate);
     PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState *tstate);
-    // Availability: Python 3.7+
+    // Availability: Python 3.7
     uint64_t PyThreadState_GetID(PyThreadState *tstate);
 
 PyInterpreterState::
@@ -204,7 +205,7 @@ PyInterpreterState::
 GC protocol::
 
     int PyObject_GC_IsTracked(PyObject* obj);
-    // Availability: Python 3.4+
+    // Availability: Python 3.4
     int PyObject_GC_IsFinalized(PyObject *obj);
 
 Module helper::

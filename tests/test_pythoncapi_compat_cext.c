@@ -3,6 +3,10 @@
 
 #include "pythoncapi_compat.h"
 
+#if PY_VERSION_HEX >= 0x03000000
+#  define PYTHON3 1
+#endif
+
 static PyObject*
 ASSERT_FAILED(const char *err_msg)
 {
@@ -196,31 +200,44 @@ test_gc(PyObject *self, PyObject *ignored)
 static PyObject *
 test_module(PyObject *self, PyObject *ignored)
 {
-    PyObject *module = self;
+    PyObject *module = PyImport_ImportModule("sys");
+    if (module == NULL) {
+        return NULL;
+    }
     assert(PyModule_Check(module));
 
     // test PyModule_AddType()
     PyTypeObject *type = &PyUnicode_Type;
+#ifdef PYTHON3
+    const char *type_name = "str";
+#else
+    const char *type_name = "unicode";
+#endif
     Py_ssize_t refcnt = Py_REFCNT(type);
 
     if (PyModule_AddType(module, type) < 0) {
-        return NULL;
+        goto error;
     }
     assert(Py_REFCNT(type) == refcnt + 1);
 
-    PyObject *attr = PyObject_GetAttrString(module, "str");
+    PyObject *attr = PyObject_GetAttrString(module, type_name);
     if (attr == NULL) {
-        return NULL;
+        goto error;
     }
     assert(attr == (PyObject *)type);
     Py_DECREF(attr);
 
-    if (PyObject_DelAttrString(module, "str") < 0) {
-        return NULL;
+    if (PyObject_DelAttrString(module, type_name) < 0) {
+        goto error;
     }
     assert(Py_REFCNT(type) == refcnt);
 
+    Py_DECREF(module);
     Py_RETURN_NONE;
+
+error:
+    Py_DECREF(module);
+    return NULL;
 }
 
 
@@ -236,6 +253,7 @@ static struct PyMethodDef methods[] = {
 };
 
 
+#ifdef PYTHON3
 static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
     .m_name = "test_pythoncapi_compat_cext",
@@ -243,8 +261,30 @@ static struct PyModuleDef module = {
 };
 
 
+#if PY_VERSION_HEX >= 0x03050000
 PyMODINIT_FUNC
 PyInit_test_pythoncapi_compat_cext(void)
 {
     return PyModuleDef_Init(&module);
 }
+#else
+// Python 3.4
+PyMODINIT_FUNC
+PyInit_test_pythoncapi_compat_cext(void)
+{
+    return PyModule_Create(&module);
+}
+#endif
+
+#else
+// Python 2
+PyMODINIT_FUNC
+inittest_pythoncapi_compat_cext(void)
+{
+    Py_InitModule4("test_pythoncapi_compat_cext",
+                   methods,
+                   NULL,
+                   NULL,
+                   PYTHON_API_VERSION);
+}
+#endif

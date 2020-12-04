@@ -7,11 +7,21 @@ Usage::
     python3 test_matrix.py
     python3 test_matrix.py -v # verbose mode
 """
+from __future__ import absolute_import
+from __future__ import print_function
 import argparse
 import os.path
 import shutil
 import subprocess
 import sys
+try:
+    from shutil import which
+except ImportError:
+    # Python 2
+    from distutils.spawn import find_executable as which
+
+
+from tests.utils import run_command
 
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'tests')
@@ -19,6 +29,9 @@ TEST_COMPAT = os.path.join(TEST_DIR, "test_pythoncapi_compat.py")
 TEST_UPGRADE = os.path.join(TEST_DIR, "test_upgrade_pythoncapi.py")
 
 PYTHONS = (
+    "python2.7",
+    "python3.4",
+    "python3.5",
     "python3.6",
     "python3.7",
     "python3.8",
@@ -27,14 +40,6 @@ PYTHONS = (
     "python3",
     "python3-debug",
 )
-
-
-def run_command(cmd):
-    proc = subprocess.Popen(cmd)
-    proc.wait()
-    exitcode = proc.returncode
-    if exitcode:
-        sys.exit(exitcode)
 
 
 def run_tests_exe(executable, verbose, tested):
@@ -50,9 +55,9 @@ def run_tests_exe(executable, verbose, tested):
 
 
 def run_tests(python, verbose, tested):
-    executable = shutil.which(python)
+    executable = which(python)
     if not executable:
-        print(f"Ignore missing: {python}")
+        print("Ignore missing: %s" % python)
         return
     run_tests_exe(executable, verbose, tested)
 
@@ -70,10 +75,14 @@ def parse_args():
 def main():
     args = parse_args()
 
-    cmd = [sys.executable, TEST_UPGRADE]
-    if args.verbose:
-        cmd.append('-v')
-    run_command(cmd)
+    # upgrade_pythoncapi.py requires Python 3.6 or newer
+    if sys.version_info >= (3, 6):
+        cmd = [sys.executable, TEST_UPGRADE]
+        if args.verbose:
+            cmd.append('-v')
+        run_command(cmd)
+    else:
+        print("Don't test upgrade_pythoncapi.py: it requires Python 3.6")
     print()
 
     tested = set()
@@ -83,7 +92,7 @@ def main():
         run_tests_exe(sys.executable, args.verbose, tested)
 
         print()
-        print(f"Tested: {len(tested)} Python executables")
+        print("Tested: %s Python executables" % len(tested))
     else:
         run_tests_exe(sys.executable, args.verbose, tested)
 
