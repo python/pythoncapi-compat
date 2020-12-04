@@ -7,21 +7,23 @@ Usage::
     python3 run_tests.py
     python3 run_tests.py -v # verbose mode
 """
-import faulthandler
+from __future__ import absolute_import
+from __future__ import print_function
 import os.path
 import shutil
 import subprocess
 import sys
+try:
+    import faulthandler
+except ImportError:
+    # Python 2
+    faulthandler = None
+
+# test.utils
+from utils import run_command, command_stdout
 
 
 VERBOSE = False
-
-
-def run_command(args, **kw):
-    proc = subprocess.run(args)
-    if proc.returncode:
-        sys.exit(proc.returncode)
-    return proc
 
 
 def display_title(title):
@@ -43,13 +45,10 @@ def build_ext():
         run_command(cmd)
         print()
     else:
-        proc = subprocess.run(cmd,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.STDOUT,
-                              universal_newlines=True)
-        if proc.returncode:
-            print(proc.stdout.rstrip())
-            sys.exit(proc.returncode)
+        exitcode, stdout = command_stdout(cmd, stderr=subprocess.STDOUT)
+        if exitcode:
+            print(stdout.rstrip())
+            sys.exit(exitcode)
 
 
 def import_tests():
@@ -68,7 +67,8 @@ def import_tests():
 def _run_tests(tests, verbose):
     for name, test_func in tests:
         if verbose:
-            print(f"{name}()", flush=True)
+            print("%s()" % name)
+            sys.stdout.flush()
         test_func()
 
 
@@ -78,14 +78,14 @@ def _check_refleak(test_func, verbose):
         if verbose:
             if i > 1:
                 print()
-            print(f"Run {i}/{nrun}:")
+            print("Run %s/%s:" % (i, nrun))
 
         init_refcnt = sys.gettotalrefcount()
         test_func()
         diff = sys.gettotalrefcount() - init_refcnt
 
         if i > 3 and diff:
-            raise AssertionError(f"refcnt leak, diff: {diff}")
+            raise AssertionError("refcnt leak, diff: %s" % diff)
 
 
 def run_tests(testmod):
@@ -110,10 +110,10 @@ def run_tests(testmod):
 
     ver = sys.version_info
     build = 'debug' if hasattr(sys, 'gettotalrefcount') else 'release'
-    msg = f"{len(tests)} tests succeeded!"
-    msg = f"Python {ver.major}.{ver.minor} ({build} build): {msg}"
+    msg = "%s tests succeeded!" % len(tests)
+    msg = "Python %s.%s (%s build): %s" % (ver.major, ver.minor, build, msg)
     if check_refleak:
-        msg = f"{msg} (no reference leak detected)"
+        msg = "%s (no reference leak detected)" % msg
     print(msg)
 
 
@@ -121,7 +121,8 @@ def main():
     global VERBOSE
     VERBOSE = "-v" in sys.argv[1:]
 
-    faulthandler.enable()
+    if faulthandler is not None:
+        faulthandler.enable()
 
     src_dir = os.path.dirname(__file__)
     if src_dir:

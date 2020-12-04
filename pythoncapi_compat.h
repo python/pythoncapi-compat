@@ -1,4 +1,5 @@
-// Header file providing new functions of the Python C API to Python 3.6.
+// Header file providing new functions of the Python C API to old Python
+// versions.
 //
 // File distributed under the MIT license.
 //
