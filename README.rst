@@ -254,7 +254,9 @@ Links
   <https://cython.org/>`_
 * `Old 2to3c project <https://github.com/davidmalcolm/2to3c>`_ by David Malcolm
   which uses `Coccinelle <https://coccinelle.gitlabpages.inria.fr/website/>`_
-  to ease migration of C extensions from Python 2 to Python 3.
+  to ease migration of C extensions from Python 2 to Python 3. See
+  also `2to3c: an implementation of Python's 2to3 for C code
+  <https://dmalcolm.livejournal.com/3935.html>`_ article (2009).
 
 
 Changelog
