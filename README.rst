@@ -252,6 +252,11 @@ Links
   <https://hpy.readthedocs.io/>`_
 * `Cython: C-extensions for Python
   <https://cython.org/>`_
+
+  * `ModuleSetupCode.c
+    <https://github.com/cython/cython/blob/0.29.x/Cython/Utility/ModuleSetupCode.c>`_
+    provides functions like ``__Pyx_SET_REFCNT()``
+
 * `Old 2to3c project <https://github.com/davidmalcolm/2to3c>`_ by David Malcolm
   which uses `Coccinelle <https://coccinelle.gitlabpages.inria.fr/website/>`_
   to ease migration of C extensions from Python 2 to Python 3. See
