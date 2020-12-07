@@ -264,3 +264,12 @@ Changelog
 
 * 2020-11-30: Creation of the upgrade_pythoncapi.py script.
 * 2020-06-04: Creation of the pythoncapi_compat.h header file.
+
+
+Examples of projects using pythoncapi_compat.h
+==============================================
+
+* `immutables <https://github.com/MagicStack/immutables/>`_:
+  ``immutables/_map.c`` uses ``Py_SET_SIZE()``
+  (`pythoncapi_compat.h copy
+  <https://github.com/MagicStack/immutables/blob/master/immutables/pythoncapi_compat.h>`_)
