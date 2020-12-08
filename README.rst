@@ -256,6 +256,9 @@ Links
   * `ModuleSetupCode.c
     <https://github.com/cython/cython/blob/0.29.x/Cython/Utility/ModuleSetupCode.c>`_
     provides functions like ``__Pyx_SET_REFCNT()``
+  * Cython doesn't use pythoncapi_compat.h:
+    `see Cython issue #3934
+    <https://github.com/cython/cython/issues/3934>`_
 
 * `Old 2to3c project <https://github.com/davidmalcolm/2to3c>`_ by David Malcolm
   which uses `Coccinelle <https://coccinelle.gitlabpages.inria.fr/website/>`_
