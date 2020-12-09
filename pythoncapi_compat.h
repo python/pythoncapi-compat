@@ -8,6 +8,8 @@
 //
 // Latest version:
 // https://raw.githubusercontent.com/pythoncapi/pythoncapi_compat/master/pythoncapi_compat.h
+//
+// SPDX-License-Identifier: MIT
 
 #ifndef PYTHONCAPI_COMPAT
 #define PYTHONCAPI_COMPAT
