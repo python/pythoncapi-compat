@@ -26,6 +26,9 @@ extern "C" {
 #ifndef _PyObject_CAST
 #  define _PyObject_CAST(op) ((PyObject*)(op))
 #endif
+#ifndef _PyObject_CAST_CONST
+#  define _PyObject_CAST_CONST(op) ((const PyObject*)(op))
+#endif
 
 
 // bpo-42262 added Py_NewRef() to Python 3.10.0a3
@@ -56,7 +59,7 @@ static inline void _Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
 {
     ob->ob_refcnt = refcnt;
 }
-#define Py_SET_REFCNT(ob, refcnt) _Py_SET_REFCNT((PyObject*)(ob), refcnt)
+#define Py_SET_REFCNT(ob, refcnt) _Py_SET_REFCNT(_PyObject_CAST(ob), refcnt)
 #endif
 
 
@@ -67,7 +70,7 @@ _Py_SET_TYPE(PyObject *ob, PyTypeObject *type)
 {
     ob->ob_type = type;
 }
-#define Py_SET_TYPE(ob, type) _Py_SET_TYPE((PyObject*)(ob), type)
+#define Py_SET_TYPE(ob, type) _Py_SET_TYPE(_PyObject_CAST(ob), type)
 #endif
 
 
@@ -270,7 +273,7 @@ static inline int
 _Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type) {
     return ob->ob_type == type;
 }
-#define Py_IS_TYPE(ob, type) _Py_IS_TYPE((const PyObject*)(ob), type)
+#define Py_IS_TYPE(ob, type) _Py_IS_TYPE(_PyObject_CAST_CONST(ob), type)
 #endif
 
 
