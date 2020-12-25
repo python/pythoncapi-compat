@@ -285,3 +285,6 @@ Examples of projects using pythoncapi_compat.h
   ``immutables/_map.c`` uses ``Py_SET_SIZE()``
   (`pythoncapi_compat.h copy
   <https://github.com/MagicStack/immutables/blob/master/immutables/pythoncapi_compat.h>`_)
+* `python-zstandard <https://github.com/indygreg/python-zstandard/>`_
+  (`commit <https://github.com/indygreg/python-zstandard/commit/e5a3baf61b65f3075f250f504ddad9f8612bfedf>`__):
+  Mercurial extension.
