@@ -57,7 +57,7 @@ def run_tests_exe(executable, verbose, tested):
 def run_tests(python, verbose, tested):
     executable = which(python)
     if not executable:
-        print("Ignore missing: %s" % python)
+        print("Ignore missing Python executable: %s" % python)
         return
     run_tests_exe(executable, verbose, tested)
 
@@ -75,8 +75,13 @@ def parse_args():
 def main():
     args = parse_args()
 
+    path = os.path.join(TEST_DIR, 'build')
+    if os.path.exists(path):
+        shutil.rmtree(path)
+
     # upgrade_pythoncapi.py requires Python 3.6 or newer
     if sys.version_info >= (3, 6):
+        print("Run %s" % TEST_UPGRADE)
         cmd = [sys.executable, TEST_UPGRADE]
         if args.verbose:
             cmd.append('-v')
