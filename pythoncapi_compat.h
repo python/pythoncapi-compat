@@ -216,6 +216,21 @@ PyObject_CallOneArg(PyObject *func, PyObject *arg)
 #endif
 
 
+// bpo-1635741 added PyModule_AddObjectRef() to Python 3.10.0a3
+#if PY_VERSION_HEX < 0x030A00A3
+static inline int
+PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
+{
+    Py_XINCREF(value);
+    int res = PyModule_AddObject(module, name, value);
+    if (res < 0) {
+        Py_XDECREF(value);
+    }
+    return res;
+}
+#endif
+
+
 // bpo-40024 added PyModule_AddType() to Python 3.9.0a5
 #if PY_VERSION_HEX < 0x030900A5
 static inline int
@@ -235,28 +250,7 @@ PyModule_AddType(PyObject *module, PyTypeObject *type)
         name = dot + 1;
     }
 
-    Py_INCREF(type);
-    if (PyModule_AddObject(module, name, (PyObject *)type) < 0) {
-        Py_DECREF(type);
-        return -1;
-    }
-
-    return 0;
-}
-#endif
-
-
-// bpo-1635741 added PyModule_AddObjectRef() to Python 3.10.0a3
-#if PY_VERSION_HEX < 0x030A00A3
-static inline int
-PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
-{
-    Py_XINCREF(value);
-    int res = PyModule_AddObject(module, name, value);
-    if (res < 0) {
-        Py_XDECREF(value);
-    }
-    return res;
+    return PyModule_AddObjectRef(module, name, (PyObject *)type);
 }
 #endif
 
