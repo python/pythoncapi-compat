@@ -213,6 +213,7 @@ GC protocol::
 
 Module helper::
 
+    int PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value);
     int PyModule_AddType(PyObject *module, PyTypeObject *type);
 
 

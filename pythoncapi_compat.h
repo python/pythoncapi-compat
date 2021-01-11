@@ -32,7 +32,7 @@ extern "C" {
 
 
 // bpo-42262 added Py_NewRef() to Python 3.10.0a3
-#if PY_VERSION_HEX < 0x030a00A3 && !defined(Py_NewRef)
+#if PY_VERSION_HEX < 0x030A00A3 && !defined(Py_NewRef)
 static inline PyObject* _Py_NewRef(PyObject *obj)
 {
     Py_INCREF(obj);
@@ -43,7 +43,7 @@ static inline PyObject* _Py_NewRef(PyObject *obj)
 
 
 // bpo-42262 added Py_XNewRef() to Python 3.10.0a3
-#if PY_VERSION_HEX < 0x030a00A3 && !defined(Py_XNewRef)
+#if PY_VERSION_HEX < 0x030A00A3 && !defined(Py_XNewRef)
 static inline PyObject* _Py_XNewRef(PyObject *obj)
 {
     Py_XINCREF(obj);
@@ -242,6 +242,21 @@ PyModule_AddType(PyObject *module, PyTypeObject *type)
     }
 
     return 0;
+}
+#endif
+
+
+// bpo-1635741 added PyModule_AddObjectRef() to Python 3.10.0a3
+#if PY_VERSION_HEX < 0x030A00A3
+static inline int
+PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
+{
+    Py_XINCREF(value);
+    int res = PyModule_AddObject(module, name, value);
+    if (res < 0) {
+        Py_XDECREF(value);
+    }
+    return res;
 }
 #endif
 

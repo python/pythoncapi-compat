@@ -197,16 +197,10 @@ test_gc(PyObject *self, PyObject *ignored)
 }
 
 
-static PyObject *
-test_module(PyObject *self, PyObject *ignored)
+// test PyModule_AddType()
+static int
+test_module_add_type(PyObject *module)
 {
-    PyObject *module = PyImport_ImportModule("sys");
-    if (module == NULL) {
-        return NULL;
-    }
-    assert(PyModule_Check(module));
-
-    // test PyModule_AddType()
     PyTypeObject *type = &PyUnicode_Type;
 #ifdef PYTHON3
     const char *type_name = "str";
@@ -216,21 +210,69 @@ test_module(PyObject *self, PyObject *ignored)
     Py_ssize_t refcnt = Py_REFCNT(type);
 
     if (PyModule_AddType(module, type) < 0) {
-        goto error;
+        return -1;
     }
     assert(Py_REFCNT(type) == refcnt + 1);
 
     PyObject *attr = PyObject_GetAttrString(module, type_name);
     if (attr == NULL) {
-        goto error;
+        return -1;
     }
     assert(attr == (PyObject *)type);
     Py_DECREF(attr);
 
     if (PyObject_DelAttrString(module, type_name) < 0) {
-        goto error;
+        return -1;
     }
     assert(Py_REFCNT(type) == refcnt);
+    return 0;
+}
+
+
+// test PyModule_AddObjectRef()
+static int
+test_module_addobjectref(PyObject *module)
+{
+    PyObject *obj = Py_True;
+    Py_ssize_t refcnt = Py_REFCNT(obj);
+    const char *name = "test_module_addobjectref";
+
+    if (PyModule_AddObjectRef(module, name, obj) < 0) {
+        assert(Py_REFCNT(obj) == refcnt);
+        return -1;
+    }
+    assert(Py_REFCNT(obj) == refcnt + 1);
+
+    if (PyObject_DelAttrString(module, name) < 0) {
+        return -1;
+    }
+    assert(Py_REFCNT(obj) == refcnt);
+
+    // PyModule_AddObjectRef() with value=NULL must not crash
+    int res = PyModule_AddObjectRef(module, name, NULL);
+    assert(res < 0);
+    PyErr_Clear();
+
+    return 0;
+}
+
+
+static PyObject *
+test_module(PyObject *self, PyObject *ignored)
+{
+    PyObject *module = PyImport_ImportModule("sys");
+    if (module == NULL) {
+        return NULL;
+    }
+    assert(PyModule_Check(module));
+
+    if (test_module_add_type(module) < 0) {
+        goto error;
+    }
+
+    if (test_module_addobjectref(module) < 0) {
+        goto error;
+    }
 
     Py_DECREF(module);
     Py_RETURN_NONE;
