@@ -305,9 +305,12 @@ Examples of projects using pythoncapi_compat.h
   ``immutables/_map.c`` uses ``Py_SET_SIZE()``
   (`pythoncapi_compat.h copy
   <https://github.com/MagicStack/immutables/blob/master/immutables/pythoncapi_compat.h>`__)
-* `Mercurial (hg) <https://www.mercurial-scm.org/>`_
-  (`pythoncapi_compat.h copy
+* `Mercurial (hg) <https://www.mercurial-scm.org/>`_ uses ``Py_SET_TYPE()``
+  (`commit
+  <https://www.mercurial-scm.org/repo/hg/rev/e92ca942ddca>`__,
+  `pythoncapi_compat.h copy
   <https://www.mercurial-scm.org/repo/hg/file/tip/mercurial/pythoncapi_compat.h>`__)
 * `python-zstandard <https://github.com/indygreg/python-zstandard/>`_
+  uses ``Py_SET_TYPE()`` and ``Py_SET_SIZE()``
   (`commit <https://github.com/indygreg/python-zstandard/commit/e5a3baf61b65f3075f250f504ddad9f8612bfedf>`__):
   Mercurial extension.
