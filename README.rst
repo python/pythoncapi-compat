@@ -17,8 +17,8 @@ The Python C API compatibility project is made of two parts:
 ``pythoncapi_compat.h`` supports Python 2.7 to Python 3.10. A C99 subset is
 required, like ``static inline`` functions: see `PEP 7
 <https://www.python.org/dev/peps/pep-0007/>`_. ISO C90 is partially supported
-for Python 2.7 (avoid mixed declarations and code, GCC
-``-Werror=declaration-after-statement`` flag).
+for Python 2.7: avoid mixed declarations and code (GCC
+``-Werror=declaration-after-statement`` flag) and support Visual Studio 2008.
 
 ``upgrade_pythoncapi.py`` requires Python 3.6 or newer.
 
@@ -300,11 +300,14 @@ Examples of projects using pythoncapi_compat.h
 * `bitarray <https://github.com/ilanschnell/bitarray/>`_:
   ``bitarray/_bitarray.c`` uses ``Py_SET_SIZE()``
   (`pythoncapi_compat.h copy
-  <https://github.com/ilanschnell/bitarray/blob/master/bitarray/pythoncapi_compat.h>`_)
+  <https://github.com/ilanschnell/bitarray/blob/master/bitarray/pythoncapi_compat.h>`__)
 * `immutables <https://github.com/MagicStack/immutables/>`_:
   ``immutables/_map.c`` uses ``Py_SET_SIZE()``
   (`pythoncapi_compat.h copy
-  <https://github.com/MagicStack/immutables/blob/master/immutables/pythoncapi_compat.h>`_)
+  <https://github.com/MagicStack/immutables/blob/master/immutables/pythoncapi_compat.h>`__)
+* `Mercurial (hg) <https://www.mercurial-scm.org/>`_
+  (`pythoncapi_compat.h copy
+  <https://www.mercurial-scm.org/repo/hg/file/tip/mercurial/pythoncapi_compat.h>`__)
 * `python-zstandard <https://github.com/indygreg/python-zstandard/>`_
   (`commit <https://github.com/indygreg/python-zstandard/commit/e5a3baf61b65f3075f250f504ddad9f8612bfedf>`__):
   Mercurial extension.
