@@ -297,6 +297,7 @@ Changelog
 =========
 
 * 2021-02-16: Add ``_Py_StealRef()`` and ``_Py_XStealRef()`` functions.
+* 2021-01-27: Fix compatibility with Visual Studio 2008 for Python 2.7.
 * 2020-11-30: Creation of the ``upgrade_pythoncapi.py`` script.
 * 2020-06-04: Creation of the ``pythoncapi_compat.h`` header file.
 
