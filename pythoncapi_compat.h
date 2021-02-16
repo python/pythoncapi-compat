@@ -156,11 +156,8 @@ PyThreadState_GetInterpreter(PyThreadState *tstate)
 static inline PyFrameObject*
 PyThreadState_GetFrame(PyThreadState *tstate)
 {
-    PyFrameObject *frame;
     assert(tstate != NULL);
-    frame = tstate->frame;
-    Py_XINCREF(frame);
-    return frame;
+    return (PyFrameObject *)Py_XNewRef(tstate->frame);
 }
 #endif
 
