@@ -100,12 +100,9 @@ _Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
 static inline PyCodeObject*
 PyFrame_GetCode(PyFrameObject *frame)
 {
-    PyCodeObject *code;
     assert(frame != NULL);
-    code = frame->f_code;
-    assert(code != NULL);
-    Py_INCREF(code);
-    return code;
+    assert(frame->f_code != NULL);
+    return (PyCodeObject*)Py_NewRef(frame->f_code);
 }
 #endif
 
@@ -123,11 +120,8 @@ _PyFrame_GetCodeBorrow(PyFrameObject *frame)
 static inline PyFrameObject*
 PyFrame_GetBack(PyFrameObject *frame)
 {
-    PyFrameObject *back;
     assert(frame != NULL);
-    back = frame->f_back;
-    Py_XINCREF(back);
-    return back;
+    return (PyFrameObject*)Py_XNewRef(frame->f_back);
 }
 #endif
 
