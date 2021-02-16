@@ -23,7 +23,7 @@ test_object(PyObject *self, PyObject *ignored)
     }
     Py_ssize_t refcnt = Py_REFCNT(obj);
 
-    // Py_NewRef() and Py_XNewRef()
+    // Py_NewRef()
     PyObject *ref = Py_NewRef(obj);
     assert(ref == obj);
     assert(Py_REFCNT(obj) == (refcnt + 1));
@@ -46,6 +46,35 @@ test_object(PyObject *self, PyObject *ignored)
     // test Py_IS_TYPE()
     int is_type = Py_IS_TYPE(obj, Py_TYPE(obj));
     assert(is_type);
+
+    assert(Py_REFCNT(obj) == refcnt);
+    Py_DECREF(obj);
+    Py_RETURN_NONE;
+}
+
+
+static PyObject *
+test_steal_ref(PyObject *self, PyObject *ignored)
+{
+    PyObject *obj = PyList_New(0);
+    if (obj == NULL) {
+        return NULL;
+    }
+    Py_ssize_t refcnt = Py_REFCNT(obj);
+
+    // _Py_StealRef()
+    Py_INCREF(obj);
+    PyObject *ref = _Py_StealRef(obj);
+    assert(ref == obj);
+    assert(Py_REFCNT(obj) == refcnt);
+
+    // _Py_XStealRef()
+    Py_INCREF(obj);
+    PyObject *xref = _Py_XStealRef(obj);
+    assert(xref == obj);
+    assert(Py_REFCNT(obj) == refcnt);
+
+    assert(_Py_XStealRef(NULL) == NULL);
 
     assert(Py_REFCNT(obj) == refcnt);
     Py_DECREF(obj);
@@ -285,6 +314,7 @@ error:
 
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS},
+    {"test_steal_ref", test_steal_ref, METH_NOARGS},
     {"test_frame", test_frame, METH_NOARGS},
     {"test_thread_state", test_thread_state, METH_NOARGS},
     {"test_interpreter", test_interpreter, METH_NOARGS},

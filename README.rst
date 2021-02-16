@@ -152,6 +152,12 @@ Borrow variant
 To ease migration of C extensions to the new C API, a variant is provided
 to return borrowed references rather than strong references::
 
+    // Similar to "Py_INCREF(ob); return ob;"
+    PyObject* _Py_StealRef(PyObject *ob);
+
+    // Similar to "Py_XINCREF(ob); return ob;"
+    PyObject* _Py_XStealRef(PyObject *ob);
+
     // PyThreadState_GetFrame()
     PyFrameObject* _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 
@@ -290,8 +296,9 @@ Links
 Changelog
 =========
 
-* 2020-11-30: Creation of the upgrade_pythoncapi.py script.
-* 2020-06-04: Creation of the pythoncapi_compat.h header file.
+* 2021-02-16: Add ``_Py_StealRef()`` and ``_Py_XStealRef()`` functions.
+* 2020-11-30: Creation of the ``upgrade_pythoncapi.py`` script.
+* 2020-06-04: Creation of the ``pythoncapi_compat.h`` header file.
 
 
 Examples of projects using pythoncapi_compat.h

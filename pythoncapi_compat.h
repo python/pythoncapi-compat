@@ -63,6 +63,28 @@ static inline PyObject* _Py_XNewRef(PyObject *obj)
 #endif
 
 
+// See https://bugs.python.org/issue42522
+#if !defined(_Py_StealRef)
+static inline PyObject* __Py_StealRef(PyObject *obj)
+{
+    Py_DECREF(obj);
+    return obj;
+}
+#define _Py_StealRef(obj) __Py_StealRef(_PyObject_CAST(obj))
+#endif
+
+
+// See https://bugs.python.org/issue42522
+#if !defined(_Py_XStealRef)
+static inline PyObject* __Py_XStealRef(PyObject *obj)
+{
+    Py_XDECREF(obj);
+    return obj;
+}
+#define _Py_XStealRef(obj) __Py_XStealRef(_PyObject_CAST(obj))
+#endif
+
+
 // bpo-39573 added Py_SET_REFCNT() to Python 3.9.0a4
 #if PY_VERSION_HEX < 0x030900A4 && !defined(Py_SET_REFCNT)
 static inline void _Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
@@ -109,9 +131,7 @@ PyFrame_GetCode(PyFrameObject *frame)
 static inline PyCodeObject*
 _PyFrame_GetCodeBorrow(PyFrameObject *frame)
 {
-    PyCodeObject *code = PyFrame_GetCode(frame);
-    Py_DECREF(code);
-    return code;  // borrowed reference
+    return (PyCodeObject *)_Py_StealRef(PyFrame_GetCode(frame));
 }
 
 
@@ -128,9 +148,7 @@ PyFrame_GetBack(PyFrameObject *frame)
 static inline PyFrameObject*
 _PyFrame_GetBackBorrow(PyFrameObject *frame)
 {
-    PyFrameObject *back = PyFrame_GetBack(frame);
-    Py_XDECREF(back);
-    return back;  // borrowed reference
+    return (PyFrameObject *)_Py_XStealRef(PyFrame_GetBack(frame));
 }
 
 
@@ -158,9 +176,7 @@ PyThreadState_GetFrame(PyThreadState *tstate)
 static inline PyFrameObject*
 _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 {
-    PyFrameObject *frame = PyThreadState_GetFrame(tstate);
-    Py_XDECREF(frame);
-    return frame;  // borrowed reference
+    return (PyFrameObject *)_Py_XStealRef(PyThreadState_GetFrame(tstate));
 }
 
 
