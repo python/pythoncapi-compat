@@ -33,6 +33,7 @@ def display_title(title):
     print(title)
     print("=" * len(title))
     print()
+    sys.stdout.flush()
 
 
 def build_ext():
