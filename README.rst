@@ -2,9 +2,9 @@
 Python C API compatibility
 ++++++++++++++++++++++++++
 
-.. image:: https://travis-ci.com/pythoncapi/pythoncapi_compat.svg?branch=master
-   :alt: Build status of pyperf on Travis CI
-   :target: https://travis-ci.com/github/pythoncapi/pythoncapi_compat
+.. image:: https://github.com/pythoncapi/pythoncapi_compat/actions/workflows/build.yml/badge.svg
+   :alt: Build status of pythoncapi_compat on GitHub Actions
+   :target: https://github.com/pythoncapi/pythoncapi_compat/actions
 
 The Python C API compatibility project is made of two parts:
 
