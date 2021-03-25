@@ -7,6 +7,15 @@
 #  define PYTHON3 1
 #endif
 
+#ifndef Py_UNUSED
+   // Backport the macro for Python 3.5 and older
+#  if defined(__GNUC__) || defined(__clang__)
+#    define Py_UNUSED(name) _unused_ ## name __attribute__((unused))
+#  else
+#    define Py_UNUSED(name) _unused_ ## name
+#  endif
+#endif
+
 static PyObject*
 ASSERT_FAILED(const char *err_msg)
 {
@@ -15,7 +24,7 @@ ASSERT_FAILED(const char *err_msg)
 }
 
 static PyObject *
-test_object(PyObject *self, PyObject *ignored)
+test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *obj = PyList_New(0);
     if (obj == NULL) {
@@ -54,7 +63,7 @@ test_object(PyObject *self, PyObject *ignored)
 
 
 static PyObject *
-test_steal_ref(PyObject *self, PyObject *ignored)
+test_steal_ref(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *obj = PyList_New(0);
     if (obj == NULL) {
@@ -83,7 +92,7 @@ test_steal_ref(PyObject *self, PyObject *ignored)
 
 
 static PyObject *
-test_frame(PyObject *self, PyObject *ignored)
+test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyThreadState *tstate = PyThreadState_Get();
 
@@ -136,7 +145,7 @@ test_frame(PyObject *self, PyObject *ignored)
 
 
 static PyObject *
-test_thread_state(PyObject *self, PyObject *ignored)
+test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyThreadState *tstate = PyThreadState_Get();
 
@@ -161,7 +170,7 @@ test_thread_state(PyObject *self, PyObject *ignored)
 
 
 static PyObject *
-test_interpreter(PyObject *self, PyObject *ignored)
+test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     // test PyInterpreterState_Get()
     PyInterpreterState *interp = PyInterpreterState_Get();
@@ -175,7 +184,7 @@ test_interpreter(PyObject *self, PyObject *ignored)
 
 
 static PyObject *
-test_calls(PyObject *self, PyObject *ignored)
+test_calls(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *func = (PyObject *)&PyUnicode_Type;
 
@@ -205,7 +214,7 @@ test_calls(PyObject *self, PyObject *ignored)
 
 
 static PyObject *
-test_gc(PyObject *self, PyObject *ignored)
+test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *tuple = PyTuple_New(1);
     Py_INCREF(Py_None);
@@ -287,7 +296,7 @@ test_module_addobjectref(PyObject *module)
 
 
 static PyObject *
-test_module(PyObject *self, PyObject *ignored)
+test_module(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *module = PyImport_ImportModule("sys");
     if (module == NULL) {
@@ -313,15 +322,15 @@ error:
 
 
 static struct PyMethodDef methods[] = {
-    {"test_object", test_object, METH_NOARGS},
-    {"test_steal_ref", test_steal_ref, METH_NOARGS},
-    {"test_frame", test_frame, METH_NOARGS},
-    {"test_thread_state", test_thread_state, METH_NOARGS},
-    {"test_interpreter", test_interpreter, METH_NOARGS},
-    {"test_calls", test_calls, METH_NOARGS},
-    {"test_gc", test_gc, METH_NOARGS},
-    {"test_module", test_module, METH_NOARGS},
-    {NULL, NULL}
+    {"test_object", test_object, METH_NOARGS, NULL},
+    {"test_steal_ref", test_steal_ref, METH_NOARGS, NULL},
+    {"test_frame", test_frame, METH_NOARGS, NULL},
+    {"test_thread_state", test_thread_state, METH_NOARGS, NULL},
+    {"test_interpreter", test_interpreter, METH_NOARGS, NULL},
+    {"test_calls", test_calls, METH_NOARGS, NULL},
+    {"test_gc", test_gc, METH_NOARGS, NULL},
+    {"test_module", test_module, METH_NOARGS, NULL},
+    {NULL, NULL, 0, NULL}
 };
 
 
