@@ -1,0 +1,33 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+        include:
+          - os: ubuntu-latest
+            python: 3.6
+          - os: ubuntu-latest
+            python: 3.7
+          - os: ubuntu-latest
+            python: 3.8
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Display the Python version
+        run: python -VV
+      - name: Run tests
+        run: python runtests.py --current --verbose
