@@ -12,7 +12,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+        # 2020-03-30: use "3.10.0-alpha - 3.10" to get Python 3.10 alpha
+        python: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, "3.10.0-alpha - 3.10"]
         include:
           - os: windows-latest
             python: 3.6
