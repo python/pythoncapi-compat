@@ -241,6 +241,21 @@ Module helper
 
     int PyModule_AddType(PyObject *module, PyTypeObject *type);
 
+Python 3.5.2
+------------
+
+::
+
+    Py_SETREF(op, op2)
+    Py_XSETREF(op, op2)
+
+Python 3.4
+----------
+
+::
+
+    Py_UNUSED(name)
+
 
 Run tests
 =========
@@ -296,6 +311,7 @@ Links
 Changelog
 =========
 
+* 2021-04-01: Add ``Py_SETREF()``, ``Py_XSETREF()`` and ``Py_UNUSED()``.
 * 2021-02-16: Add ``_Py_StealRef()`` and ``_Py_XStealRef()`` functions.
 * 2021-01-27: Fix compatibility with Visual Studio 2008 for Python 2.7.
 * 2020-11-30: Creation of the ``upgrade_pythoncapi.py`` script.

@@ -95,6 +95,24 @@ static inline void _Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
 #endif
 
 
+// Py_SETREF() and Py_XSETREF() were added to Python 3.5.2.
+// It is excluded from the limited C API.
+#if (PY_VERSION_HEX < 0x03050200 && !defined(Py_SETREF)) && !defined(Py_LIMITED_API)
+#define Py_SETREF(op, op2)                      \
+    do {                                        \
+        PyObject *_py_tmp = _PyObject_CAST(op); \
+        (op) = (op2);                           \
+        Py_DECREF(_py_tmp);                     \
+    } while (0)
+
+#define Py_XSETREF(op, op2)                     \
+    do {                                        \
+        PyObject *_py_tmp = _PyObject_CAST(op); \
+        (op) = (op2);                           \
+        Py_XDECREF(_py_tmp);                    \
+    } while (0)
+#endif
+
 // bpo-39573 added Py_SET_TYPE() to Python 3.9.0a4
 #if PY_VERSION_HEX < 0x030900A4 && !defined(Py_SET_TYPE)
 static inline void
@@ -300,6 +318,16 @@ _Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type) {
     return ob->ob_type == type;
 }
 #define Py_IS_TYPE(ob, type) _Py_IS_TYPE(_PyObject_CAST_CONST(ob), type)
+#endif
+
+
+// Py_UNUSED() was added to Python 3.4.0b2.
+#if PY_VERSION_HEX < 0x030400B2 && !defined(Py_UNUSED)
+#  if defined(__GNUC__) || defined(__clang__)
+#    define Py_UNUSED(name) _unused_ ## name __attribute__((unused))
+#  else
+#    define Py_UNUSED(name) _unused_ ## name
+#  endif
 #endif
 
 

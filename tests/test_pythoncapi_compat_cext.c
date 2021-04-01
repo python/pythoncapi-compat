@@ -3,17 +3,12 @@
 
 #include "pythoncapi_compat.h"
 
-#if PY_VERSION_HEX >= 0x03000000
-#  define PYTHON3 1
+#ifdef Py_LIMITED_API
+#  error "Py_LIMITED_API is not supported"
 #endif
 
-#ifndef Py_UNUSED
-   // Backport the macro for Python 3.5 and older
-#  if defined(__GNUC__) || defined(__clang__)
-#    define Py_UNUSED(name) _unused_ ## name __attribute__((unused))
-#  else
-#    define Py_UNUSED(name) _unused_ ## name
-#  endif
+#if PY_VERSION_HEX >= 0x03000000
+#  define PYTHON3 1
 #endif
 
 static PyObject*
@@ -46,13 +41,38 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     assert(Py_XNewRef(NULL) == NULL);
 
-    // test Py_SET_REFCNT
+    // Py_SETREF()
+    PyObject *setref = Py_NewRef(obj);
+    PyObject *none = Py_None;
+    assert(Py_REFCNT(obj) == (refcnt + 1));
+
+    Py_SETREF(setref, none);
+    assert(setref == none);
+    assert(Py_REFCNT(obj) == refcnt);
+    Py_INCREF(setref);
+
+    Py_SETREF(setref, NULL);
+    assert(setref == NULL);
+
+    // Py_XSETREF()
+    PyObject *xsetref = NULL;
+
+    Py_INCREF(obj);
+    assert(Py_REFCNT(obj) == (refcnt + 1));
+    Py_XSETREF(xsetref, obj);
+    assert(xsetref == obj);
+
+    Py_XSETREF(xsetref, NULL);
+    assert(Py_REFCNT(obj) == refcnt);
+    assert(xsetref == NULL);
+
+    // Py_SET_REFCNT
     Py_SET_REFCNT(obj, Py_REFCNT(obj));
-    // test Py_SET_TYPE
+    // Py_SET_TYPE
     Py_SET_TYPE(obj, Py_TYPE(obj));
-    // test Py_SET_SIZE
+    // Py_SET_SIZE
     Py_SET_SIZE(obj, Py_SIZE(obj));
-    // test Py_IS_TYPE()
+    // Py_IS_TYPE()
     int is_type = Py_IS_TYPE(obj, Py_TYPE(obj));
     assert(is_type);
 
