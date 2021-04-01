@@ -14,10 +14,11 @@ The Python C API compatibility project is made of two parts:
   Python API without losing support for old Python versions. It relies on
   ``pythoncapi_compat.h``.
 
-``pythoncapi_compat.h`` supports Python 3.5 to Python 3.10, and Python 2.7.
-A C99 subset is required, like ``static inline`` functions: see `PEP 7
-<https://www.python.org/dev/peps/pep-0007/>`_. ISO C90 is partially supported
-for Python 2.7: avoid mixed declarations and code (GCC
+``pythoncapi_compat.h`` supports Python 3.5 to Python 3.10, Python 2.7,
+PyPy 3.6 and PyPy 2.7. A C99 subset is required, like ``static inline``
+functions: see `PEP 7 <https://www.python.org/dev/peps/pep-0007/>`_.
+ISO C90 is partially supported for Python 2.7:
+avoid mixed declarations and code (GCC
 ``-Werror=declaration-after-statement`` flag) and support Visual Studio 2008.
 
 ``upgrade_pythoncapi.py`` requires Python 3.6 or newer.
@@ -318,7 +319,6 @@ Changelog
   * Add ``Py_SETREF()``, ``Py_XSETREF()`` and ``Py_UNUSED()``.
   * Add PyPy support.
 
-* 2021-02-16: Add ``_Py_StealRef()`` and ``_Py_XStealRef()`` functions.
 * 2021-01-27: Fix compatibility with Visual Studio 2008 for Python 2.7.
 * 2020-11-30: Creation of the ``upgrade_pythoncapi.py`` script.
 * 2020-06-04: Creation of the ``pythoncapi_compat.h`` header file.
