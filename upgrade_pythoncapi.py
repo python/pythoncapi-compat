@@ -385,6 +385,10 @@ class Patcher:
         return self._patch(content)[0]
 
     def patch_file(self, filename):
+        if os.path.basename(filename) == PYTHONCAPI_COMPAT_H:
+            self.log(f"Skip {filename}")
+            return
+
         encoding = "utf-8"
         errors = "surrogateescape"
 
