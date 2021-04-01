@@ -11,12 +11,16 @@
 #  define PYTHON3 1
 #endif
 
-static PyObject*
-ASSERT_FAILED(const char *err_msg)
-{
-    PyErr_SetString(PyExc_AssertionError, err_msg);
-    return NULL;
-}
+// Ignore reference count checks on PyPy
+#if !defined(PYPY_VERSION)
+#  define CHECK_REFCNT
+#endif
+
+#ifdef CHECK_REFCNT
+#  define ASSERT_REFCNT(expr) assert(expr)
+#else
+#  define ASSERT_REFCNT(expr)
+#endif
 
 static PyObject *
 test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
@@ -111,6 +115,7 @@ test_steal_ref(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
+#if !defined(PYPY_VERSION)
 static PyObject *
 test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -119,7 +124,8 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     // test PyThreadState_GetFrame()
     PyFrameObject *frame = PyThreadState_GetFrame(tstate);
     if (frame == NULL) {
-        return ASSERT_FAILED("PyThreadState_GetFrame failed");
+        PyErr_SetString(PyExc_AssertionError, "PyThreadState_GetFrame failed");
+        return NULL;
     }
 
     // test _PyThreadState_GetFrameBorrow()
@@ -162,6 +168,7 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     Py_DECREF(frame);
     Py_RETURN_NONE;
 }
+#endif
 
 
 static PyObject *
@@ -173,12 +180,14 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyInterpreterState *interp = PyThreadState_GetInterpreter(tstate);
     assert(interp != NULL);
 
+#if !defined(PYPY_VERSION)
     // test PyThreadState_GetFrame()
     PyFrameObject *frame = PyThreadState_GetFrame(tstate);
     if (frame != NULL) {
         assert(PyFrame_Check(frame));
     }
     Py_XDECREF(frame);
+#endif
 
 #if 0x030700A1 <= PY_VERSION_HEX
     uint64_t id = PyThreadState_GetID(tstate);
@@ -240,11 +249,13 @@ test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     Py_INCREF(Py_None);
     PyTuple_SET_ITEM(tuple, 0, Py_None);
 
+#if !defined(PYPY_VERSION)
     // test PyObject_GC_IsTracked()
     int tracked = PyObject_GC_IsTracked(tuple);
     assert(tracked);
+#endif
 
-#if PY_VERSION_HEX >= 0x030400F0
+#if PY_VERSION_HEX >= 0x030400F0 && !defined(PYPY_VERSION)
     // test PyObject_GC_IsFinalized()
     int finalized = PyObject_GC_IsFinalized(tuple);
     assert(!finalized);
@@ -265,12 +276,14 @@ test_module_add_type(PyObject *module)
 #else
     const char *type_name = "unicode";
 #endif
+#ifdef CHECK_REFCNT
     Py_ssize_t refcnt = Py_REFCNT(type);
+#endif
 
     if (PyModule_AddType(module, type) < 0) {
         return -1;
     }
-    assert(Py_REFCNT(type) == refcnt + 1);
+    ASSERT_REFCNT(Py_REFCNT(type) == refcnt + 1);
 
     PyObject *attr = PyObject_GetAttrString(module, type_name);
     if (attr == NULL) {
@@ -282,7 +295,7 @@ test_module_add_type(PyObject *module)
     if (PyObject_DelAttrString(module, type_name) < 0) {
         return -1;
     }
-    assert(Py_REFCNT(type) == refcnt);
+    ASSERT_REFCNT(Py_REFCNT(type) == refcnt);
     return 0;
 }
 
@@ -292,19 +305,21 @@ static int
 test_module_addobjectref(PyObject *module)
 {
     PyObject *obj = Py_True;
-    Py_ssize_t refcnt = Py_REFCNT(obj);
     const char *name = "test_module_addobjectref";
+#ifdef CHECK_REFCNT
+    Py_ssize_t refcnt = Py_REFCNT(obj);
+#endif
 
     if (PyModule_AddObjectRef(module, name, obj) < 0) {
-        assert(Py_REFCNT(obj) == refcnt);
+        ASSERT_REFCNT(Py_REFCNT(obj) == refcnt);
         return -1;
     }
-    assert(Py_REFCNT(obj) == refcnt + 1);
+    ASSERT_REFCNT(Py_REFCNT(obj) == refcnt + 1);
 
     if (PyObject_DelAttrString(module, name) < 0) {
         return -1;
     }
-    assert(Py_REFCNT(obj) == refcnt);
+    ASSERT_REFCNT(Py_REFCNT(obj) == refcnt);
 
     // PyModule_AddObjectRef() with value=NULL must not crash
     int res = PyModule_AddObjectRef(module, name, NULL);
@@ -344,7 +359,9 @@ error:
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, NULL},
     {"test_steal_ref", test_steal_ref, METH_NOARGS, NULL},
+#if !defined(PYPY_VERSION)
     {"test_frame", test_frame, METH_NOARGS, NULL},
+#endif
     {"test_thread_state", test_thread_state, METH_NOARGS, NULL},
     {"test_interpreter", test_interpreter, METH_NOARGS, NULL},
     {"test_calls", test_calls, METH_NOARGS, NULL},
