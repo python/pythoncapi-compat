@@ -189,7 +189,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     Py_XDECREF(frame);
 #endif
 
-#if 0x030700A1 <= PY_VERSION_HEX
+#if 0x030700A1 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
     uint64_t id = PyThreadState_GetID(tstate);
     assert(id > 0);
 #endif
