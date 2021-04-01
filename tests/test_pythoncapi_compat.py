@@ -112,7 +112,18 @@ def run_tests(testmod):
     ver = sys.version_info
     build = 'debug' if hasattr(sys, 'gettotalrefcount') else 'release'
     msg = "%s tests succeeded!" % len(tests)
-    msg = "Python %s.%s (%s build): %s" % (ver.major, ver.minor, build, msg)
+    if hasattr(sys, 'implementation'):
+        python_impl = sys.implementation.name
+        if python_impl == 'cpython':
+            python_impl = 'CPython'
+        elif python_impl == 'pypy':
+            python_impl = 'PyPy'
+    else:
+        if "PyPy" in sys.version:
+            python_impl = "PyPy"
+        else:
+            python_impl = 'Python'
+    msg = "%s %s.%s (%s build): %s" % (python_impl, ver.major, ver.minor, build, msg)
     if check_refleak:
         msg = "%s (no reference leak detected)" % msg
     print(msg)
