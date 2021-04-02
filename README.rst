@@ -147,35 +147,7 @@ Upgrade Operations
 pythoncapi_compat.h functions
 =============================
 
-Some functions are not available on PyPy.
-
-Borrow variant
---------------
-
-To ease migration of C extensions to the new C API, a variant is provided
-to return borrowed references rather than strong references::
-
-    // Similar to "Py_INCREF(ob); return ob;"
-    PyObject* _Py_StealRef(PyObject *ob);
-
-    // Similar to "Py_XINCREF(ob); return ob;"
-    PyObject* _Py_XStealRef(PyObject *ob);
-
-    // PyThreadState_GetFrame()
-    PyFrameObject* _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
-
-    // PyFrame_GetCode()
-    PyCodeObject* _PyFrame_GetCodeBorrow(PyFrameObject *frame)
-
-    // PyFrame_GetBack()
-    PyFrameObject* _PyFrame_GetBackBorrow(PyFrameObject *frame)
-
-For example, ``tstate->frame`` can be replaced with
-``_PyThreadState_GetFrameBorrow(tstate)`` to avoid accessing directly
-``PyThreadState.frame`` member.
-
-These functions are only available in ``pythoncapi_compat.h`` and are not
-part of the Python C API.
+Some functions related to frame objects are not available on PyPy.
 
 Python 3.10
 -----------
@@ -209,6 +181,7 @@ PyFrameObject
 ::
 
     PyCodeObject* PyFrame_GetCode(PyFrameObject *frame);
+    // Not available on PyPy
     PyFrameObject* PyFrame_GetBack(PyFrameObject *frame);
 
 PyThreadState
@@ -216,6 +189,7 @@ PyThreadState
 
 ::
 
+    // Not available on PyPy
     PyFrameObject* PyThreadState_GetFrame(PyThreadState *tstate);
     PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState *tstate);
     // Availability: Python 3.7
@@ -258,6 +232,34 @@ Python 3.4
 ::
 
     Py_UNUSED(name)
+
+Borrow variant
+--------------
+
+To ease migration of C extensions to the new C API, a variant is provided
+to return borrowed references rather than strong references::
+
+    // Similar to "Py_INCREF(ob); return ob;"
+    PyObject* _Py_StealRef(PyObject *ob);
+
+    // Similar to "Py_XINCREF(ob); return ob;"
+    PyObject* _Py_XStealRef(PyObject *ob);
+
+    // PyThreadState_GetFrame(). Not available on PyPy.
+    PyFrameObject* _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
+
+    // PyFrame_GetCode()
+    PyCodeObject* _PyFrame_GetCodeBorrow(PyFrameObject *frame)
+
+    // PyFrame_GetBack(). Not available on PyPy.
+    PyFrameObject* _PyFrame_GetBackBorrow(PyFrameObject *frame)
+
+For example, ``tstate->frame`` can be replaced with
+``_PyThreadState_GetFrameBorrow(tstate)`` to avoid accessing directly
+``PyThreadState.frame`` member.
+
+These functions are only available in ``pythoncapi_compat.h`` and are not
+part of the Python C API.
 
 
 Run tests
