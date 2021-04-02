@@ -312,6 +312,13 @@ Links
   also `2to3c: an implementation of Python's 2to3 for C code
   <https://dmalcolm.livejournal.com/3935.html>`_ article (2009).
 
+* numpy has its own compatibility layer, ``npy_pycompat.h`` and
+  ``npy_3kcompat.h`` header files. It supports more C compilers than
+  pythoncapi_compat.h: it supports ``__STRICT_ANSI__`` (ISO C90) for example.
+  Reject `PR 18713: MAINT: Use pythoncapi_compat.h in npy_3kcompat.h
+  <https://github.com/numpy/numpy/pull/18713>`_ (when it was rejected, numpy
+  still had code for compatibility with Python 2.7).
+
 
 Changelog
 =========
