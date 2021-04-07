@@ -192,7 +192,7 @@ PyThreadState
     // Not available on PyPy
     PyFrameObject* PyThreadState_GetFrame(PyThreadState *tstate);
     PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState *tstate);
-    // Availability: Python 3.7
+    // Availability: Python 3.7. Not available on PyPy.
     uint64_t PyThreadState_GetID(PyThreadState *tstate);
 
 PyInterpreterState
@@ -207,8 +207,9 @@ GC protocol
 
 ::
 
+    // Not available on PyPy.
     int PyObject_GC_IsTracked(PyObject* obj);
-    // Availability: Python 3.4
+    // Availability: Python 3.4. Not available on PyPy.
     int PyObject_GC_IsFinalized(PyObject *obj);
 
 Module helper
