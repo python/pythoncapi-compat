@@ -16,7 +16,8 @@ INCLUDE_PYTHONCAPI_COMPAT2 = f'#include <{PYTHONCAPI_COMPAT_H}>'
 
 
 # Match a C identifier: 'identifier', 'var_3', 'NameCamelCase'
-ID_REGEX = r'[a-zA-Z][a-zA-Z0-9_]*'
+# Use \b to only match a full word: match "a_b", but not just "b" in "a_b".
+ID_REGEX = r'\b[a-zA-Z][a-zA-Z0-9_]*\b'
 # Match 'array[3]'
 SUBEXPR_REGEX = fr'{ID_REGEX}(?:\[[^]]+\])*'
 # Match a C expression like "frame", "frame.attr" or "obj->attr".
