@@ -6,6 +6,7 @@ import sys
 
 
 FORCE_NEWREF = False
+FORCE_STEALREF = False
 
 
 PYTHONCAPI_COMPAT_URL = ('https://raw.githubusercontent.com/pythoncapi/'
@@ -265,7 +266,42 @@ class Py_INCREF_assign(Operation):
     NEED_PYTHONCAPI_COMPAT = True
 
 
-OPERATIONS = (
+class Py_DECREF_return(Operation):
+    NAME = "Py_DECREF_return"
+    DOC = ('replace "Py_DECREF(obj); return (obj);" '
+           'with "return Py_NewRef(obj);"')
+    REPLACE = (
+        (re.compile(r'Py_DECREF\((%s)\);\s*return \1;' % ID_REGEX),
+         r'return _Py_StealRef(\1);'),
+    )
+    # Need _Py_StealRef(): new in Python 3.10
+    NEED_PYTHONCAPI_COMPAT = True
+
+
+class Py_DECREF_assign(Operation):
+    NAME = "Py_DECREF_assign"
+    DOC = 'replace "Py_DECREF(obj); var = (obj);" with "var = Py_BorrowRed(obj);"'
+
+    def replace2(regs):
+        x = regs.group(1)
+        y = regs.group(2)
+        if y == 'NULL':
+            return regs.group(0)
+        return f'{x} = _Py_StealRef({y});'
+
+    REPLACE = (
+        (re.compile(r'Py_DECREF\((%s)\);\s*' % ID_REGEX
+                    + assign_regex_str(r'(%s)' % EXPR_REGEX, r'\1')),
+         r'\2 = _Py_StealRef(\1);'),
+        (re.compile(assign_regex_str(r'(%s)' % EXPR_REGEX, r'(%s)' % ID_REGEX)
+                    + r"\s*Py_DECREF\((?:\1|\2)\);"),
+         replace2),
+    )
+    # Need Py_Borrowef(): new in Python 3.10
+    NEED_PYTHONCAPI_COMPAT = True
+
+
+OPERATIONS = [
     Py_SET_TYPE,
     Py_SET_SIZE,
     Py_SET_REFCNT,
@@ -283,11 +319,16 @@ OPERATIONS = (
 
     PyThreadState_GetInterpreter,
     PyThreadState_GetFrame,
-)
+]
 if FORCE_NEWREF:
     OPERATIONS.extend((
         Py_INCREF_return,
         Py_INCREF_assign,
+    ))
+if FORCE_STEALREF:
+    OPERATIONS.extend((
+        Py_DECREF_return,
+        Py_DECREF_assign,
     ))
 
 

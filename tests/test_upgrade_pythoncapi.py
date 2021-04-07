@@ -420,6 +420,59 @@ class Tests(unittest.TestCase):
             }
         """)
 
+    @unittest.skipUnless(upgrade_pythoncapi.FORCE_STEALREF, 'FORCE_STEALREF=False')
+    def test_py_decref_return(self):
+        self.check_replace("""
+            PyObject* steal_ref(PyObject *obj)
+            {
+                Py_DECREF(obj);
+                return obj;
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            PyObject* steal_ref(PyObject *obj)
+            {
+                return _Py_StealRef(obj);
+            }
+        """)
+
+    @unittest.skipUnless(upgrade_pythoncapi.FORCE_STEALREF, 'FORCE_STEALREF=False')
+    def test_py_decref_assign(self):
+        self.check_replace("""
+            void set_attr(MyStruct *obj, PyObject *value)
+            {
+                Py_DECREF(value);
+                obj->attr1 = value;
+
+                obj->attr2 = value;
+                Py_DECREF(value);
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set_attr(MyStruct *obj, PyObject *value)
+            {
+                obj->attr1 = _Py_StealRef(value);
+
+                obj->attr2 = _Py_StealRef(value);
+            }
+        """)
+
+        # The regex matchs "value" in "obj->value" of case 2
+        self.check_dont_replace("""
+            void set_attr(MyStruct *obj, PyObject *value)
+            {
+                // Case 1
+                Py_DECREF(value);
+                obj->value = NULL;
+
+                // Case 2
+                obj->value = NULL;
+                Py_DECREF(value);
+            }
+        """)
+
 
 if __name__ == "__main__":
     unittest.main()
