@@ -113,6 +113,23 @@ static inline void _Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
     } while (0)
 #endif
 
+
+// bpo-43753 added Py_Is(), Py_IsNone(), Py_IsTrue() and Py_IsFalse()
+// to Python 3.10.0b1.
+#if PY_VERSION_HEX < 0x030A00B1 && !defined(Py_Is)
+#  define Py_Is(x, y) ((x) == (y))
+#endif
+#if PY_VERSION_HEX < 0x030A00B1 && !defined(Py_IsNone)
+#  define Py_IsNone(x) Py_Is(x, Py_None)
+#endif
+#if PY_VERSION_HEX < 0x030A00B1 && !defined(Py_IsTrue)
+#  define Py_IsTrue(x) Py_Is(x, Py_True)
+#endif
+#if PY_VERSION_HEX < 0x030A00B1 && !defined(Py_IsFalse)
+#  define Py_IsFalse(x) Py_Is(x, Py_False)
+#endif
+
+
 // bpo-39573 added Py_SET_TYPE() to Python 3.9.0a4
 #if PY_VERSION_HEX < 0x030900A4 && !defined(Py_SET_TYPE)
 static inline void

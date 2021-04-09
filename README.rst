@@ -108,6 +108,15 @@ Upgrade Operations
   * Replace ``obj->ob_refcnt = refcnt;`` with ``Py_SET_REFCNT(obj, refcnt);``.
   * Replace ``Py_REFCNT(obj) = refcnt;`` with ``Py_SET_REFCNT(obj, refcnt);``.
 
+* ``Py_Is``:
+
+  * Replace ``x == Py_None`` with ``Py_IsNone(x)``.
+  * Replace ``x == Py_True`` with ``Py_IsTrue(x)``.
+  * Replace ``x == Py_False`` with ``Py_IsFalse(x)``.
+  * Replace ``x != Py_None`` with ``!Py_IsNone(x)``.
+  * Replace ``x != Py_True`` with ``!Py_IsTrue(x)``.
+  * Replace ``x != Py_False`` with ``!Py_IsFalse(x)``.
+
 * ``PyObject_NEW``:
 
   * Replace ``PyObject_NEW(...)`` with ``PyObject_New(...)``.
@@ -156,6 +165,10 @@ Python 3.10
 
     PyObject* Py_NewRef(PyObject *obj);
     PyObject* Py_XNewRef(PyObject *obj);
+    int Py_Is(PyObject *x, PyObject *y);
+    int Py_IsNone(PyObject *x);
+    int Py_IsTrue(PyObject *x);
+    int Py_IsFalse(PyObject *x);
 
     int PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value);
 
@@ -324,6 +337,7 @@ Links
 Changelog
 =========
 
+* 2021-04-09: Add Py_Is(), Py_IsNone(), Py_IsTrue(), Py_IsFalse() functions.
 * 2021-04-01:
 
   * Add ``Py_SETREF()``, ``Py_XSETREF()`` and ``Py_UNUSED()``.

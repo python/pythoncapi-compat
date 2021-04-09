@@ -301,6 +301,33 @@ class Py_DECREF_assign(Operation):
     NEED_PYTHONCAPI_COMPAT = True
 
 
+class Py_Is(Operation):
+    NAME = "Py_Is"
+    DOC = ('replace "x == Py_None" with Py_IsNone(x), '
+           'replace "x != Py_None" with !Py_IsNone(x), '
+           'and do the same for Py_True/Py_False with Py_IsTrue()/Py_IsFalse()')
+
+    def replace2(regs):
+        x = regs.group(1)
+        y = regs.group(2)
+        if y == 'NULL':
+            return regs.group(0)
+        return f'{x} = _Py_StealRef({y});'
+
+    REPLACE = []
+    id_regex = r'(%s)' % ID_REGEX
+    for name in ('None', 'True', 'False'):
+        REPLACE.extend((
+            (re.compile(fr'({ID_REGEX}) == Py_{name}\b'),
+             fr'Py_Is{name}(\1)'),
+            (re.compile(fr'({ID_REGEX}) != Py_{name}\b'),
+             fr'!Py_Is{name}(\1)'),
+        ))
+
+    # Need Py_IsNone(), Py_IsTrue(), Py_IsFalse(): new in Python 3.10
+    NEED_PYTHONCAPI_COMPAT = True
+
+
 OPERATIONS = [
     Py_SET_TYPE,
     Py_SET_SIZE,
@@ -309,6 +336,8 @@ OPERATIONS = [
     Py_TYPE,
     Py_SIZE,
     Py_REFCNT,
+
+    Py_Is,
 
     PyObject_NEW,
     PyMem_MALLOC,

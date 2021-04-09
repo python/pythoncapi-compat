@@ -22,6 +22,8 @@ def reformat(source):
 
 
 class Tests(unittest.TestCase):
+    maxDiff = 80 * 30
+
     def _test_patch_file(self, tmp_dir):
         # test Patcher.patcher()
         source = """
@@ -470,6 +472,67 @@ class Tests(unittest.TestCase):
                 // Case 2
                 obj->value = NULL;
                 Py_DECREF(value);
+            }
+        """)
+
+    def test_py_is(self):
+        self.check_replace("""
+            void test_py_is(PyObject *x)
+            {
+                if (x == Py_None) {
+                    return 1;
+                }
+                if (x == Py_True) {
+                    return 2;
+                }
+                if (x == Py_False) {
+                    return 3;
+                }
+                return 0;
+            }
+
+            void test_py_is_not(PyObject *x)
+            {
+                if (x != Py_None) {
+                    return 1;
+                }
+                if (x != Py_True) {
+                    return 2;
+                }
+                if (x != Py_False) {
+                    return 3;
+                }
+                return 0;
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void test_py_is(PyObject *x)
+            {
+                if (Py_IsNone(x)) {
+                    return 1;
+                }
+                if (Py_IsTrue(x)) {
+                    return 2;
+                }
+                if (Py_IsFalse(x)) {
+                    return 3;
+                }
+                return 0;
+            }
+
+            void test_py_is_not(PyObject *x)
+            {
+                if (!Py_IsNone(x)) {
+                    return 1;
+                }
+                if (!Py_IsTrue(x)) {
+                    return 2;
+                }
+                if (!Py_IsFalse(x)) {
+                    return 3;
+                }
+                return 0;
             }
         """)
 

@@ -87,6 +87,40 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
 
 static PyObject *
+test_py_is(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
+{
+    PyObject *o_none = Py_None;
+    PyObject *o_true = Py_True;
+    PyObject *o_false = Py_False;
+    PyObject *obj = PyList_New(0);
+    if (obj == NULL) {
+        return NULL;
+    }
+
+    /* test Py_Is() */
+    assert(Py_Is(obj, obj));
+    assert(!Py_Is(obj, o_none));
+
+    /* test Py_IsNone() */
+    assert(Py_IsNone(o_none));
+    assert(!Py_IsNone(obj));
+
+    /* test Py_IsTrue() */
+    assert(Py_IsTrue(o_true));
+    assert(!Py_IsTrue(o_false));
+    assert(!Py_IsTrue(obj));
+
+    /* testPy_IsFalse() */
+    assert(Py_IsFalse(o_false));
+    assert(!Py_IsFalse(o_true));
+    assert(!Py_IsFalse(obj));
+
+    Py_DECREF(obj);
+    Py_RETURN_NONE;
+}
+
+
+static PyObject *
 test_steal_ref(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *obj = PyList_New(0);
@@ -358,6 +392,7 @@ error:
 
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, NULL},
+    {"test_py_is", test_py_is, METH_NOARGS, NULL},
     {"test_steal_ref", test_steal_ref, METH_NOARGS, NULL},
 #if !defined(PYPY_VERSION)
     {"test_frame", test_frame, METH_NOARGS, NULL},
