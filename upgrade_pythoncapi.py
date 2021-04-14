@@ -21,9 +21,11 @@ INCLUDE_PYTHONCAPI_COMPAT2 = f'#include <{PYTHONCAPI_COMPAT_H}>'
 ID_REGEX = r'\b[a-zA-Z][a-zA-Z0-9_]*\b'
 # Match 'array[3]'
 SUBEXPR_REGEX = fr'{ID_REGEX}(?:\[[^]]+\])*'
-# Match a C expression like "frame", "frame.attr" or "obj->attr".
+# Match a C expression like "frame", "frame.attr", "obj->attr" or "*obj".
 # Don't match functions calls like "func()".
-EXPR_REGEX = fr"{SUBEXPR_REGEX}(?:(?:->|\.){SUBEXPR_REGEX})*"
+EXPR_REGEX = (fr"\*?"  # "*" prefix
+              fr"{SUBEXPR_REGEX}"  # "var"
+              fr"(?:(?:->|\.){SUBEXPR_REGEX})*")  # "->attr" or ".attr"
 
 
 def get_member_regex_str(member):
