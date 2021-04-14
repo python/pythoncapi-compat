@@ -315,12 +315,12 @@ class Py_Is(Operation):
         return f'{x} = _Py_StealRef({y});'
 
     REPLACE = []
-    id_regex = r'(%s)' % ID_REGEX
+    expr = r'(%s)' % EXPR_REGEX
     for name in ('None', 'True', 'False'):
         REPLACE.extend((
-            (re.compile(fr'({ID_REGEX}) == Py_{name}\b'),
+            (re.compile(fr'{expr} == Py_{name}\b'),
              fr'Py_Is{name}(\1)'),
-            (re.compile(fr'({ID_REGEX}) != Py_{name}\b'),
+            (re.compile(fr'{expr} != Py_{name}\b'),
              fr'!Py_Is{name}(\1)'),
         ))
 

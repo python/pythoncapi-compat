@@ -110,14 +110,6 @@ class Tests(unittest.TestCase):
         source = reformat(source)
         self.assertEqual(patch(source), source)
 
-    def test_expr_regex(self):
-        self.check_replace("a->b->ob_type", "Py_TYPE(a->b)")
-        self.check_replace("a.b->ob_type", "Py_TYPE(a.b)")
-        self.check_replace("array[2]->ob_type", "Py_TYPE(array[2])")
-
-        # Don't match function calls
-        self.check_dont_replace("func()->ob_type")
-
     def test_pythoncapi_compat(self):
         # If pythoncapi_compat.h is included, avoid compatibility includes
         # and macros.
@@ -533,6 +525,32 @@ class Tests(unittest.TestCase):
                 }
                 if (!Py_IsFalse(x)) {
                     return 3;
+                }
+                return 0;
+            }
+        """)
+
+        self.check_replace("""
+            void test_expr(struct MyStruct *obj)
+            {
+                if (obj->attr1 == Py_None) {
+                    return 1;
+                }
+                if (obj->attr2.name == Py_None) {
+                    return 1;
+                }
+                return 0;
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void test_expr(struct MyStruct *obj)
+            {
+                if (Py_IsNone(obj->attr1)) {
+                    return 1;
+                }
+                if (Py_IsNone(obj->attr2.name)) {
+                    return 1;
                 }
                 return 0;
             }
