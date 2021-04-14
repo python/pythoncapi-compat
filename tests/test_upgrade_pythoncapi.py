@@ -11,8 +11,10 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import upgrade_pythoncapi   # noqa
 
 
-def patch(source):
+def patch(source, no_compat=False):
     args = ['script', 'mod.c']
+    if no_compat:
+        args.append('--no-compat')
     patcher = upgrade_pythoncapi.Patcher(args)
     return patcher.patch(source)
 
@@ -99,10 +101,10 @@ class Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             self._test_patch_file(tmp_dir)
 
-    def check_replace(self, source, expected):
+    def check_replace(self, source, expected, **kwargs):
         source = reformat(source)
         expected = reformat(expected)
-        self.assertEqual(patch(source), expected)
+        self.assertEqual(patch(source, **kwargs), expected)
 
     def check_dont_replace(self, source):
         source = reformat(source)
@@ -536,6 +538,22 @@ class Tests(unittest.TestCase):
             }
         """)
 
+
+    def test_no_compat(self):
+        # Don't add "#include "pythoncapi_compat.h"
+        source = """
+            void test_type(PyObject *obj, PyTypeObject *type)
+            {
+                obj->ob_type = type;
+            }
+        """
+        expected = """
+            void test_type(PyObject *obj, PyTypeObject *type)
+            {
+                Py_SET_TYPE(obj, type);
+            }
+        """
+        self.check_replace(source, expected, no_compat=True)
 
 if __name__ == "__main__":
     unittest.main()
