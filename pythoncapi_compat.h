@@ -2,6 +2,7 @@
 // versions.
 //
 // File distributed under the MIT license.
+// Copyright Contributors to the pythoncapi_compat project.
 //
 // Homepage:
 // https://github.com/pythoncapi/pythoncapi_compat
