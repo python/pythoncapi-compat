@@ -12,7 +12,7 @@
 #endif
 
 // Ignore reference count checks on PyPy
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
 #  define CHECK_REFCNT
 #endif
 
@@ -149,7 +149,7 @@ test_steal_ref(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
 static PyObject *
 test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -214,7 +214,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyInterpreterState *interp = PyThreadState_GetInterpreter(tstate);
     assert(interp != NULL);
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     // test PyThreadState_GetFrame()
     PyFrameObject *frame = PyThreadState_GetFrame(tstate);
     if (frame != NULL) {
@@ -226,6 +226,14 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 #if 0x030700A1 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
     uint64_t id = PyThreadState_GetID(tstate);
     assert(id > 0);
+#endif
+
+#ifndef PYPY_VERSION
+    // PyThreadState_IsTracing(), PyThreadState_DisableTracing(),
+    // PyThreadState_ResetTracing()
+    PyThreadState_DisableTracing(tstate);
+    assert(PyThreadState_IsTracing(tstate) == 0);
+    PyThreadState_ResetTracing(tstate);
 #endif
 
     Py_RETURN_NONE;
@@ -283,7 +291,7 @@ test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     Py_INCREF(Py_None);
     PyTuple_SET_ITEM(tuple, 0, Py_None);
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     // test PyObject_GC_IsTracked()
     int tracked = PyObject_GC_IsTracked(tuple);
     assert(tracked);
@@ -394,7 +402,7 @@ static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, NULL},
     {"test_py_is", test_py_is, METH_NOARGS, NULL},
     {"test_steal_ref", test_steal_ref, METH_NOARGS, NULL},
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     {"test_frame", test_frame, METH_NOARGS, NULL},
 #endif
     {"test_thread_state", test_thread_state, METH_NOARGS, NULL},

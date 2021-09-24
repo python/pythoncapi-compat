@@ -156,7 +156,7 @@ Upgrade Operations
 pythoncapi_compat.h functions
 =============================
 
-Some functions related to frame objects are not available on PyPy.
+Some functions related to frame objects and tracing are not available on PyPy.
 
 Python 3.10
 -----------
@@ -207,6 +207,12 @@ PyThreadState
     PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState *tstate);
     // Availability: Python 3.7. Not available on PyPy.
     uint64_t PyThreadState_GetID(PyThreadState *tstate);
+    // Not available on PyPy.
+    int PyThreadState_IsTracing(PyThreadState *tstate);
+    // Not available on PyPy.
+    void PyThreadState_DisableTracing(PyThreadState *tstate);
+    // Not available on PyPy.
+    void PyThreadState_ResetTracing(PyThreadState *tstate);
 
 PyInterpreterState
 ^^^^^^^^^^^^^^^^^^
@@ -337,6 +343,8 @@ Links
 Changelog
 =========
 
+* 2021-09-24: Add PyThreadState_IsTracing(), PyThreadState_DisableTracing()
+  and PyThreadState_ResetTracing() functions.
 * 2021-04-09: Add Py_Is(), Py_IsNone(), Py_IsTrue(), Py_IsFalse() functions.
 * 2021-04-01:
 

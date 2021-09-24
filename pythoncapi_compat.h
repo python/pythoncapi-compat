@@ -251,6 +251,47 @@ PyThreadState_GetID(PyThreadState *tstate)
 }
 #endif
 
+// bpo-43760 added PyThreadState_IsTracing() to Python 3.11.0a1
+#if PY_VERSION_HEX < 0x030B00A1 && !defined(PYPY_VERSION)
+static inline int
+PyThreadState_IsTracing(PyThreadState *tstate)
+{
+#if PY_VERSION_HEX >= 0X030A00B1
+    return tstate->cframe->use_tracing;
+#else
+    return tstate->use_tracing;
+#endif
+}
+#endif
+
+// bpo-43760 added PyThreadState_DisableTracing() to Python 3.11.0a1
+#if PY_VERSION_HEX < 0x030B00A1 && !defined(PYPY_VERSION)
+static inline void
+PyThreadState_DisableTracing(PyThreadState *tstate)
+{
+#if PY_VERSION_HEX >= 0X030A00B1
+    tstate->cframe->use_tracing = 0;
+#else
+    tstate->use_tracing = 0;
+#endif
+}
+#endif
+
+// bpo-43760 added PyThreadState_ResetTracing() to Python 3.11.0a1
+#if PY_VERSION_HEX < 0x030B00A1 && !defined(PYPY_VERSION)
+static inline void
+PyThreadState_ResetTracing(PyThreadState *tstate)
+{
+#if PY_VERSION_HEX >= 0X030A00B1
+    tstate->cframe->use_tracing = (tstate->c_tracefunc != NULL
+                                   || tstate->c_profilefunc != NULL);
+#else
+    tstate->use_tracing = (tstate->c_tracefunc != NULL
+                           || tstate->c_profilefunc != NULL);
+#endif
+}
+#endif
+
 
 // bpo-37194 added PyObject_CallNoArgs() to Python 3.9.0a1
 #if PY_VERSION_HEX < 0x030900A1
