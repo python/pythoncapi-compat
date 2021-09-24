@@ -251,8 +251,8 @@ PyThreadState_GetID(PyThreadState *tstate)
 }
 #endif
 
-// bpo-43760 added PyThreadState_IsTracing() to Python 3.11.0a1
-#if PY_VERSION_HEX < 0x030B00A1 && !defined(PYPY_VERSION)
+// bpo-43760 added PyThreadState_IsTracing() to Python 3.11.0a0
+#if PY_VERSION_HEX < 0x030B00A0 && !defined(PYPY_VERSION)
 static inline int
 PyThreadState_IsTracing(PyThreadState *tstate)
 {
@@ -264,8 +264,8 @@ PyThreadState_IsTracing(PyThreadState *tstate)
 }
 #endif
 
-// bpo-43760 added PyThreadState_DisableTracing() to Python 3.11.0a1
-#if PY_VERSION_HEX < 0x030B00A1 && !defined(PYPY_VERSION)
+// bpo-43760 added PyThreadState_DisableTracing() to Python 3.11.0a0
+#if PY_VERSION_HEX < 0x030B00A0 && !defined(PYPY_VERSION)
 static inline void
 PyThreadState_DisableTracing(PyThreadState *tstate)
 {
@@ -277,8 +277,8 @@ PyThreadState_DisableTracing(PyThreadState *tstate)
 }
 #endif
 
-// bpo-43760 added PyThreadState_ResetTracing() to Python 3.11.0a1
-#if PY_VERSION_HEX < 0x030B00A1 && !defined(PYPY_VERSION)
+// bpo-43760 added PyThreadState_ResetTracing() to Python 3.11.0a0
+#if PY_VERSION_HEX < 0x030B00A0 && !defined(PYPY_VERSION)
 static inline void
 PyThreadState_ResetTracing(PyThreadState *tstate)
 {
