@@ -253,10 +253,10 @@ Borrow variant
 To ease migration of C extensions to the new C API, a variant is provided
 to return borrowed references rather than strong references::
 
-    // Similar to "Py_INCREF(ob); return ob;"
+    // Similar to "Py_DECREF(ob); return ob;"
     PyObject* _Py_StealRef(PyObject *ob);
 
-    // Similar to "Py_XINCREF(ob); return ob;"
+    // Similar to "Py_XDECREF(ob); return ob;"
     PyObject* _Py_XStealRef(PyObject *ob);
 
     // PyThreadState_GetFrame(). Not available on PyPy.
@@ -329,7 +329,7 @@ Links
 * numpy has its own compatibility layer, ``npy_pycompat.h`` and
   ``npy_3kcompat.h`` header files. It supports more C compilers than
   pythoncapi_compat.h: it supports ``__STRICT_ANSI__`` (ISO C90) for example.
-  Reject `PR 18713: MAINT: Use pythoncapi_compat.h in npy_3kcompat.h
+  Rejected `PR 18713: MAINT: Use pythoncapi_compat.h in npy_3kcompat.h
   <https://github.com/numpy/numpy/pull/18713>`_ (when it was rejected, numpy
   still had code for compatibility with Python 2.7).
 
