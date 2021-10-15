@@ -156,7 +156,18 @@ Upgrade Operations
 pythoncapi_compat.h functions
 =============================
 
-Some functions related to frame objects are not available on PyPy.
+Some functions related to frame objects and ``PyThreadState`` are not available
+on PyPy.
+
+Python 3.11
+-----------
+
+::
+
+    // Not available on PyPy
+    void PyThreadState_EnterTracing(PyThreadState *tstate);
+    // Not available on PyPy
+    void PyThreadState_LeaveTracing(PyThreadState *tstate);
 
 Python 3.10
 -----------
@@ -337,6 +348,8 @@ Links
 Changelog
 =========
 
+* 2021-10-15: Add PyThreadState_EnterTracing() and
+  PyThreadState_LeaveTracing().
 * 2021-04-09: Add Py_Is(), Py_IsNone(), Py_IsTrue(), Py_IsFalse() functions.
 * 2021-04-01:
 

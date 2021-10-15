@@ -228,6 +228,12 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(id > 0);
 #endif
 
+#if !defined(PYPY_VERSION)
+    // PyThreadState_EnterTracing(), PyThreadState_LeaveTracing()
+    PyThreadState_EnterTracing(tstate);
+    PyThreadState_LeaveTracing(tstate);
+#endif
+
     Py_RETURN_NONE;
 }
 
