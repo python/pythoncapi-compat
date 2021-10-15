@@ -251,6 +251,34 @@ PyThreadState_GetID(PyThreadState *tstate)
 }
 #endif
 
+// bpo-43760 added PyThreadState_EnterTracing() to Python 3.11.0a2
+#if PY_VERSION_HEX < 0x030B00A2 && !defined(PYPY_VERSION)
+static inline void PyThreadState_EnterTracing(PyThreadState *tstate)
+{
+    tstate->tracing++;
+#if PY_VERSION_HEX >= 0x030A00A1
+    tstate->cframe->use_tracing = 0;
+#else
+    tstate->use_tracing = 0;
+#endif
+}
+#endif
+
+// bpo-43760 added PyThreadState_LeaveTracing() to Python 3.11.0a2
+#if PY_VERSION_HEX < 0x030B00A2 && !defined(PYPY_VERSION)
+static inline void PyThreadState_LeaveTracing(PyThreadState *tstate)
+{
+    tstate->tracing--;
+    int use_tracing = (tstate->c_tracefunc != NULL
+                       || tstate->c_profilefunc != NULL);
+#if PY_VERSION_HEX >= 0x030A00A1
+    tstate->cframe->use_tracing = use_tracing;
+#else
+    tstate->use_tracing = use_tracing;
+#endif
+}
+#endif
+
 
 // bpo-37194 added PyObject_CallNoArgs() to Python 3.9.0a1
 #if PY_VERSION_HEX < 0x030900A1
