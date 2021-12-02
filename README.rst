@@ -381,3 +381,5 @@ Examples of projects using pythoncapi_compat.h
   uses ``Py_SET_TYPE()`` and ``Py_SET_SIZE()``
   (`commit <https://github.com/indygreg/python-zstandard/commit/e5a3baf61b65f3075f250f504ddad9f8612bfedf>`__):
   Mercurial extension.
+* `python-zstd <https://github.com/sergey-dryabzhinsky/python-zstd/>`_
+  (`commit <https://github.com/sergey-dryabzhinsky/python-zstd/commit/8aa6d7a4b250e1f0a4e27b4107c39dc516c87f96>`_)
