@@ -377,6 +377,9 @@ Examples of projects using pythoncapi_compat.h
   <https://www.mercurial-scm.org/repo/hg/rev/e92ca942ddca>`__,
   `pythoncapi_compat.h copy
   <https://www.mercurial-scm.org/repo/hg/file/tip/mercurial/pythoncapi_compat.h>`__)
+* `mypy <https://github.com/python/mypy>`_
+  (mypyc,
+  `commit <https://github.com/python/mypy/commit/2b7e2df923f7e4a3a199915b3c8563f45bc69dfa>`__)
 * `python-zstandard <https://github.com/indygreg/python-zstandard/>`_
   uses ``Py_SET_TYPE()`` and ``Py_SET_SIZE()``
   (`commit <https://github.com/indygreg/python-zstandard/commit/e5a3baf61b65f3075f250f504ddad9f8612bfedf>`__):
