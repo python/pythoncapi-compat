@@ -15,6 +15,14 @@ PYTHONCAPI_COMPAT_H = 'pythoncapi_compat.h'
 INCLUDE_PYTHONCAPI_COMPAT = f'#include "{PYTHONCAPI_COMPAT_H}"'
 INCLUDE_PYTHONCAPI_COMPAT2 = f'#include <{PYTHONCAPI_COMPAT_H}>'
 
+C_FILE_EXT = (
+    # C language
+    ".c", ".h",
+    # C++ language
+    ".cc", ".cpp", ".cxx", ".hpp",
+)
+IGNORE_DIRS = (".git", ".tox")
+
 
 # Match a C identifier: 'identifier', 'var_3', 'NameCamelCase'
 # Use \b to only match a full word: match "a_b", but not just "b" in "a_b".
@@ -64,7 +72,7 @@ def call_assign_regex(name):
 
 
 def is_c_filename(filename):
-    return filename.endswith((".c", ".h"))
+    return filename.endswith(C_FILE_EXT)
 
 
 class Operation:
@@ -496,10 +504,11 @@ class Patcher:
 
         for dirpath, dirnames, filenames in os.walk(path):
             # Don't walk into .tox
-            try:
-                dirnames.remove(".tox")
-            except ValueError:
-                pass
+            for ignore_name in IGNORE_DIRS:
+                try:
+                    dirnames.remove(ignore_name)
+                except ValueError:
+                    pass
             for filename in filenames:
                 if is_c_filename(filename):
                     yield os.path.join(dirpath, filename)

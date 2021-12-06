@@ -45,7 +45,8 @@ Upgrade ``mod.c`` file::
 
     python3 upgrade_pythoncapi.py mod.c
 
-Upgrade all ``.c`` and ``.h`` files of a project::
+Upgrade all C and C++ files (``.c``, ``.h``, ``.cc``, ``.cpp``, ``.cxx`` and
+``.hpp`` files) of a project::
 
     python3 upgrade_pythoncapi.py directory/
 
