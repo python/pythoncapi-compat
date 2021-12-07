@@ -2,6 +2,7 @@
 import argparse
 import os
 import re
+import urllib.request
 import sys
 
 
@@ -530,6 +531,10 @@ class Patcher:
                 self.warning("Path %s does not exist" % path)
                 self.exitcode = 1
 
+    def get_latest_header(self, base_dir):
+        target_dir = f'{base_dir}/{PYTHONCAPI_COMPAT_H}'
+        urllib.request.urlretrieve(PYTHONCAPI_COMPAT_URL, target_dir)
+
     @staticmethod
     def usage(parser):
         parser.print_help()
@@ -564,6 +569,9 @@ class Patcher:
             '-C', '--no-compat', action="store_true",
             help=f"Don't add: {INCLUDE_PYTHONCAPI_COMPAT}")
         parser.add_argument(
+            '-d', '--download-latest-header', action="store_true",
+            help=f'Download latest pythoncapi_compat.h file')
+        parser.add_argument(
             metavar='file_or_directory', dest="paths", nargs='*')
 
         args = parser.parse_args(args)
@@ -583,10 +591,15 @@ class Patcher:
 
         if self.pythoncapi_compat_added and not self.args.quiet:
             self.log()
-            self.log(f"{INCLUDE_PYTHONCAPI_COMPAT} added: you may have "
-                     f"to copy {PYTHONCAPI_COMPAT_H } to your project")
-            self.log("It can be copied from:")
-            self.log(PYTHONCAPI_COMPAT_URL)
+            if self.args.download_latest_header:
+                for path in self.args.paths:
+                    self.log(f"Download {PYTHONCAPI_COMPAT_H} to {path}")
+                    self.get_latest_header(path)
+            else:
+                self.log(f"{INCLUDE_PYTHONCAPI_COMPAT} added: you may have "
+                         f"to copy {PYTHONCAPI_COMPAT_H} to your project")
+                self.log("It can be copied from:")
+                self.log(PYTHONCAPI_COMPAT_URL)
 
         sys.exit(self.exitcode)
 
