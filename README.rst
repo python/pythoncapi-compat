@@ -381,6 +381,8 @@ Examples of projects using pythoncapi_compat.h
 * `mypy <https://github.com/python/mypy>`_
   (mypyc,
   `commit <https://github.com/python/mypy/commit/2b7e2df923f7e4a3a199915b3c8563f45bc69dfa>`__)
+* `python-snappy <https://github.com/andrix/python-snappy/>`_
+  (`commit <https://github.com/andrix/python-snappy/commit/1a539d71d5b1ceaf9a2291f21f686cf53a46d707>`_)
 * `python-zstandard <https://github.com/indygreg/python-zstandard/>`_
   uses ``Py_SET_TYPE()`` and ``Py_SET_SIZE()``
   (`commit <https://github.com/indygreg/python-zstandard/commit/e5a3baf61b65f3075f250f504ddad9f8612bfedf>`__):
