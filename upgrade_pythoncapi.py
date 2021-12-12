@@ -532,8 +532,8 @@ class Patcher:
                 self.exitcode = 1
 
     def get_latest_header(self, base_dir):
-        target_dir = f'{base_dir}/{PYTHONCAPI_COMPAT_H}'
-        urllib.request.urlretrieve(PYTHONCAPI_COMPAT_URL, target_dir)
+        target = f'{base_dir}/{PYTHONCAPI_COMPAT_H}'
+        urllib.request.urlretrieve(PYTHONCAPI_COMPAT_URL, target)
 
     @staticmethod
     def usage(parser):
@@ -547,6 +547,12 @@ class Patcher:
         print()
         print("If a directory is passed, search for .c and .h files "
               "in subdirectories.")
+
+    def _parse_dir_path(self, path):
+        if os.path.isdir(path):
+            return path
+        else:
+            raise argparse.ArgumentTypeError(f"{path} is not a valid path")
 
     def _parse_options(self, args):
         parser = argparse.ArgumentParser(
@@ -569,13 +575,14 @@ class Patcher:
             '-C', '--no-compat', action="store_true",
             help=f"Don't add: {INCLUDE_PYTHONCAPI_COMPAT}")
         parser.add_argument(
-            '-d', '--download-latest-header', action="store_true",
-            help=f'Download latest pythoncapi_compat.h file')
+            '-d', '--download-latest-header',
+            help=f'Download latest pythoncapi_compat.h file to designate path',
+            type=self._parse_dir_path)
         parser.add_argument(
             metavar='file_or_directory', dest="paths", nargs='*')
 
         args = parser.parse_args(args)
-        if not args.paths:
+        if not args.paths and not args.download_latest_header:
             self.usage(parser)
             sys.exit(1)
 
@@ -586,20 +593,20 @@ class Patcher:
         self.operations = self._get_operations(parser)
 
     def main(self):
-        for filename in self.walk(self.args.paths):
-            self.patch_file(filename)
+        if self.args.paths:
+            for filename in self.walk(self.args.paths):
+                self.patch_file(filename)
+
+        if self.args.download_latest_header:
+            path = self.args.download_latest_header
+            self.log(f"Download {PYTHONCAPI_COMPAT_H} to {path}")
+            self.get_latest_header(path)
 
         if self.pythoncapi_compat_added and not self.args.quiet:
             self.log()
-            if self.args.download_latest_header:
-                for path in self.args.paths:
-                    self.log(f"Download {PYTHONCAPI_COMPAT_H} to {path}")
-                    self.get_latest_header(path)
-            else:
-                self.log(f"{INCLUDE_PYTHONCAPI_COMPAT} added: you may have "
-                         f"to copy {PYTHONCAPI_COMPAT_H} to your project")
-                self.log("It can be copied from:")
-                self.log(PYTHONCAPI_COMPAT_URL)
+            self.log(f"{INCLUDE_PYTHONCAPI_COMPAT} added: you may have "
+                     f"to copy {PYTHONCAPI_COMPAT_H } to your project")
+            self.log("Run 'python upgrade_pythoncapi.py -d <target_path>'")
 
         sys.exit(self.exitcode)
 
