@@ -575,14 +575,14 @@ class Patcher:
             '-C', '--no-compat', action="store_true",
             help=f"Don't add: {INCLUDE_PYTHONCAPI_COMPAT}")
         parser.add_argument(
-            '-d', '--download-latest-header',
+            '-d', '--download',
             help=f'Download latest pythoncapi_compat.h file to designate path',
             type=self._parse_dir_path)
         parser.add_argument(
             metavar='file_or_directory', dest="paths", nargs='*')
 
         args = parser.parse_args(args)
-        if not args.paths and not args.download_latest_header:
+        if not args.paths and not args.download:
             self.usage(parser)
             sys.exit(1)
 
@@ -597,8 +597,8 @@ class Patcher:
             for filename in self.walk(self.args.paths):
                 self.patch_file(filename)
 
-        if self.args.download_latest_header:
-            path = self.args.download_latest_header
+        if self.args.download:
+            path = self.args.download
             self.log(f"Download {PYTHONCAPI_COMPAT_H} to {path}")
             self.get_latest_header(path)
 
