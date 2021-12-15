@@ -74,7 +74,7 @@ Most upgrade_pythoncapi.py operations add ``#include "pythoncapi_compat.h"``.
 You may have to download the ``pythoncapi_compat.h`` header file to your project.
 It can be downloaded by::
 
-    python3 upgrade_pythoncapi.py --downalod {path}
+    python3 upgrade_pythoncapi.py --download PATH
 
 
 Upgrade Operations

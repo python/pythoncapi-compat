@@ -576,8 +576,8 @@ class Patcher:
             '-C', '--no-compat', action="store_true",
             help=f"Don't add: {INCLUDE_PYTHONCAPI_COMPAT}")
         parser.add_argument(
-            '-d', '--download',
-            help=f'Download latest pythoncapi_compat.h file to designate path',
+            '-d', '--download', metavar='PATH',
+            help=f'Download latest pythoncapi_compat.h file to designate PATH',
             type=self._parse_dir_path)
         parser.add_argument(
             metavar='file_or_directory', dest="paths", nargs='*')
