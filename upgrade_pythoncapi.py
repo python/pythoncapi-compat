@@ -532,7 +532,8 @@ class Patcher:
                 self.exitcode = 1
 
     def get_latest_header(self, base_dir):
-        target = f'{base_dir}/{PYTHONCAPI_COMPAT_H}'
+        target = os.path.join(base_dir, PYTHONCAPI_COMPAT_H)
+        self.log(f"Download the file from {PYTHONCAPI_COMPAT_URL} to {target}.")
         urllib.request.urlretrieve(PYTHONCAPI_COMPAT_URL, target)
 
     @staticmethod
@@ -599,14 +600,13 @@ class Patcher:
 
         if self.args.download:
             path = self.args.download
-            self.log(f"Download {PYTHONCAPI_COMPAT_H} to {path}")
             self.get_latest_header(path)
 
         if self.pythoncapi_compat_added and not self.args.quiet:
             self.log()
             self.log(f"{INCLUDE_PYTHONCAPI_COMPAT} added: you may have "
-                     f"to copy {PYTHONCAPI_COMPAT_H } to your project")
-            self.log("Run 'python upgrade_pythoncapi.py -d <target_path>'")
+                     f"to copy {PYTHONCAPI_COMPAT_H} to your project")
+            self.log("Run 'python upgrade_pythoncapi.py --download <target_path>'")
 
         sys.exit(self.exitcode)
 
