@@ -67,14 +67,14 @@ use::
 
     python3 upgrade_pythoncapi.py -o all,-Py_TYPE mod.c
 
-Copy pythoncapi_compat.h
+Download pythoncapi_compat.h
 ------------------------
 
 Most upgrade_pythoncapi.py operations add ``#include "pythoncapi_compat.h"``.
-You may have to copy the ``pythoncapi_compat.h`` header file to your project.
-It can be copied from::
+You may have to download the ``pythoncapi_compat.h`` header file to your project.
+It can be downloaded by::
 
-    https://raw.githubusercontent.com/pythoncapi/pythoncapi_compat/master/pythoncapi_compat.h
+    python3 upgrade_pythoncapi.py --download PATH
 
 
 Upgrade Operations

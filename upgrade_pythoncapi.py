@@ -2,6 +2,7 @@
 import argparse
 import os
 import re
+import urllib.request
 import sys
 
 
@@ -530,6 +531,11 @@ class Patcher:
                 self.warning("Path %s does not exist" % path)
                 self.exitcode = 1
 
+    def get_latest_header(self, base_dir):
+        target = os.path.join(base_dir, PYTHONCAPI_COMPAT_H)
+        self.log(f"Download the file from {PYTHONCAPI_COMPAT_URL} to {target}.")
+        urllib.request.urlretrieve(PYTHONCAPI_COMPAT_URL, target)
+
     @staticmethod
     def usage(parser):
         parser.print_help()
@@ -542,6 +548,12 @@ class Patcher:
         print()
         print("If a directory is passed, search for .c and .h files "
               "in subdirectories.")
+
+    def _parse_dir_path(self, path):
+        if os.path.isdir(path):
+            return path
+        else:
+            raise argparse.ArgumentTypeError(f"{path} is not a valid path")
 
     def _parse_options(self, args):
         parser = argparse.ArgumentParser(
@@ -564,10 +576,14 @@ class Patcher:
             '-C', '--no-compat', action="store_true",
             help=f"Don't add: {INCLUDE_PYTHONCAPI_COMPAT}")
         parser.add_argument(
+            '-d', '--download', metavar='PATH',
+            help=f'Download latest pythoncapi_compat.h file to designated PATH',
+            type=self._parse_dir_path)
+        parser.add_argument(
             metavar='file_or_directory', dest="paths", nargs='*')
 
         args = parser.parse_args(args)
-        if not args.paths:
+        if not args.paths and not args.download:
             self.usage(parser)
             sys.exit(1)
 
@@ -578,15 +594,19 @@ class Patcher:
         self.operations = self._get_operations(parser)
 
     def main(self):
-        for filename in self.walk(self.args.paths):
-            self.patch_file(filename)
+        if self.args.paths:
+            for filename in self.walk(self.args.paths):
+                self.patch_file(filename)
+
+        if self.args.download:
+            path = self.args.download
+            self.get_latest_header(path)
 
         if self.pythoncapi_compat_added and not self.args.quiet:
             self.log()
             self.log(f"{INCLUDE_PYTHONCAPI_COMPAT} added: you may have "
-                     f"to copy {PYTHONCAPI_COMPAT_H } to your project")
-            self.log("It can be copied from:")
-            self.log(PYTHONCAPI_COMPAT_URL)
+                     f"to copy {PYTHONCAPI_COMPAT_H} to your project")
+            self.log("Run 'python upgrade_pythoncapi.py --download <target_path>'")
 
         sys.exit(self.exitcode)
 
