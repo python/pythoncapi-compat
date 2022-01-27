@@ -369,6 +369,9 @@ Examples of projects using pythoncapi_compat.h
   ``bitarray/_bitarray.c`` uses ``Py_SET_SIZE()``
   (`pythoncapi_compat.h copy
   <https://github.com/ilanschnell/bitarray/blob/master/bitarray/pythoncapi_compat.h>`__)
+* `guppy3 <https://github.com/zhuyifei1999/guppy3/>`_
+  (`commit
+  <https://github.com/zhuyifei1999/guppy3/commit/4cb9fcb5d75327544a6875b6caabfdffb70a7e29>`__)
 * `immutables <https://github.com/MagicStack/immutables/>`_:
   ``immutables/_map.c`` uses ``Py_SET_SIZE()``
   (`pythoncapi_compat.h copy
