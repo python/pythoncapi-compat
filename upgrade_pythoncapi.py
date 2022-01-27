@@ -378,6 +378,7 @@ class Patcher:
         self.pythoncapi_compat_added = 0
         self.want_pythoncapi_compat = False
         self.operations = None
+        self.applied_operations = set()
 
         # Set temporariliy by patch()
         self._has_pythoncapi_compat = None
@@ -496,6 +497,7 @@ class Patcher:
         with open(filename, "w", encoding=encoding, errors=errors) as fp:
             fp.write(new_contents)
 
+        self.applied_operations |= set(operations)
         operations = ', '.join(operations)
         self.log(f"Patched file: {filename} ({operations})")
         return True
@@ -597,6 +599,12 @@ class Patcher:
         if self.args.paths:
             for filename in self.walk(self.args.paths):
                 self.patch_file(filename)
+
+        if self.applied_operations:
+            nops = len(self.applied_operations)
+            ops = ', '.join(sorted(self.applied_operations))
+            self.log()
+            self.log(f"Applied operations ({nops}): {ops}")
 
         if self.args.download:
             path = self.args.download
