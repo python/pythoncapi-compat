@@ -384,6 +384,8 @@ Examples of projects using pythoncapi_compat.h
 * `mypy <https://github.com/python/mypy>`_
   (mypyc,
   `commit <https://github.com/python/mypy/commit/2b7e2df923f7e4a3a199915b3c8563f45bc69dfa>`__)
+* `pybluez <https://github.com/pybluez/pybluez>`_
+  (`commit <https://github.com/pybluez/pybluez/commit/5096047f90a1f6a74ceb250aef6243e144170f92>`__)
 * `python-snappy <https://github.com/andrix/python-snappy/>`_
   (`commit <https://github.com/andrix/python-snappy/commit/1a539d71d5b1ceaf9a2291f21f686cf53a46d707>`_)
 * `python-zstandard <https://github.com/indygreg/python-zstandard/>`_
