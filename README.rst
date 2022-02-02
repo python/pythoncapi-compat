@@ -324,26 +324,11 @@ Links
   <https://hpy.readthedocs.io/>`_
 * `Cython: C-extensions for Python
   <https://cython.org/>`_
-
-  * `ModuleSetupCode.c
-    <https://github.com/cython/cython/blob/0.29.x/Cython/Utility/ModuleSetupCode.c>`_
-    provides functions like ``__Pyx_SET_REFCNT()``
-  * Cython doesn't use pythoncapi_compat.h:
-    `see Cython issue #3934
-    <https://github.com/cython/cython/issues/3934>`_
-
 * `Old 2to3c project <https://github.com/davidmalcolm/2to3c>`_ by David Malcolm
   which uses `Coccinelle <https://coccinelle.gitlabpages.inria.fr/website/>`_
   to ease migration of C extensions from Python 2 to Python 3. See
   also `2to3c: an implementation of Python's 2to3 for C code
   <https://dmalcolm.livejournal.com/3935.html>`_ article (2009).
-
-* numpy has its own compatibility layer, ``npy_pycompat.h`` and
-  ``npy_3kcompat.h`` header files. It supports more C compilers than
-  pythoncapi_compat.h: it supports ``__STRICT_ANSI__`` (ISO C90) for example.
-  Rejected `PR 18713: MAINT: Use pythoncapi_compat.h in npy_3kcompat.h
-  <https://github.com/numpy/numpy/pull/18713>`_ (when it was rejected, numpy
-  still had code for compatibility with Python 2.7).
 
 
 Changelog
@@ -394,3 +379,35 @@ Examples of projects using pythoncapi_compat.h
   Mercurial extension.
 * `python-zstd <https://github.com/sergey-dryabzhinsky/python-zstd/>`_
   (`commit <https://github.com/sergey-dryabzhinsky/python-zstd/commit/8aa6d7a4b250e1f0a4e27b4107c39dc516c87f96>`_)
+
+
+Projects not using pythoncapi_compat.h
+======================================
+
+Projects not using ``pythoncapi_compat.h``:
+
+* numpy has its own compatibility layer, ``npy_pycompat.h`` and
+  ``npy_3kcompat.h`` header files. It supports more C compilers than
+  pythoncapi_compat.h: it supports ``__STRICT_ANSI__`` (ISO C90) for example.
+  Rejected `PR 18713: MAINT: Use pythoncapi_compat.h in npy_3kcompat.h
+  <https://github.com/numpy/numpy/pull/18713>`_ (when it was rejected, numpy
+  still had code for compatibility with Python 2.7).
+* Cython doesn't use pythoncapi_compat.h:
+  `see Cython issue #3934
+  <https://github.com/cython/cython/issues/3934>`_.
+  For example, `ModuleSetupCode.c
+  <https://github.com/cython/cython/blob/0.29.x/Cython/Utility/ModuleSetupCode.c>`_
+  provides functions like ``__Pyx_SET_REFCNT()``.
+
+Project with a strict contributor agreement:
+
+* `zodbpickle
+  <https://github.com/zopefoundation/zodbpickle/pull/64>`_
+
+Discussion about the MIT license of the ``pythoncapi_compat.h`` file in the
+immutables project:
+
+* issue: `pythoncapi_compat.h is MIT licensed
+  <https://github.com/MagicStack/immutables/pull/64>`_
+* commit: `Clarify the license of the included pythoncapi_compat.h header
+  <https://github.com/MagicStack/immutables/commit/67c5edfb8284e39ab6a0be9a4644ede306c6e9bd>`_
