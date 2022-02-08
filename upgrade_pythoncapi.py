@@ -78,7 +78,6 @@ def is_c_filename(filename):
 
 class Operation:
     NAME = "<name>"
-    DOC = "<doc>"
     REPLACE = ()
     NEED_PYTHONCAPI_COMPAT = False
 
@@ -96,7 +95,6 @@ class Operation:
 
 class Py_TYPE(Operation):
     NAME = "Py_TYPE"
-    DOC = 'replace "op->ob_type" with "Py_TYPE(op)"'
     REPLACE = (
         (get_member_regex('ob_type'), r'Py_TYPE(\1)'),
     )
@@ -105,7 +103,6 @@ class Py_TYPE(Operation):
 
 class Py_SIZE(Operation):
     NAME = "Py_SIZE"
-    DOC = 'replace "op->ob_size" with "Py_SIZE(op)"'
     REPLACE = (
         (get_member_regex('ob_size'), r'Py_SIZE(\1)'),
     )
@@ -114,7 +111,6 @@ class Py_SIZE(Operation):
 
 class Py_REFCNT(Operation):
     NAME = "Py_REFCNT"
-    DOC = 'replace "op->ob_refcnt " with "Py_REFCNT(op)"'
     REPLACE = (
         (get_member_regex('ob_refcnt'), r'Py_REFCNT(\1)'),
     )
@@ -123,7 +119,6 @@ class Py_REFCNT(Operation):
 
 class Py_SET_TYPE(Operation):
     NAME = "Py_SET_TYPE"
-    DOC = 'replace "Py_TYPE(obj) = type;" with "Py_SET_TYPE(obj, type);"'
     REPLACE = (
         (call_assign_regex('Py_TYPE'), r'Py_SET_TYPE(\1, \2);'),
         (set_member_regex('ob_type'), r'Py_SET_TYPE(\1, \2);'),
@@ -134,7 +129,6 @@ class Py_SET_TYPE(Operation):
 
 class Py_SET_SIZE(Operation):
     NAME = "Py_SET_SIZE"
-    DOC = 'replace "Py_SIZE(obj) = size;" with "Py_SET_SIZE(obj, size);"'
     REPLACE = (
         (call_assign_regex('Py_SIZE'), r'Py_SET_SIZE(\1, \2);'),
         (set_member_regex('ob_size'), r'Py_SET_SIZE(\1, \2);'),
@@ -145,8 +139,6 @@ class Py_SET_SIZE(Operation):
 
 class Py_SET_REFCNT(Operation):
     NAME = "Py_SET_REFCNT"
-    DOC = ('replace "Py_REFCNT(obj) = refcnt;" '
-           'with "Py_SET_REFCNT(obj, refcnt);"')
     REPLACE = (
         (call_assign_regex('Py_REFCNT'), r'Py_SET_REFCNT(\1, \2);'),
         (set_member_regex('ob_refcnt'), r'Py_SET_REFCNT(\1, \2);'),
@@ -160,8 +152,6 @@ class PyObject_NEW(Operation):
     # In Python 3.9, the PyObject_NEW() macro becomes an alias to the
     # PyObject_New() macro, and the PyObject_NEW_VAR() macro becomes an alias
     # to the PyObject_NewVar() macro.
-    DOC = ('replace "PyObject_NEW(...)" with "PyObject_New(...)", '
-           'and replace "PyObject_NEW_VAR(...)" with "PyObject_NewVar(...)"')
     REPLACE = (
         (re.compile(r"\bPyObject_NEW\b( *\()"), r'PyObject_New\1'),
         (re.compile(r"\bPyObject_NEW_VAR\b( *\()"), r'PyObject_NewVar\1'),
@@ -173,11 +163,6 @@ class PyMem_MALLOC(Operation):
     # In Python 3.9, the PyObject_NEW() macro becomes an alias to the
     # PyObject_New() macro, and the PyObject_NEW_VAR() macro becomes an alias
     # to the PyObject_NewVar() macro.
-    DOC = ('replace "PyMem_MALLOC(...)" with "PyMem_Malloc(...)", '
-           'replace "PyMem_REALLOC(...)" with "PyMem_Realloc(...)", '
-           'and replace "PyMem_FREE(...)" with "PyMem_Free(...)", '
-           'and replace "PyMem_DEL(...)" with "PyMem_Free(...)", '
-           'and replace "PyMem_Del(...)" with "PyMem_Free(...)"')
 
     REPLACE = (
         (re.compile(r"\bPyMem_MALLOC\b( *\()"), r'PyMem_Malloc\1'),
@@ -193,11 +178,6 @@ class PyObject_MALLOC(Operation):
     # In Python 3.9, the PyObject_NEW() macro becomes an alias to the
     # PyObject_New() macro, and the PyObject_NEW_VAR() macro becomes an alias
     # to the PyObject_NewVar() macro.
-    DOC = ('replace "PyObject_MALLOC(...)" with "PyObject_Malloc(...)", '
-           'replace "PyObject_REALLOC(...)" with "PyObject_Realloc(...)", '
-           'and replace "PyObject_FREE(...)" with "PyObject_Free(...)", '
-           'and replace "PyObject_DEL(...)" with "PyObject_Free(...)", '
-           'and replace "PyObject_Del(...)" with "PyObject_Free(...)"')
 
     REPLACE = (
         (re.compile(r"\bPyObject_MALLOC\b( *\()"), r'PyObject_Malloc\1'),
@@ -210,7 +190,6 @@ class PyObject_MALLOC(Operation):
 
 class PyFrame_GetBack(Operation):
     NAME = "PyFrame_GetBack"
-    DOC = 'replace "frame->f_back" with "_PyFrame_GetBackBorrow(frame)"'
     REPLACE = (
         (get_member_regex('f_back'), r'_PyFrame_GetBackBorrow(\1)'),
     )
@@ -220,8 +199,6 @@ class PyFrame_GetBack(Operation):
 
 class PyFrame_GetCode(Operation):
     NAME = "PyFrame_GetCode"
-    DOC = ('replace "frame->f_code" with "_PyFrame_GetCodeBorrow(frame)" '
-           'and add a Py_Borrow() static inline function')
 
     REPLACE = (
         (get_member_regex('f_code'), r'_PyFrame_GetCodeBorrow(\1)'),
@@ -232,8 +209,6 @@ class PyFrame_GetCode(Operation):
 
 class PyThreadState_GetInterpreter(Operation):
     NAME = "PyThreadState_GetInterpreter"
-    DOC = ('replace "tstate->interp" '
-           'with "PyThreadState_GetInterpreter(tstate)"')
     REPLACE = (
         (get_member_regex('interp'), r'PyThreadState_GetInterpreter(\1)'),
     )
@@ -243,8 +218,6 @@ class PyThreadState_GetInterpreter(Operation):
 
 class PyThreadState_GetFrame(Operation):
     NAME = "PyThreadState_GetFrame"
-    DOC = ('replace "tstate->frame" '
-           'with "_PyThreadState_GetFrameBorrow(tstate)"')
     REPLACE = (
         (get_member_regex('frame'), r'_PyThreadState_GetFrameBorrow(\1)'),
     )
@@ -255,8 +228,6 @@ class PyThreadState_GetFrame(Operation):
 
 class Py_INCREF_return(Operation):
     NAME = "Py_INCREF_return"
-    DOC = ('replace "Py_INCREF(obj); return (obj);" '
-           'with "return Py_NewRef(obj);"')
     REPLACE = (
         (re.compile(r'Py_INCREF\((%s)\);\s*return \1;' % ID_REGEX),
          r'return Py_NewRef(\1);'),
@@ -267,7 +238,6 @@ class Py_INCREF_return(Operation):
 
 class Py_INCREF_assign(Operation):
     NAME = "Py_INCREF_assign"
-    DOC = 'replace "Py_INCREF(obj); var = (obj);" with "var = Py_NewRef(obj);"'
     REPLACE = (
         (re.compile(r'Py_INCREF\((%s)\);\s*' % ID_REGEX
                     + assign_regex_str(r'(%s)' % EXPR_REGEX, r'\1')),
@@ -279,8 +249,6 @@ class Py_INCREF_assign(Operation):
 
 class Py_DECREF_return(Operation):
     NAME = "Py_DECREF_return"
-    DOC = ('replace "Py_DECREF(obj); return (obj);" '
-           'with "return Py_NewRef(obj);"')
     REPLACE = (
         (re.compile(r'Py_DECREF\((%s)\);\s*return \1;' % ID_REGEX),
          r'return _Py_StealRef(\1);'),
@@ -291,7 +259,6 @@ class Py_DECREF_return(Operation):
 
 class Py_DECREF_assign(Operation):
     NAME = "Py_DECREF_assign"
-    DOC = 'replace "Py_DECREF(obj); var = (obj);" with "var = Py_BorrowRed(obj);"'
 
     def replace2(regs):
         x = regs.group(1)
@@ -314,9 +281,6 @@ class Py_DECREF_assign(Operation):
 
 class Py_Is(Operation):
     NAME = "Py_Is"
-    DOC = ('replace "x == Py_None" with Py_IsNone(x), '
-           'replace "x != Py_None" with !Py_IsNone(x), '
-           'and do the same for Py_True/Py_False with Py_IsTrue()/Py_IsFalse()')
 
     def replace2(regs):
         x = regs.group(1)
@@ -545,8 +509,8 @@ class Patcher:
         print("Operations:")
         print()
         for operation in sorted(OPERATIONS,
-                                key=lambda operation: operation.NAME):
-            print("- %s: %s" % (operation.NAME, operation.DOC))
+                                key=lambda operation: operation.NAME.lower()):
+            print(f"- {operation.NAME}")
         print()
         print("If a directory is passed, search for .c and .h files "
               "in subdirectories.")
