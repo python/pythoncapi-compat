@@ -425,18 +425,18 @@ static struct PyMethodDef methods[] = {
 #ifdef PYTHON3
 static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
-    .m_name = MODULE_NAME_STR,
-    .m_doc = PYCAPI_COMPAT_NULL,
-    .m_size = 0,
-    .m_methods = methods,
+    MODULE_NAME_STR,     // m_name
+    PYCAPI_COMPAT_NULL,  // m_doc
+    0, i                 // m_doc
+    methods,             // m_methods
 #if PY_VERSION_HEX >= 0x03050000
-    .m_slots = PYCAPI_COMPAT_NULL,
+    PYCAPI_COMPAT_NULL,  // m_slots
 #else
-    .m_reload = PYCAPI_COMPAT_NULL,
+    PYCAPI_COMPAT_NULL,  // m_reload
 #endif
-    .m_traverse = PYCAPI_COMPAT_NULL,
-    .m_clear = PYCAPI_COMPAT_NULL,
-    .m_free = PYCAPI_COMPAT_NULL,
+    PYCAPI_COMPAT_NULL,  // m_traverse
+    PYCAPI_COMPAT_NULL,  // m_clear
+    PYCAPI_COMPAT_NULL,  // m_free
 };
 
 
