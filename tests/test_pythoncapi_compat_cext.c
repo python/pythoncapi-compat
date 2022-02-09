@@ -11,6 +11,14 @@
 #  define PYTHON3 1
 #endif
 
+#ifdef __cplusplus
+#  define MODULE_NAME test_pythoncapi_compat_cppext
+#  define MODULE_NAME_STR "test_pythoncapi_compat_cppext"
+#else
+#  define MODULE_NAME test_pythoncapi_compat_cext
+#  define MODULE_NAME_STR "test_pythoncapi_compat_cext"
+#endif
+
 // Ignore reference count checks on PyPy
 #if !defined(PYPY_VERSION)
 #  define CHECK_REFCNT
@@ -21,6 +29,8 @@
 #else
 #  define ASSERT_REFCNT(expr)
 #endif
+
+#define CONCAT(a, b) a ## b
 
 static PyObject *
 test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
@@ -415,21 +425,34 @@ static struct PyMethodDef methods[] = {
 #ifdef PYTHON3
 static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
-    .m_name = "test_pythoncapi_compat_cext",
-    .m_methods = methods,
+    MODULE_NAME_STR,     // m_name
+    PYCAPI_COMPAT_NULL,  // m_doc
+    0,                   // m_doc
+    methods,             // m_methods
+#if PY_VERSION_HEX >= 0x03050000
+    PYCAPI_COMPAT_NULL,  // m_slots
+#else
+    PYCAPI_COMPAT_NULL,  // m_reload
+#endif
+    PYCAPI_COMPAT_NULL,  // m_traverse
+    PYCAPI_COMPAT_NULL,  // m_clear
+    PYCAPI_COMPAT_NULL,  // m_free
 };
 
 
+#define _INIT_FUNC(name) CONCAT(PyInit_, name)
+#define INIT_FUNC _INIT_FUNC(MODULE_NAME)
+
 #if PY_VERSION_HEX >= 0x03050000
 PyMODINIT_FUNC
-PyInit_test_pythoncapi_compat_cext(void)
+INIT_FUNC(void)
 {
     return PyModuleDef_Init(&module);
 }
 #else
 // Python 3.4
 PyMODINIT_FUNC
-PyInit_test_pythoncapi_compat_cext(void)
+INIT_FUNC(void)
 {
     return PyModule_Create(&module);
 }
@@ -437,10 +460,14 @@ PyInit_test_pythoncapi_compat_cext(void)
 
 #else
 // Python 2
+
+#define _INIT_FUNC(name) CONCAT(init, name)
+#define INIT_FUNC _INIT_FUNC(MODULE_NAME)
+
 PyMODINIT_FUNC
-inittest_pythoncapi_compat_cext(void)
+INIT_FUNC(void)
 {
-    Py_InitModule4("test_pythoncapi_compat_cext",
+    Py_InitModule4(MODULE_NAME_STR,
                    methods,
                    NULL,
                    NULL,

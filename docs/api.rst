@@ -5,7 +5,12 @@ pythoncapi_compat.h API
 The ``pythoncapi_compat.h`` header file provides implementations of recent
 functions for old Python versions.
 
-It supports Python 3.5 to Python 3.11, Python 2.7, PyPy 3.6 and PyPy 2.7.
+Supported Python versions:
+
+* Python 2.7, Python 3.5 - 3.11
+* PyPy 2.7, 3.6 and 3.7
+
+C++ is supported on Python 3.6 and newer.
 
 A C99 subset is required, like ``static inline`` functions: see `PEP 7
 <https://www.python.org/dev/peps/pep-0007/>`_.  ISO C90 is partially supported

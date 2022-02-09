@@ -23,12 +23,17 @@ except ImportError:
 from utils import run_command, command_stdout
 
 
+# C++ is only supported on Python 3.6 and newer
+TEST_CPP = (sys.version_info >= (3, 6))
 VERBOSE = False
 
 
 def display_title(title):
     if not VERBOSE:
         return
+
+    ver = sys.version_info
+    title = "Python %s.%s: %s" % (ver.major, ver.minor, title)
 
     print(title)
     print("=" * len(title))
@@ -37,11 +42,15 @@ def display_title(title):
 
 
 def build_ext():
-    display_title("Build the C extension")
+    if TEST_CPP:
+        display_title("Build the C and C++ extensions")
+    else:
+        display_title("Build the C extension")
     if os.path.exists("build"):
         shutil.rmtree("build")
-    os.environ['CFLAGS'] = "-I .."
     cmd = [sys.executable, "setup.py", "build"]
+    if TEST_CPP:
+        cmd.append('--build-cppext')
     if VERBOSE:
         run_command(cmd)
         print()
@@ -52,7 +61,7 @@ def build_ext():
             sys.exit(exitcode)
 
 
-def import_tests():
+def import_tests(module_name):
     pythonpath = None
     for name in os.listdir("build"):
         if name.startswith('lib.'):
@@ -61,8 +70,8 @@ def import_tests():
     if not pythonpath:
         raise Exception("Failed to find the build directory")
     sys.path.append(pythonpath)
-    import test_pythoncapi_compat_cext
-    return test_pythoncapi_compat_cext
+
+    return __import__(module_name)
 
 
 def _run_tests(tests, verbose):
@@ -89,8 +98,15 @@ def _check_refleak(test_func, verbose):
             raise AssertionError("refcnt leak, diff: %s" % diff)
 
 
-def run_tests(testmod):
-    display_title("Run tests")
+def run_tests(module_name):
+    title = "Test %s" % module_name
+    if "cppext" in title:
+        title += " (C++)"
+    else:
+        title += " (C)"
+    display_title(title)
+
+    testmod = import_tests(module_name)
 
     check_refleak = hasattr(sys, 'gettotalrefcount')
 
@@ -131,7 +147,7 @@ def run_tests(testmod):
 
 def main():
     global VERBOSE
-    VERBOSE = "-v" in sys.argv[1:]
+    VERBOSE = ("-v" in sys.argv[1:] or "--verbose" in sys.argv[1:])
 
     if faulthandler is not None:
         faulthandler.enable()
@@ -141,8 +157,10 @@ def main():
         os.chdir(src_dir)
 
     build_ext()
-    mod = import_tests()
-    run_tests(mod)
+
+    run_tests("test_pythoncapi_compat_cext")
+    if TEST_CPP:
+        run_tests("test_pythoncapi_compat_cppext")
 
 
 if __name__ == "__main__":
