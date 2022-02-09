@@ -304,7 +304,7 @@ PyThreadState_LeaveTracing(PyThreadState *tstate)
 PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyObject_CallNoArgs(PyObject *func)
 {
-    return PyObject_CallFunctionObjArgs(func, PYCAPI_COMPAT_NULL);
+    return PyObject_CallFunctionObjArgs(func, NULL);
 }
 #endif
 
@@ -315,7 +315,7 @@ PyObject_CallNoArgs(PyObject *func)
 PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyObject_CallOneArg(PyObject *func, PyObject *arg)
 {
-    return PyObject_CallFunctionObjArgs(func, arg, PYCAPI_COMPAT_NULL);
+    return PyObject_CallFunctionObjArgs(func, arg, NULL);
 }
 #endif
 

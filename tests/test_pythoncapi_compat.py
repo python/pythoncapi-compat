@@ -99,7 +99,12 @@ def _check_refleak(test_func, verbose):
 
 
 def run_tests(module_name):
-    display_title("Test %s" % module_name)
+    title = "Test %s" % module_name
+    if "cppext" in title:
+        title += " (C++)"
+    else:
+        title += " (C)"
+    display_title(title)
 
     testmod = import_tests(module_name)
 
