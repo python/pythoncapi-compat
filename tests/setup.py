@@ -27,6 +27,9 @@ CPPFLAGS = COMMON_FLAGS + [
     # non-designated initializers in the same initializer list is a C99
     # extension
     '-Wno-c99-designator',
+    # Option -Wstrict-prototypes is not valid for C++: the option comes from
+    # Python 3.5 C flags
+    '-Wno-strict-prototypes',
 ]
 
 def main():

@@ -43,9 +43,9 @@ def display_title(title):
 
 def build_ext():
     if TEST_CPP:
-        display_title("Build the C extension")
-    else:
         display_title("Build the C and C++ extensions")
+    else:
+        display_title("Build the C extension")
     if os.path.exists("build"):
         shutil.rmtree("build")
     cmd = [sys.executable, "setup.py", "build"]
