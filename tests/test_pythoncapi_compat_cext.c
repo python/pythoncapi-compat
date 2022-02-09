@@ -427,7 +427,7 @@ static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
     MODULE_NAME_STR,     // m_name
     PYCAPI_COMPAT_NULL,  // m_doc
-    0, i                 // m_doc
+    0,                   // m_doc
     methods,             // m_methods
 #if PY_VERSION_HEX >= 0x03050000
     PYCAPI_COMPAT_NULL,  // m_slots
