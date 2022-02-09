@@ -1,7 +1,7 @@
 Changelog
 =========
 
-* 2022-02-09: ``pythoncapi_compat.h`` now supports C++ on Python 3.5 and newer:
+* 2022-02-09: ``pythoncapi_compat.h`` now supports C++ on Python 3.6 and newer:
   use ``nullptr`` and ``reinterpret_cast<type>`` cast on C++, and use ``NULL``
   and ``(type)`` cast on C.
 * 2021-10-15: Add ``PyThreadState_EnterTracing()`` and

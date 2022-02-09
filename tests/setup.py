@@ -23,13 +23,7 @@ CFLAGS = COMMON_FLAGS + [
     '-std=c99',
 ]
 CPPFLAGS = COMMON_FLAGS + [
-    # pythoncapi_compat.c: PyModuleDef: mixture of designated and
-    # non-designated initializers in the same initializer list is a C99
-    # extension
-    '-Wno-c99-designator',
-    # Option -Wstrict-prototypes is not valid for C++: the option comes from
-    # Python 3.5 C flags
-    '-Wno-strict-prototypes',
+    # no C++ option yet
 ]
 
 def main():

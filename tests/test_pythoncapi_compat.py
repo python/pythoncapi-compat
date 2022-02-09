@@ -23,8 +23,8 @@ except ImportError:
 from utils import run_command, command_stdout
 
 
-# C++ is only supported on Python 3.5 and newer
-TEST_CPP = (sys.version_info >= (3, 5))
+# C++ is only supported on Python 3.6 and newer
+TEST_CPP = (sys.version_info >= (3, 6))
 VERBOSE = False
 
 

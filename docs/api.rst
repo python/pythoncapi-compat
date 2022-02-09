@@ -10,7 +10,7 @@ Supported Python versions:
 * Python 2.7, Python 3.5 - 3.11
 * PyPy 2.7, 3.6 and 3.7
 
-C++ is supported on Python 3.5 and newer.
+C++ is supported on Python 3.6 and newer.
 
 A C99 subset is required, like ``static inline`` functions: see `PEP 7
 <https://www.python.org/dev/peps/pep-0007/>`_.  ISO C90 is partially supported
