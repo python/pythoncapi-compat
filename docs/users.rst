@@ -9,6 +9,8 @@ Examples of projects using pythoncapi_compat.h
   ``bitarray/_bitarray.c`` uses ``Py_SET_SIZE()``
   (`pythoncapi_compat.h copy
   <https://github.com/ilanschnell/bitarray/blob/master/bitarray/pythoncapi_compat.h>`__)
+* `datatable <https://github.com/h2oai/datatable>`_
+  (`commit <https://github.com/h2oai/datatable/commit/02f13114828ed4567e4410f5bac579895e20355a>`__)
 * `guppy3 <https://github.com/zhuyifei1999/guppy3/>`_
   (`commit
   <https://github.com/zhuyifei1999/guppy3/commit/4cb9fcb5d75327544a6875b6caabfdffb70a7e29>`__)
