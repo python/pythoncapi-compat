@@ -12,10 +12,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        # 2020-03-30: use "3.10.0-alpha - 3.10" to get Python 3.10 alpha
+        # The list of all available versions can be found here:
+        # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
         python:
           - "2.7"
-          - "3.4"
+          - "3.4.10"
           - "3.5"
           - "3.6"
           - "3.7"
