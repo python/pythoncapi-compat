@@ -60,11 +60,3 @@ Project with a strict contributor agreement:
 
 * `zodbpickle
   <https://github.com/zopefoundation/zodbpickle/pull/64>`_
-
-Discussion about the MIT license of the ``pythoncapi_compat.h`` file in the
-immutables project:
-
-* issue: `pythoncapi_compat.h is MIT licensed
-  <https://github.com/MagicStack/immutables/pull/64>`_
-* commit: `Clarify the license of the included pythoncapi_compat.h header
-  <https://github.com/MagicStack/immutables/commit/67c5edfb8284e39ab6a0be9a4644ede306c6e9bd>`_

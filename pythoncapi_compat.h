@@ -1,7 +1,6 @@
-// Header file providing new functions of the Python C API to old Python
-// versions.
+// Header file providing new C API functions to old Python versions.
 //
-// File distributed under the MIT license.
+// File distributed under the Zero Clause BSD (0BSD) license.
 // Copyright Contributors to the pythoncapi_compat project.
 //
 // Homepage:
@@ -10,7 +9,7 @@
 // Latest version:
 // https://raw.githubusercontent.com/pythoncapi/pythoncapi_compat/master/pythoncapi_compat.h
 //
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: 0BSD
 
 #ifndef PYTHONCAPI_COMPAT
 #define PYTHONCAPI_COMPAT
