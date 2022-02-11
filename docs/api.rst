@@ -27,26 +27,48 @@ Latest version of the header file:
 Python 3.11
 -----------
 
-::
+.. c:function:: void PyThreadState_EnterTracing(PyThreadState *tstate)
 
-    // Not available on PyPy
-    void PyThreadState_EnterTracing(PyThreadState *tstate);
-    // Not available on PyPy
-    void PyThreadState_LeaveTracing(PyThreadState *tstate);
+   See `PyThreadState_EnterTracing() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_EnterTracing>`__.
+
+   Not available on PyPy.
+
+.. c:function:: void PyThreadState_LeaveTracing(PyThreadState *tstate)
+
+   See `PyThreadState_LeaveTracing() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_LeaveTracing>`__.
+
+   Not available on PyPy
 
 Python 3.10
 -----------
 
-::
+.. c:function:: PyObject* Py_NewRef(PyObject *obj)
 
-    PyObject* Py_NewRef(PyObject *obj);
-    PyObject* Py_XNewRef(PyObject *obj);
-    int Py_Is(PyObject *x, PyObject *y);
-    int Py_IsNone(PyObject *x);
-    int Py_IsTrue(PyObject *x);
-    int Py_IsFalse(PyObject *x);
+   See `Py_NewRef() documentation <https://docs.python.org/dev/c-api/refcounting.html#c.Py_NewRef>`__.
 
-    int PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value);
+.. c:function:: PyObject* Py_XNewRef(PyObject *obj)
+
+   See `Py_XNewRef() documentation <https://docs.python.org/dev/c-api/refcounting.html#c.Py_XNewRef>`__.
+
+.. c:function:: int Py_Is(PyObject *x, PyObject *y)
+
+   See `Py_Is() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_Is>`__.
+
+.. c:function:: int Py_IsNone(PyObject *x)
+
+   See `Py_IsNone() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_IsNone>`__.
+
+.. c:function:: int Py_IsTrue(PyObject *x)
+
+   See `Py_IsTrue() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_IsTrue>`__.
+
+.. c:function:: int Py_IsFalse(PyObject *x)
+
+   See `Py_IsFalse() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_IsFalse>`__.
+
+.. c:function:: int PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
+
+   See `PyModule_AddObjectRef() documentation <https://docs.python.org/dev/c-api/module.html#c.PyModule_AddObjectRef>`__.
 
 Python 3.9
 ----------
@@ -54,99 +76,137 @@ Python 3.9
 PyObject
 ^^^^^^^^
 
-::
+.. c:function:: void Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
 
-    void Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt);
-    void Py_SET_TYPE(PyObject *ob, PyTypeObject *type);
-    void Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size);
-    int Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type);
+   See `Py_SET_REFCNT() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_REFCNT>`__.
 
-    PyObject* PyObject_CallNoArgs(PyObject *func);
-    PyObject* PyObject_CallOneArg(PyObject *func, PyObject *arg);
+.. c:function:: void Py_SET_TYPE(PyObject *ob, PyTypeObject *type)
+
+   See `Py_SET_TYPE() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_TYPE>`__.
+
+.. c:function:: void Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
+
+   See `Py_SET_SIZE() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_SIZE>`__.
+
+.. c:function:: int Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type)
+
+   See `Py_IS_TYPE() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_IS_TYPE>`__.
+
+.. c:function:: PyObject* PyObject_CallNoArgs(PyObject *func)
+
+   See `PyObject_CallNoArgs() documentation <https://docs.python.org/dev/c-api/call.html#c.PyObject_CallNoArgs>`__.
+
+.. c:function:: PyObject* PyObject_CallOneArg(PyObject *func, PyObject *arg)
+
+   See `PyObject_CallOneArg() documentation <https://docs.python.org/dev/c-api/call.html#c.PyObject_CallOneArg>`__.
+
 
 PyFrameObject
 ^^^^^^^^^^^^^
 
-::
+.. c:function:: PyCodeObject* PyFrame_GetCode(PyFrameObject *frame)
 
-    PyCodeObject* PyFrame_GetCode(PyFrameObject *frame);
-    // Not available on PyPy
-    PyFrameObject* PyFrame_GetBack(PyFrameObject *frame);
+   See `PyFrame_GetCode() documentation <https://docs.python.org/dev/c-api/reflection.html#c.PyFrame_GetCode>`__.
+
+.. c:function:: PyFrameObject* PyFrame_GetBack(PyFrameObject *frame)
+
+   See `PyFrame_GetBack() documentation <https://docs.python.org/dev/c-api/reflection.html#c.PyFrame_GetBack>`__.
+
+   Not available on PyPy
+
 
 PyThreadState
 ^^^^^^^^^^^^^
 
-::
+.. c:function:: PyFrameObject* PyThreadState_GetFrame(PyThreadState *tstate)
 
-    // Not available on PyPy
-    PyFrameObject* PyThreadState_GetFrame(PyThreadState *tstate);
-    PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState *tstate);
-    // Availability: Python 3.7. Not available on PyPy.
-    uint64_t PyThreadState_GetID(PyThreadState *tstate);
+   See `PyThreadState_GetFrame() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_GetFrame>`__.
+
+   Not available on PyPy
+
+.. c:function:: PyInterpreterState* PyThreadState_GetInterpreter(PyThreadState *tstate)
+
+   See `PyThreadState_GetInterpreter() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_GetInterpreter>`__.
+
+.. c:function:: uint64_t PyThreadState_GetID(PyThreadState *tstate)
+
+   See `PyThreadState_GetID() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_GetID>`__.
+
+   Availability: Python 3.7. Not available on PyPy.
 
 PyInterpreterState
 ^^^^^^^^^^^^^^^^^^
 
-::
+.. c:function:: PyInterpreterState* PyInterpreterState_Get(void)
 
-    PyInterpreterState* PyInterpreterState_Get(void);
+   See `PyInterpreterState_Get() documentation <https://docs.python.org/dev/c-api/init.html#c.PyInterpreterState_Get>`__.
+
 
 GC protocol
 ^^^^^^^^^^^
 
-::
+.. c:function:: int PyObject_GC_IsTracked(PyObject* obj)
 
-    // Not available on PyPy.
-    int PyObject_GC_IsTracked(PyObject* obj);
-    // Availability: Python 3.4. Not available on PyPy.
-    int PyObject_GC_IsFinalized(PyObject *obj);
+   See `PyObject_GC_IsTracked() documentation <https://docs.python.org/dev/c-api/gcsupport.html#c.PyObject_GC_IsTracked>`__.
+
+   Not available on PyPy.
+
+.. c:function:: int PyObject_GC_IsFinalized(PyObject *obj)
+
+   See `PyObject_GC_IsFinalized() documentation <https://docs.python.org/dev/c-api/gcsupport.html#c.PyObject_GC_IsFinalized>`__.
+
+   Availability: Python 3.4. Not available on PyPy.
 
 Module helper
 ^^^^^^^^^^^^^
 
-::
+.. c:function:: int PyModule_AddType(PyObject *module, PyTypeObject *type)
 
-    int PyModule_AddType(PyObject *module, PyTypeObject *type);
+   See `PyModule_AddType() documentation <https://docs.python.org/dev/c-api/module.html#c.PyModule_AddType>`__.
 
 Python 3.5.2
 ------------
 
-::
+.. c:macro:: Py_SETREF(op, op2)
 
-    Py_SETREF(op, op2)
-    Py_XSETREF(op, op2)
+.. c:macro:: Py_XSETREF(op, op2)
 
 Python 3.4
 ----------
 
-::
+.. c:macro:: Py_UNUSED(name)
 
-    Py_UNUSED(name)
+   See `Py_UNUSED() documentation <https://docs.python.org/dev/c-api/intro.html#c.Py_UNUSED>`__.
 
 Borrow variant
 --------------
 
 To ease migration of C extensions to the new C API, a variant is provided
-to return borrowed references rather than strong references::
+to return borrowed references rather than strong references.
 
-    // Similar to "Py_DECREF(ob); return ob;"
-    PyObject* _Py_StealRef(PyObject *ob);
+These functions are only available in ``pythoncapi_compat.h`` and are not
+part of the Python C API.
 
-    // Similar to "Py_XDECREF(ob); return ob;"
-    PyObject* _Py_XStealRef(PyObject *ob);
+.. c:function:: PyObject* _Py_StealRef(PyObject *ob)
 
-    // PyThreadState_GetFrame(). Not available on PyPy.
-    PyFrameObject* _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
+   Similar to ``Py_DECREF(ob); return ob;``.
 
-    // PyFrame_GetCode()
-    PyCodeObject* _PyFrame_GetCodeBorrow(PyFrameObject *frame)
+.. c:function:: PyObject* _Py_XStealRef(PyObject *ob)
 
-    // PyFrame_GetBack(). Not available on PyPy.
-    PyFrameObject* _PyFrame_GetBackBorrow(PyFrameObject *frame)
+   Similar to ``Py_XDECREF(ob); return ob;``.
+
+.. c:function:: PyFrameObject* _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
+
+   :c:func:`PyThreadState_GetFrame` variant. Not available on PyPy.
+
+.. c:function:: PyCodeObject* _PyFrame_GetCodeBorrow(PyFrameObject *frame)
+
+   :c:func:`PyFrame_GetCode` variant.
+
+.. c:function:: PyFrameObject* _PyFrame_GetBackBorrow(PyFrameObject *frame)
+
+   :c:func:`PyFrame_GetBack` variant Not available on PyPy.
 
 For example, ``tstate->frame`` can be replaced with
 ``_PyThreadState_GetFrameBorrow(tstate)`` to avoid accessing directly
 ``PyThreadState.frame`` member.
-
-These functions are only available in ``pythoncapi_compat.h`` and are not
-part of the Python C API.
