@@ -15,5 +15,6 @@ a wide range of Python versions with a single code base. It is made of the
 * `Documentation
   <https://pythoncapi-compat.readthedocs.io/en/latest/>`_
 
-This project is distributed under the MIT license and is covered by the `PSF
-Code of Conduct <https://www.python.org/psf/codeofconduct/>`_.
+This project is distributed under the `Zero Clause BSD (0BSD) license
+<https://opensource.org/licenses/0BSD>`_ and is covered by the `PSF Code of
+Conduct <https://www.python.org/psf/codeofconduct/>`_.

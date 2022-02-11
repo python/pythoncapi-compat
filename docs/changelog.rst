@@ -1,6 +1,10 @@
 Changelog
 =========
 
+* 2022-02-11: The project license changes from the MIT license to the Zero
+  Clause BSD (0BSD) license. Projects copying ``pythoncapi_compat.h`` no longer
+  have to include the MIT license and the copyright notice.
+* 2022-02-08: Add documentation.
 * 2022-02-09: ``pythoncapi_compat.h`` now supports C++ on Python 3.6 and newer:
   use ``nullptr`` and ``reinterpret_cast<type>`` cast on C++, and use ``NULL``
   and ``(type)`` cast on C.
