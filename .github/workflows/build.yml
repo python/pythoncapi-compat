@@ -12,7 +12,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        # 2020-03-30: use "3.10.0-alpha - 3.10" to get Python 3.10 alpha
+        # The list of all available versions can be found here:
+        # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
         python:
           - "2.7"
           - "3.5"
@@ -21,6 +22,7 @@ jobs:
           - "3.8"
           - "3.9"
           - "3.10"
+          - "3.11.0-alpha.5"
           - "pypy2"
           - "pypy3"
         include:
@@ -28,6 +30,8 @@ jobs:
             python: 3.6
           - os: macos-latest
             python: 3.6
+          - os: ubuntu-18.04
+            python: 3.4
 
     steps:
       - uses: actions/checkout@v2

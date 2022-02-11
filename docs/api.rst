@@ -7,7 +7,7 @@ functions for old Python versions.
 
 Supported Python versions:
 
-* Python 2.7, Python 3.5 - 3.11
+* Python 2.7, Python 3.4 - 3.11
 * PyPy 2.7, 3.6 and 3.7
 
 C++ is supported on Python 3.6 and newer.
