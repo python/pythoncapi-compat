@@ -15,6 +15,7 @@ jobs:
         # 2020-03-30: use "3.10.0-alpha - 3.10" to get Python 3.10 alpha
         python:
           - "2.7"
+          - "3.4"
           - "3.5"
           - "3.6"
           - "3.7"
