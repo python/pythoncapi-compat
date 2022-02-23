@@ -37,7 +37,7 @@ extern "C" {
 #  define PYCAPI_COMPAT_CAST(TYPE, EXPR) reinterpret_cast<TYPE>(EXPR)
 #  define PYCAPI_COMPAT_NULL nullptr
 #else
-#  define PYCAPI_COMPAT_CAST(TYPE, EXPR) (TYPE)(EXPR)
+#  define PYCAPI_COMPAT_CAST(TYPE, EXPR) ((TYPE)(EXPR))
 #  define PYCAPI_COMPAT_NULL NULL
 #endif
 
@@ -200,7 +200,7 @@ PYCAPI_COMPAT_STATIC_INLINE(PyFrameObject*)
 _PyFrame_GetBackBorrow(PyFrameObject *frame)
 {
     return PYCAPI_COMPAT_CAST(PyFrameObject *,
-                                  _Py_XStealRef(PyFrame_GetBack(frame)));
+                              _Py_XStealRef(PyFrame_GetBack(frame)));
 }
 #endif
 
