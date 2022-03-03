@@ -10,7 +10,7 @@ FORCE_NEWREF = False
 FORCE_STEALREF = False
 
 
-PYTHONCAPI_COMPAT_URL = ('https://raw.githubusercontent.com/pythoncapi/'
+PYTHONCAPI_COMPAT_URL = ('https://raw.githubusercontent.com/python/'
                          'pythoncapi_compat/master/pythoncapi_compat.h')
 PYTHONCAPI_COMPAT_H = 'pythoncapi_compat.h'
 INCLUDE_PYTHONCAPI_COMPAT = f'#include "{PYTHONCAPI_COMPAT_H}"'
