@@ -7,7 +7,7 @@ a wide range of Python versions with a single code base. It is made of the
 ``pythoncapi_compat.h`` header file and the ``upgrade_pythoncapi.py`` script.
 
 * Homepage: `GitHub pythoncapi_compat project
-  <https://github.com/pythoncapi/pythoncapi_compat>`_.
+  <https://github.com/python/pythoncapi_compat>`_.
 * `Documentation
   <https://pythoncapi-compat.readthedocs.io/en/latest/>`_
 

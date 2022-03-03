@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2022-03-03: The project moved to https://github.com/python/pythoncapi_compat
 * 2022-02-11: The project license changes from the MIT license to the Zero
   Clause BSD (0BSD) license. Projects copying ``pythoncapi_compat.h`` no longer
   have to include the MIT license and the copyright notice.

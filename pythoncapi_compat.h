@@ -4,10 +4,10 @@
 // Copyright Contributors to the pythoncapi_compat project.
 //
 // Homepage:
-// https://github.com/pythoncapi/pythoncapi_compat
+// https://github.com/python/pythoncapi_compat
 //
 // Latest version:
-// https://raw.githubusercontent.com/pythoncapi/pythoncapi_compat/master/pythoncapi_compat.h
+// https://raw.githubusercontent.com/python/pythoncapi_compat/master/pythoncapi_compat.h
 //
 // SPDX-License-Identifier: 0BSD
 
