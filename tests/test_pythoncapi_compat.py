@@ -99,11 +99,11 @@ def _check_refleak(test_func, verbose):
 
 
 def run_tests(module_name):
-    title = "Test %s" % module_name
-    if "cppext" in title:
-        title += " (C++)"
+    if "cppext" in module_name:
+        lang = "C++"
     else:
-        title += " (C)"
+        lang = "C"
+    title = "Test %s (%s)" % (module_name, lang)
     display_title(title)
 
     testmod = import_tests(module_name)
@@ -127,7 +127,7 @@ def run_tests(module_name):
 
     ver = sys.version_info
     build = 'debug' if hasattr(sys, 'gettotalrefcount') else 'release'
-    msg = "%s tests succeeded!" % len(tests)
+    msg = "%s %s tests succeeded!" % (len(tests), lang)
     if hasattr(sys, 'implementation'):
         python_impl = sys.implementation.name
         if python_impl == 'cpython':
