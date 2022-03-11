@@ -391,6 +391,45 @@ _Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type) {
 #endif
 
 
+// bpo-46906 added PyFloat_Pack2() and PyFloat_Unpack2() to Python 3.11a7.
+// bpo-11734 added _PyFloat_Pack2() and _PyFloat_Unpack2() to Python 3.6.0b1.
+// Python 3.11a2 moved _PyFloat_Pack2() and _PyFloat_Unpack2() to the internal
+// C API: Python 3.11a2-3.11a6 versions are not supported.
+#if 0x030600B1 <= PY_VERSION_HEX && PY_VERSION_HEX <= 0x030B00A1 && !defined(PYPY_VERSION)
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyFloat_Pack2(double x, char *p, int le)
+{ return _PyFloat_Pack2(x, (unsigned char*)p, le); }
+
+PYCAPI_COMPAT_STATIC_INLINE(double)
+PyFloat_Unpack2(const char *p, int le)
+{ return _PyFloat_Unpack2((const unsigned char *)p, le); }
+#endif
+
+
+// bpo-46906 added PyFloat_Pack4(), PyFloat_Pack8(), PyFloat_Unpack4() and
+// PyFloat_Unpack8() to Python 3.11a7.
+// Python 3.11a2 moved _PyFloat_Pack4(), _PyFloat_Pack8(), _PyFloat_Unpack4()
+// and _PyFloat_Unpack8() to the internal C API: Python 3.11a2-3.11a6 versions
+// are not supported.
+#if PY_VERSION_HEX <= 0x030B00A1 && !defined(PYPY_VERSION)
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyFloat_Pack4(double x, char *p, int le)
+{ return _PyFloat_Pack4(x, (unsigned char*)p, le); }
+
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyFloat_Pack8(double x, char *p, int le)
+{ return _PyFloat_Pack8(x, (unsigned char*)p, le); }
+
+PYCAPI_COMPAT_STATIC_INLINE(double)
+PyFloat_Unpack4(const char *p, int le)
+{ return _PyFloat_Unpack4((const unsigned char *)p, le); }
+
+PYCAPI_COMPAT_STATIC_INLINE(double)
+PyFloat_Unpack8(const char *p, int le)
+{ return _PyFloat_Unpack8((const unsigned char *)p, le); }
+#endif
+
+
 // Py_UNUSED() was added to Python 3.4.0b2.
 #if PY_VERSION_HEX < 0x030400B2 && !defined(Py_UNUSED)
 #  if defined(__GNUC__) || defined(__clang__)

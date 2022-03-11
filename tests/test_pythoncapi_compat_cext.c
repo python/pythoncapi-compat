@@ -406,6 +406,62 @@ error:
 }
 
 
+#if (PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) && !defined(PYPY_VERSION)
+static PyObject *
+test_float_pack(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
+{
+    const int big_endian = 0;
+    const int little_endian = 1;
+    char data[8];
+    const double d = 1.5;
+
+#if PY_VERSION_HEX >= 0x030600B1
+#  define HAVE_FLOAT_PACK2
+#endif
+
+    // Test Pack (big endian)
+#ifdef HAVE_FLOAT_PACK2
+    assert(PyFloat_Pack2(d, data, big_endian) == 0);
+    assert(memcmp(data, ">\x00", 2) == 0);
+#endif
+
+    assert(PyFloat_Pack4(d, data, big_endian) == 0);
+    assert(memcmp(data, "?\xc0\x00\x00", 2) == 0);
+
+    assert(PyFloat_Pack8(d, data, big_endian) == 0);
+    assert(memcmp(data, "?\xf8\x00\x00\x00\x00\x00\x00", 2) == 0);
+
+    // Test Pack (little endian)
+#ifdef HAVE_FLOAT_PACK2
+    assert(PyFloat_Pack2(d, data, little_endian) == 0);
+    assert(memcmp(data, "\x00>", 2) == 0);
+#endif
+
+    assert(PyFloat_Pack4(d, data, little_endian) == 0);
+    assert(memcmp(data, "\x00\x00\xc0?", 2) == 0);
+
+    assert(PyFloat_Pack8(d, data, little_endian) == 0);
+    assert(memcmp(data, "\x00\x00\x00\x00\x00\x00\xf8?", 2) == 0);
+
+    // Test Unpack (big endian)
+#ifdef HAVE_FLOAT_PACK2
+    assert(PyFloat_Unpack2(">\x00", big_endian) == d);
+#endif
+    assert(PyFloat_Unpack4("?\xc0\x00\x00", big_endian) == d);
+    assert(PyFloat_Unpack8("?\xf8\x00\x00\x00\x00\x00\x00", big_endian) == d);
+
+    // Test Unpack (little endian)
+#ifdef HAVE_FLOAT_PACK2
+    assert(PyFloat_Unpack2("\x00>", little_endian) == d);
+#endif
+    assert(PyFloat_Unpack4("\x00\x00\xc0?", little_endian) == d);
+    assert(PyFloat_Unpack8("\x00\x00\x00\x00\x00\x00\xf8?", little_endian) == d);
+
+    Py_RETURN_NONE;
+}
+#endif
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, NULL},
     {"test_py_is", test_py_is, METH_NOARGS, NULL},
@@ -418,6 +474,9 @@ static struct PyMethodDef methods[] = {
     {"test_calls", test_calls, METH_NOARGS, NULL},
     {"test_gc", test_gc, METH_NOARGS, NULL},
     {"test_module", test_module, METH_NOARGS, NULL},
+#if (PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) && !defined(PYPY_VERSION)
+    {"test_float_pack", test_float_pack, METH_NOARGS, NULL},
+#endif
     {NULL, NULL, 0, NULL}
 };
 

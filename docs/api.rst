@@ -39,6 +39,42 @@ Python 3.11
 
    Not available on PyPy
 
+.. c:function:: int PyFloat_Pack2(double x, unsigned char *p, int le)
+
+   Pack a C double as the IEEE 754 binary16 half-precision format.
+
+   Availability: Python 3.6 and newer. Not available on PyPy
+
+.. c:function:: int PyFloat_Pack4(double x, unsigned char *p, int le)
+
+   Pack a C double as the IEEE 754 binary32 single precision format.
+
+   Not available on PyPy
+
+.. c:function:: int PyFloat_Pack8(double x, unsigned char *p, int le)
+
+   Pack a C double as the IEEE 754 binary64 double precision format.
+
+   Not available on PyPy
+
+.. c:function:: double PyFloat_Unpack2(const unsigned char *p, int le)
+
+   Unpack the IEEE 754 binary16 half-precision format as a C double.
+
+   Availability: Python 3.6 and newer. Not available on PyPy
+
+.. c:function:: double PyFloat_Unpack4(const unsigned char *p, int le)
+
+   Unpack the IEEE 754 binary32 single precision format as a C double.
+
+   Not available on PyPy
+
+.. c:function:: double PyFloat_Unpack8(const unsigned char *p, int le)
+
+   Unpack the IEEE 754 binary64 double precision format as a C double.
+
+   Not available on PyPy
+
 Python 3.10
 -----------
 
