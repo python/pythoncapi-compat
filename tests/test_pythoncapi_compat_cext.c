@@ -1,6 +1,17 @@
 // Always enable assertions
 #undef NDEBUG
 
+// In Python 3.11a2-3.11a6, _PyFloat_Pack8() is part of the internal C API:
+// pythoncapi_compat.h doesn't support these early alpha versions. Workaround
+// the issue to be able to test pythoncapi_compat.h on these unsupported Python
+// versions anyway.
+#include "Python.h"
+#if (0x030B00A2 <= PY_VERSION_HEX && PY_VERSION_HEX <= 0x030B00A6) && !defined(PYPY_VERSION)
+#  define Py_BUILD_CORE 1
+#  include "internal/pycore_floatobject.h"
+#  undef Py_BUILD_CORE
+#endif
+
 #include "pythoncapi_compat.h"
 
 #ifdef Py_LIMITED_API
