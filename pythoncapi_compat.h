@@ -391,7 +391,8 @@ _Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type) {
 #endif
 
 
-// bpo-11734 added _PyFloat_Pack2() and _PyFloat_Unpack2() to Python 3.6.0b1
+// bpo-11734 added _PyFloat_Pack2() and _PyFloat_Unpack2() to Python 3.6.0b1.
+// bpo-46906 added PyFloat_Pack2() and PyFloat_Unpack2() to Python 3.11a7.
 #if 0x030600B1 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(int)
 PyFloat_Pack2(double x, char *p, int le)
@@ -403,6 +404,8 @@ PyFloat_Unpack2(const char *p, int le)
 #endif
 
 
+// bpo-46906 added PyFloat_Pack4(), PyFloat_Pack8(), PyFloat_Unpack4() and
+// PyFloat_Unpack8() to Python 3.11a7.
 #if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(int)
 PyFloat_Pack4(double x, char *p, int le)
