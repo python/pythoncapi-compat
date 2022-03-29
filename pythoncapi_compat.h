@@ -322,11 +322,11 @@ PyObject_CallOneArg(PyObject *func, PyObject *arg)
 // bpo-1635741 added PyModule_AddObjectRef() to Python 3.10.0a3
 #if PY_VERSION_HEX < 0x030A00A3
 PYCAPI_COMPAT_STATIC_INLINE(int)
-PyModule_AddObjectRef(PyObject *mod, const char *name, PyObject *value)
+PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
 {
     int res;
     Py_XINCREF(value);
-    res = PyModule_AddObject(mod, name, value);
+    res = PyModule_AddObject(module, name, value);
     if (res < 0) {
         Py_XDECREF(value);
     }
@@ -338,7 +338,7 @@ PyModule_AddObjectRef(PyObject *mod, const char *name, PyObject *value)
 // bpo-40024 added PyModule_AddType() to Python 3.9.0a5
 #if PY_VERSION_HEX < 0x030900A5
 PYCAPI_COMPAT_STATIC_INLINE(int)
-PyModule_AddType(PyObject *mod, PyTypeObject *type)
+PyModule_AddType(PyObject *module, PyTypeObject *type)
 {
     const char *name, *dot;
 
@@ -354,7 +354,7 @@ PyModule_AddType(PyObject *mod, PyTypeObject *type)
         name = dot + 1;
     }
 
-    return PyModule_AddObjectRef(mod, name, _PyObject_CAST(type));
+    return PyModule_AddObjectRef(module, name, _PyObject_CAST(type));
 }
 #endif
 
