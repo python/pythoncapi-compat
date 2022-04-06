@@ -26,4 +26,4 @@ Links
   * `bpo-40170: PyTypeObject <https://bugs.python.org/issue40170>`_
   * `bpo-39947: PyThreadState <https://bugs.python.org/issue39947>`_
   * `bpo-40421: PyFrameObject <https://bugs.python.org/issue40421>`_
-
+  * `bpo-47241: PyCodeObject <https://bugs.python.org/issue47241>`_
