@@ -209,6 +209,29 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     }
     Py_XDECREF(back);
 
+    // test PyFrame_GetLocals()
+    PyObject *locals = PyFrame_GetLocals(frame);
+    assert(locals != NULL);
+    assert(PyDict_Check(locals));
+
+    // test PyFrame_GetGlobals()
+    PyObject *globals = PyFrame_GetGlobals(frame);
+    assert(globals != NULL);
+    assert(PyDict_Check(globals));
+
+    // test PyFrame_GetBuiltins()
+    PyObject *builtins = PyFrame_GetBuiltins(frame);
+    assert(builtins != NULL);
+    assert(PyDict_Check(builtins));
+
+    assert(locals != globals);
+    assert(globals != builtins);
+    assert(builtins != locals);
+
+    Py_DECREF(locals);
+    Py_DECREF(globals);
+    Py_DECREF(builtins);
+
     Py_DECREF(frame);
     Py_RETURN_NONE;
 }
