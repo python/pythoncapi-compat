@@ -27,6 +27,24 @@ Latest version of the header file:
 Python 3.11
 -----------
 
+.. c:function:: PyObject* PyFrame_GetBuiltins(PyFrameObject *frame)
+
+   See `PyFrame_GetBuiltins() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetBuiltins>`__.
+
+   Not available on PyPy.
+
+.. c:function:: PyObject* PyFrame_GetGlobals(PyFrameObject *frame)
+
+   See `PyFrame_GetGlobals() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetGlobals>`__.
+
+   Not available on PyPy.
+
+.. c:function:: PyObject* PyFrame_GetLocals(PyFrameObject *frame)
+
+   See `PyFrame_GetLocals() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetLocals>`__.
+
+   Not available on PyPy.
+
 .. c:function:: void PyThreadState_EnterTracing(PyThreadState *tstate)
 
    See `PyThreadState_EnterTracing() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_EnterTracing>`__.

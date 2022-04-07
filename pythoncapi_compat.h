@@ -205,6 +205,43 @@ _PyFrame_GetBackBorrow(PyFrameObject *frame)
 #endif
 
 
+// bpo-40421 added PyFrame_GetLocals() to Python 3.11.0a7
+#if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
+PyObject*
+PyFrame_GetLocals(PyFrameObject *frame)
+{
+#if PY_VERSION_HEX >= 0x030400B1
+    if (PyFrame_FastToLocalsWithError(frame) < 0) {
+        return NULL;
+    }
+#else
+    PyFrame_FastToLocals(frame);
+#endif
+    return Py_NewRef(frame->f_locals);
+}
+#endif
+
+
+// bpo-40421 added PyFrame_GetGlobals() to Python 3.11.0a7
+#if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
+PyObject*
+PyFrame_GetGlobals(PyFrameObject *frame)
+{
+    return Py_NewRef(frame->f_globals);
+}
+#endif
+
+
+// bpo-40421 added PyFrame_GetBuiltins() to Python 3.11.0a7
+#if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
+PyObject*
+PyFrame_GetBuiltins(PyFrameObject *frame)
+{
+    return Py_NewRef(frame->f_builtins);
+}
+#endif
+
+
 // bpo-39947 added PyThreadState_GetInterpreter() to Python 3.9.0a5
 #if PY_VERSION_HEX < 0x030900A5
 PYCAPI_COMPAT_STATIC_INLINE(PyInterpreterState *)

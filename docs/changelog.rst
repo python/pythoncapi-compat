@@ -1,6 +1,8 @@
 Changelog
 =========
 
+* 2022-04-07: Add functions ``PyFrame_GetLocals()``, ``PyFrame_GetGlobals()``
+  and ``PyFrame_GetBuiltins()``.
 * 2022-03-12: Add functions ``PyFloat_Pack2()``, ``PyFloat_Pack4()``,
   ``PyFloat_Pack8()``, ``PyFloat_Unpack2()``, ``PyFloat_Unpack4()`` and
   ``PyFloat_Unpack8()``.

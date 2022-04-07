@@ -149,6 +149,13 @@ def main():
     global VERBOSE
     VERBOSE = ("-v" in sys.argv[1:] or "--verbose" in sys.argv[1:])
 
+    # Implementing PyFrame_GetLocals() requires the internal C API in Python
+    # 3.11 alpha versions
+    if 0x30b0000 <= sys.hexversion < 0x30b00a7:
+        version = sys.version.split()[0]
+        print("SKIP TESTS: Python %s is not supported" % version)
+        return
+
     if faulthandler is not None:
         faulthandler.enable()
 
