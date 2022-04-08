@@ -247,7 +247,14 @@ PyFrame_GetBuiltins(PyFrameObject *frame)
 PYCAPI_COMPAT_STATIC_INLINE(int)
 PyFrame_GetLasti(PyFrameObject *frame)
 {
+#if PY_VERSION_HEX >= 0x030A00A7
+    // bpo-27129: Since Python 3.10.0a7, f_lasti is an instruction offset,
+    // not a bytes offset anymore. Python uses 16-bit "wordcode" (2 bytes)
+    // instructions.
+    return frame->f_lasti * 2;
+#else
     return frame->f_lasti;
+#endif
 }
 #endif
 
