@@ -251,6 +251,9 @@ PyFrame_GetLasti(PyFrameObject *frame)
     // bpo-27129: Since Python 3.10.0a7, f_lasti is an instruction offset,
     // not a bytes offset anymore. Python uses 16-bit "wordcode" (2 bytes)
     // instructions.
+    if (frame->f_lasti < 0) {
+        return -1;
+    }
     return frame->f_lasti * 2;
 #else
     return frame->f_lasti;
