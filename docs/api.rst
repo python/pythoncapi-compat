@@ -39,6 +39,12 @@ Python 3.11
 
    Not available on PyPy.
 
+.. c:function:: int PyFrame_GetLasti(PyFrameObject *frame)
+
+   See `PyFrame_GetLasti() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetLasti>`__.
+
+   Not available on PyPy.
+
 .. c:function:: PyObject* PyFrame_GetLocals(PyFrameObject *frame)
 
    See `PyFrame_GetLocals() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetLocals>`__.

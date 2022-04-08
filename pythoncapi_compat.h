@@ -207,7 +207,7 @@ _PyFrame_GetBackBorrow(PyFrameObject *frame)
 
 // bpo-40421 added PyFrame_GetLocals() to Python 3.11.0a7
 #if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
-PyObject*
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyFrame_GetLocals(PyFrameObject *frame)
 {
 #if PY_VERSION_HEX >= 0x030400B1
@@ -224,7 +224,7 @@ PyFrame_GetLocals(PyFrameObject *frame)
 
 // bpo-40421 added PyFrame_GetGlobals() to Python 3.11.0a7
 #if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
-PyObject*
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyFrame_GetGlobals(PyFrameObject *frame)
 {
     return Py_NewRef(frame->f_globals);
@@ -234,10 +234,20 @@ PyFrame_GetGlobals(PyFrameObject *frame)
 
 // bpo-40421 added PyFrame_GetBuiltins() to Python 3.11.0a7
 #if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
-PyObject*
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyFrame_GetBuiltins(PyFrameObject *frame)
 {
     return Py_NewRef(frame->f_builtins);
+}
+#endif
+
+
+// bpo-40421 added PyFrame_GetLasti() to Python 3.11.0b1
+#if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyFrame_GetLasti(PyFrameObject *frame)
+{
+    return frame->f_lasti;
 }
 #endif
 

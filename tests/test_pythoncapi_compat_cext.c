@@ -232,6 +232,10 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     Py_DECREF(globals);
     Py_DECREF(builtins);
 
+    // test PyFrame_GetLasti()
+    int lasti = PyFrame_GetLasti(frame);
+    assert(lasti >= 0);
+
     Py_DECREF(frame);
     Py_RETURN_NONE;
 }
