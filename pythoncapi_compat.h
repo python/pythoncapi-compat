@@ -243,7 +243,7 @@ PyFrame_GetBuiltins(PyFrameObject *frame)
 
 
 // bpo-40421 added PyFrame_GetLasti() to Python 3.11.0b1
-#if PY_VERSION_HEX < 0x030B00A7 && !defined(PYPY_VERSION)
+#if PY_VERSION_HEX < 0x030B00B1 && !defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(int)
 PyFrame_GetLasti(PyFrameObject *frame)
 {
