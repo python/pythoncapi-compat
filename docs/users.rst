@@ -1,6 +1,6 @@
-+++++++++++++++++++++++++
-pythoncapi_compat.h users
-+++++++++++++++++++++++++
++++++++++++++++++++++++
+pythoncapi-compat users
++++++++++++++++++++++++
 
 Examples of projects using pythoncapi_compat.h
 ==============================================

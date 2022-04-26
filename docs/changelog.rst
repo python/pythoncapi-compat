@@ -1,12 +1,14 @@
 Changelog
 =========
 
+* 2022-04-26: Rename the project from ``pythoncapi_compat`` to
+  ``pythoncapi-compat``: replace the underscore separator with a dash.
 * 2022-04-08: Add functions ``PyFrame_GetLocals()``, ``PyFrame_GetGlobals()``
   ``PyFrame_GetBuiltins()``, and ``PyFrame_GetLasti()``.
 * 2022-03-12: Add functions ``PyFloat_Pack2()``, ``PyFloat_Pack4()``,
   ``PyFloat_Pack8()``, ``PyFloat_Unpack2()``, ``PyFloat_Unpack4()`` and
   ``PyFloat_Unpack8()``.
-* 2022-03-03: The project moved to https://github.com/python/pythoncapi_compat
+* 2022-03-03: The project moved to https://github.com/python/pythoncapi-compat
 * 2022-02-11: The project license changes from the MIT license to the Zero
   Clause BSD (0BSD) license. Projects copying ``pythoncapi_compat.h`` no longer
   have to include the MIT license and the copyright notice.

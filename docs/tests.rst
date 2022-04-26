@@ -1,7 +1,7 @@
 Run tests
 =========
 
-To run pythoncapi_compat tests, type::
+To run pythoncapi-compat tests, type::
 
     python3 runtests.py
 

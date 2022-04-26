@@ -2,16 +2,16 @@
 Python C API compatibility
 ++++++++++++++++++++++++++
 
-.. image:: https://github.com/python/pythoncapi_compat/actions/workflows/build.yml/badge.svg
-   :alt: Build status of pythoncapi_compat on GitHub Actions
-   :target: https://github.com/python/pythoncapi_compat/actions
+.. image:: https://github.com/python/pythoncapi-compat/actions/workflows/build.yml/badge.svg
+   :alt: Build status of pythoncapi-compat on GitHub Actions
+   :target: https://github.com/python/pythoncapi-compat/actions
 
-The ``pythoncapi_compat`` project can be used to write a C extension supporting
+The ``pythoncapi-compat`` project can be used to write a C extension supporting
 a wide range of Python versions with a single code base. It is made of the
 ``pythoncapi_compat.h`` header file and the ``upgrade_pythoncapi.py`` script.
 
-* Homepage: `GitHub pythoncapi_compat project
-  <https://github.com/python/pythoncapi_compat>`_.
+* Homepage: `GitHub pythoncapi-compat project
+  <https://github.com/python/pythoncapi-compat>`_.
 * `Documentation
   <https://pythoncapi-compat.readthedocs.io/en/latest/>`_
 
