@@ -12,7 +12,7 @@ a wide range of Python versions with a single code base. It is made of the
 
 ``upgrade_pythoncapi.py`` requires Python 3.6 or newer.
 
-See the `documentation at RTD
+See the `documentation at ReadTheDocs
 <https://pythoncapi-compat.readthedocs.io/en/latest/>`_
 for more details.
 
