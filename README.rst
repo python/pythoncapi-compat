@@ -16,8 +16,8 @@ See the `documentation at RTD
 <https://pythoncapi-compat.readthedocs.io/en/latest/>`_
 for more details.
 
-Quick-start guide
-=================
+Getting started
+===============
 
 To upgrade a specific file::
 
