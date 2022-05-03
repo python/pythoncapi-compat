@@ -27,7 +27,7 @@ Latest version of the header file:
 Python 3.11
 -----------
 
-.. c:function:: PyObject* PyCode_GetCode(PyObject *code)
+.. c:function:: PyObject* PyCode_GetCode(PyCodeObject *code)
 
    See `PyCode_GetCode() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetCode>`__.
 
