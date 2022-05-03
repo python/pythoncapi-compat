@@ -130,35 +130,6 @@ test_py_is(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
-static PyObject *
-test_steal_ref(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
-{
-    PyObject *obj = PyList_New(0);
-    if (obj == NULL) {
-        return NULL;
-    }
-    Py_ssize_t refcnt = Py_REFCNT(obj);
-
-    // _Py_StealRef()
-    Py_INCREF(obj);
-    PyObject *ref = _Py_StealRef(obj);
-    assert(ref == obj);
-    assert(Py_REFCNT(obj) == refcnt);
-
-    // _Py_XStealRef()
-    Py_INCREF(obj);
-    PyObject *xref = _Py_XStealRef(obj);
-    assert(xref == obj);
-    assert(Py_REFCNT(obj) == refcnt);
-
-    assert(_Py_XStealRef(NULL) == NULL);
-
-    assert(Py_REFCNT(obj) == refcnt);
-    Py_DECREF(obj);
-    Py_RETURN_NONE;
-}
-
-
 #if !defined(PYPY_VERSION)
 static PyObject *
 test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
@@ -516,7 +487,6 @@ test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, NULL},
     {"test_py_is", test_py_is, METH_NOARGS, NULL},
-    {"test_steal_ref", test_steal_ref, METH_NOARGS, NULL},
 #if !defined(PYPY_VERSION)
     {"test_frame", test_frame, METH_NOARGS, NULL},
 #endif
