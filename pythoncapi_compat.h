@@ -487,6 +487,14 @@ PyFloat_Unpack8(const char *p, int le)
 #endif
 
 
+#if PY_VERSION_HEX < 0x030B00B1 && !defined(PYPY_VERSION)
+PyObject *PyCode_GetCode(PyCodeObject *code)
+{
+    return Py_NewRef(code->co_code);
+}
+#endif
+
+
 // Py_UNUSED() was added to Python 3.4.0b2.
 #if PY_VERSION_HEX < 0x030400B2 && !defined(Py_UNUSED)
 #  if defined(__GNUC__) || defined(__clang__)

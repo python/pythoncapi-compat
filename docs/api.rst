@@ -27,6 +27,12 @@ Latest version of the header file:
 Python 3.11
 -----------
 
+.. c:function:: PyObject* PyCode_GetCode(PyObject *code)
+
+   See `PyCode_GetCode() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetCode>`__.
+
+   Not available on PyPy.
+
 .. c:function:: PyObject* PyFrame_GetBuiltins(PyFrameObject *frame)
 
    See `PyFrame_GetBuiltins() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetBuiltins>`__.

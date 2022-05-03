@@ -489,6 +489,30 @@ test_float_pack(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 #endif
 
 
+#if !defined(PYPY_VERSION)
+static PyObject *
+test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
+{
+    PyThreadState *tstate = PyThreadState_Get();
+    PyFrameObject *frame = PyThreadState_GetFrame(tstate);
+    if (frame == NULL) {
+        PyErr_SetString(PyExc_AssertionError, "PyThreadState_GetFrame failed");
+        return NULL;
+    }
+    PyCodeObject *code = PyFrame_GetCode(frame);
+
+    PyObject *co_code = PyCode_GetCode(code);
+    assert(co_code != NULL);
+    assert(PyBytes_Check(co_code));
+    Py_DECREF(co_code);
+
+    Py_DECREF(code);
+    Py_DECREF(frame);
+    Py_RETURN_NONE;
+}
+#endif
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, NULL},
     {"test_py_is", test_py_is, METH_NOARGS, NULL},
@@ -503,6 +527,9 @@ static struct PyMethodDef methods[] = {
     {"test_module", test_module, METH_NOARGS, NULL},
 #if (PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) && !defined(PYPY_VERSION)
     {"test_float_pack", test_float_pack, METH_NOARGS, NULL},
+#endif
+#if !defined(PYPY_VERSION)
+    {"test_code", test_code, METH_NOARGS, NULL},
 #endif
     {NULL, NULL, 0, NULL}
 };
