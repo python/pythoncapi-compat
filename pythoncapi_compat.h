@@ -45,9 +45,6 @@ extern "C" {
 #ifndef _PyObject_CAST
 #  define _PyObject_CAST(op) PYCAPI_COMPAT_CAST(PyObject*, op)
 #endif
-#ifndef _PyObject_CAST_CONST
-#  define _PyObject_CAST_CONST(op) PYCAPI_COMPAT_CAST(const PyObject*, op)
-#endif
 
 
 // bpo-42262 added Py_NewRef() to Python 3.10.0a3
@@ -441,10 +438,10 @@ PyObject_GC_IsFinalized(PyObject *obj)
 // bpo-39573 added Py_IS_TYPE() to Python 3.9.0a4
 #if PY_VERSION_HEX < 0x030900A4 && !defined(Py_IS_TYPE)
 PYCAPI_COMPAT_STATIC_INLINE(int)
-_Py_IS_TYPE(const PyObject *ob, const PyTypeObject *type) {
-    return ob->ob_type == type;
+_Py_IS_TYPE(PyObject *ob, PyTypeObject *type) {
+    return Py_TYPE(ob) == type;
 }
-#define Py_IS_TYPE(ob, type) _Py_IS_TYPE(_PyObject_CAST_CONST(ob), type)
+#define Py_IS_TYPE(ob, type) _Py_IS_TYPE(_PyObject_CAST(ob), type)
 #endif
 
 
