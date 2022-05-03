@@ -33,17 +33,23 @@ extern "C" {
 
 
 // C++ compatibility
+#ifndef _Py_CAST
+#  ifdef __cplusplus
+#    define _Py_CAST(type, expr) \
+         const_cast<type>(reinterpret_cast<const type>(expr))
+#  else
+#    define _Py_CAST(type, expr) ((type)(expr))
+#  endif
+#endif
 #ifdef __cplusplus
-#  define PYCAPI_COMPAT_CAST(TYPE, EXPR) reinterpret_cast<TYPE>(EXPR)
 #  define PYCAPI_COMPAT_NULL nullptr
 #else
-#  define PYCAPI_COMPAT_CAST(TYPE, EXPR) ((TYPE)(EXPR))
 #  define PYCAPI_COMPAT_NULL NULL
 #endif
 
 // Cast argument to PyObject* type.
 #ifndef _PyObject_CAST
-#  define _PyObject_CAST(op) PYCAPI_COMPAT_CAST(PyObject*, op)
+#  define _PyObject_CAST(op) _Py_CAST(PyObject*, op)
 #endif
 
 
@@ -68,30 +74,6 @@ _Py_XNewRef(PyObject *obj)
     return obj;
 }
 #define Py_XNewRef(obj) _Py_XNewRef(_PyObject_CAST(obj))
-#endif
-
-
-// See https://bugs.python.org/issue42522
-#if !defined(_Py_StealRef)
-PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
-__Py_StealRef(PyObject *obj)
-{
-    Py_DECREF(obj);
-    return obj;
-}
-#define _Py_StealRef(obj) __Py_StealRef(_PyObject_CAST(obj))
-#endif
-
-
-// See https://bugs.python.org/issue42522
-#if !defined(_Py_XStealRef)
-PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
-__Py_XStealRef(PyObject *obj)
-{
-    Py_XDECREF(obj);
-    return obj;
-}
-#define _Py_XStealRef(obj) __Py_XStealRef(_PyObject_CAST(obj))
 #endif
 
 
@@ -170,15 +152,16 @@ PyFrame_GetCode(PyFrameObject *frame)
 {
     assert(frame != PYCAPI_COMPAT_NULL);
     assert(frame->f_code != PYCAPI_COMPAT_NULL);
-    return PYCAPI_COMPAT_CAST(PyCodeObject*, Py_NewRef(frame->f_code));
+    return _Py_CAST(PyCodeObject*, Py_NewRef(frame->f_code));
 }
 #endif
 
 PYCAPI_COMPAT_STATIC_INLINE(PyCodeObject*)
 _PyFrame_GetCodeBorrow(PyFrameObject *frame)
 {
-    return PYCAPI_COMPAT_CAST(PyCodeObject *,
-                              _Py_StealRef(PyFrame_GetCode(frame)));
+    PyCodeObject *code = PyFrame_GetCode(frame);
+    Py_DECREF(code);
+    return code;
 }
 
 
@@ -188,7 +171,7 @@ PYCAPI_COMPAT_STATIC_INLINE(PyFrameObject*)
 PyFrame_GetBack(PyFrameObject *frame)
 {
     assert(frame != PYCAPI_COMPAT_NULL);
-    return PYCAPI_COMPAT_CAST(PyFrameObject*, Py_XNewRef(frame->f_back));
+    return _Py_CAST(PyFrameObject*, Py_XNewRef(frame->f_back));
 }
 #endif
 
@@ -196,8 +179,9 @@ PyFrame_GetBack(PyFrameObject *frame)
 PYCAPI_COMPAT_STATIC_INLINE(PyFrameObject*)
 _PyFrame_GetBackBorrow(PyFrameObject *frame)
 {
-    return PYCAPI_COMPAT_CAST(PyFrameObject *,
-                              _Py_XStealRef(PyFrame_GetBack(frame)));
+    PyFrameObject *back = PyFrame_GetBack(frame);
+    Py_XDECREF(back);
+    return back;
 }
 #endif
 
@@ -276,7 +260,7 @@ PYCAPI_COMPAT_STATIC_INLINE(PyFrameObject*)
 PyThreadState_GetFrame(PyThreadState *tstate)
 {
     assert(tstate != PYCAPI_COMPAT_NULL);
-    return PYCAPI_COMPAT_CAST(PyFrameObject *, Py_XNewRef(tstate->frame));
+    return _Py_CAST(PyFrameObject *, Py_XNewRef(tstate->frame));
 }
 #endif
 
@@ -284,8 +268,9 @@ PyThreadState_GetFrame(PyThreadState *tstate)
 PYCAPI_COMPAT_STATIC_INLINE(PyFrameObject*)
 _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 {
-    return PYCAPI_COMPAT_CAST(PyFrameObject*,
-                              _Py_XStealRef(PyThreadState_GetFrame(tstate)));
+    PyFrameObject *frame = PyThreadState_GetFrame(tstate);
+    Py_XDECREF(frame);
+    return frame;
 }
 #endif
 
@@ -429,7 +414,7 @@ PyObject_GC_IsTracked(PyObject* obj)
 PYCAPI_COMPAT_STATIC_INLINE(int)
 PyObject_GC_IsFinalized(PyObject *obj)
 {
-    PyGC_Head *gc = PYCAPI_COMPAT_CAST(PyGC_Head *, obj) - 1;
+    PyGC_Head *gc = _Py_CAST(PyGC_Head*, obj) - 1;
     return (PyObject_IS_GC(obj) && _PyGCHead_FINALIZED(gc));
 }
 #endif
