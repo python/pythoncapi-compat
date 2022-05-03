@@ -185,7 +185,7 @@ _PyFrame_GetCodeBorrow(PyFrameObject *frame)
 }
 
 
-// bpo-40421 added PyFrame_GetCode() to Python 3.9.0b1
+// bpo-40421 added PyFrame_GetBack() to Python 3.9.0b1
 #if PY_VERSION_HEX < 0x030900B1 && !defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(PyFrameObject*)
 PyFrame_GetBack(PyFrameObject *frame)
@@ -487,6 +487,7 @@ PyFloat_Unpack8(const char *p, int le)
 #endif
 
 
+// gh-92154 added PyCode_GetCode() to Python 3.11.0b1
 #if PY_VERSION_HEX < 0x030B00B1 && !defined(PYPY_VERSION)
 PyObject *PyCode_GetCode(PyCodeObject *code)
 {
