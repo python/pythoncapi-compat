@@ -32,7 +32,7 @@ extern "C" {
 #endif
 
 
-// C++ compatibility
+// C++ compatibility: _Py_CAST() and _Py_NULL
 #ifndef _Py_CAST
 #  ifdef __cplusplus
 #    define _Py_CAST(type, expr) \
@@ -41,10 +41,12 @@ extern "C" {
 #    define _Py_CAST(type, expr) ((type)(expr))
 #  endif
 #endif
-#ifdef __cplusplus
-#  define PYCAPI_COMPAT_NULL nullptr
-#else
-#  define PYCAPI_COMPAT_NULL NULL
+#ifndef _Py_NULL
+#  ifdef __cplusplus
+#    define _Py_NULL nullptr
+#  else
+#    define _Py_NULL NULL
+#  endif
 #endif
 
 // Cast argument to PyObject* type.
@@ -150,8 +152,8 @@ _Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
 PYCAPI_COMPAT_STATIC_INLINE(PyCodeObject*)
 PyFrame_GetCode(PyFrameObject *frame)
 {
-    assert(frame != PYCAPI_COMPAT_NULL);
-    assert(frame->f_code != PYCAPI_COMPAT_NULL);
+    assert(frame != _Py_NULL);
+    assert(frame->f_code != _Py_NULL);
     return _Py_CAST(PyCodeObject*, Py_NewRef(frame->f_code));
 }
 #endif
@@ -170,7 +172,7 @@ _PyFrame_GetCodeBorrow(PyFrameObject *frame)
 PYCAPI_COMPAT_STATIC_INLINE(PyFrameObject*)
 PyFrame_GetBack(PyFrameObject *frame)
 {
-    assert(frame != PYCAPI_COMPAT_NULL);
+    assert(frame != _Py_NULL);
     return _Py_CAST(PyFrameObject*, Py_XNewRef(frame->f_back));
 }
 #endif
@@ -248,7 +250,7 @@ PyFrame_GetLasti(PyFrameObject *frame)
 PYCAPI_COMPAT_STATIC_INLINE(PyInterpreterState *)
 PyThreadState_GetInterpreter(PyThreadState *tstate)
 {
-    assert(tstate != PYCAPI_COMPAT_NULL);
+    assert(tstate != _Py_NULL);
     return tstate->interp;
 }
 #endif
@@ -259,7 +261,7 @@ PyThreadState_GetInterpreter(PyThreadState *tstate)
 PYCAPI_COMPAT_STATIC_INLINE(PyFrameObject*)
 PyThreadState_GetFrame(PyThreadState *tstate)
 {
-    assert(tstate != PYCAPI_COMPAT_NULL);
+    assert(tstate != _Py_NULL);
     return _Py_CAST(PyFrameObject *, Py_XNewRef(tstate->frame));
 }
 #endif
@@ -284,11 +286,11 @@ PyInterpreterState_Get(void)
     PyInterpreterState *interp;
 
     tstate = PyThreadState_GET();
-    if (tstate == PYCAPI_COMPAT_NULL) {
+    if (tstate == _Py_NULL) {
         Py_FatalError("GIL released (tstate is NULL)");
     }
     interp = tstate->interp;
-    if (interp == PYCAPI_COMPAT_NULL) {
+    if (interp == _Py_NULL) {
         Py_FatalError("no current interpreter");
     }
     return interp;
@@ -301,7 +303,7 @@ PyInterpreterState_Get(void)
 PYCAPI_COMPAT_STATIC_INLINE(uint64_t)
 PyThreadState_GetID(PyThreadState *tstate)
 {
-    assert(tstate != PYCAPI_COMPAT_NULL);
+    assert(tstate != _Py_NULL);
     return tstate->id;
 }
 #endif
@@ -325,8 +327,8 @@ PyThreadState_EnterTracing(PyThreadState *tstate)
 PYCAPI_COMPAT_STATIC_INLINE(void)
 PyThreadState_LeaveTracing(PyThreadState *tstate)
 {
-    int use_tracing = (tstate->c_tracefunc != PYCAPI_COMPAT_NULL
-                       || tstate->c_profilefunc != PYCAPI_COMPAT_NULL);
+    int use_tracing = (tstate->c_tracefunc != _Py_NULL
+                       || tstate->c_profilefunc != _Py_NULL);
     tstate->tracing--;
 #if PY_VERSION_HEX >= 0x030A00A1
     tstate->cframe->use_tracing = use_tracing;
@@ -387,9 +389,9 @@ PyModule_AddType(PyObject *module, PyTypeObject *type)
 
     // inline _PyType_Name()
     name = type->tp_name;
-    assert(name != PYCAPI_COMPAT_NULL);
+    assert(name != _Py_NULL);
     dot = strrchr(name, '.');
-    if (dot != PYCAPI_COMPAT_NULL) {
+    if (dot != _Py_NULL) {
         name = dot + 1;
     }
 
