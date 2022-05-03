@@ -509,17 +509,17 @@ static struct PyMethodDef methods[] = {
 static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
     MODULE_NAME_STR,     // m_name
-    PYCAPI_COMPAT_NULL,  // m_doc
+    _Py_NULL,            // m_doc
     0,                   // m_doc
     methods,             // m_methods
 #if PY_VERSION_HEX >= 0x03050000
-    PYCAPI_COMPAT_NULL,  // m_slots
+    _Py_NULL,           // m_slots
 #else
-    PYCAPI_COMPAT_NULL,  // m_reload
+    _Py_NULL,           // m_reload
 #endif
-    PYCAPI_COMPAT_NULL,  // m_traverse
-    PYCAPI_COMPAT_NULL,  // m_clear
-    PYCAPI_COMPAT_NULL,  // m_free
+    _Py_NULL,           // m_traverse
+    _Py_NULL,           // m_clear
+    _Py_NULL,           // m_free
 };
 
 
