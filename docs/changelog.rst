@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2022-05-03: Add ``PyCode_GetCode()`` function.
 * 2022-04-26: Rename the project from ``pythoncapi_compat`` to
   ``pythoncapi-compat``: replace the underscore separator with a dash.
 * 2022-04-08: Add functions ``PyFrame_GetLocals()``, ``PyFrame_GetGlobals()``
