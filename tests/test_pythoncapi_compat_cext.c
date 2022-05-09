@@ -1,4 +1,4 @@
-// Always enable assertions
+// TEST Always enable assertions
 #undef NDEBUG
 
 #include "pythoncapi_compat.h"
