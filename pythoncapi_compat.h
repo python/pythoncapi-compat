@@ -26,7 +26,7 @@ extern "C" {
 // the inline keyword in C (only in C++): use __inline instead.
 #if (defined(_MSC_VER) && _MSC_VER < 1900 \
      && !defined(__cplusplus) && !defined(inline))
-#  define PYCAPI_COMPAT_STATIC_INLINE(TYPE) static __inline TYPE
+#  define PYCAPI_COMPAT_INLINE(TYPE static __inline TYPE
 #else
 #  define PYCAPI_COMPAT_STATIC_INLINE(TYPE) static inline TYPE
 #endif
