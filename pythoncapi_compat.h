@@ -473,7 +473,8 @@ PyFloat_Unpack8(const char *p, int le)
 
 // gh-92154 added PyCode_GetCode() to Python 3.11.0b1
 #if PY_VERSION_HEX < 0x030B00B1 && !defined(PYPY_VERSION)
-PyObject *PyCode_GetCode(PyCodeObject *code)
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
+PyCode_GetCode(PyCodeObject *code)
 {
     return Py_NewRef(code->co_code);
 }
