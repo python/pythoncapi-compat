@@ -36,8 +36,8 @@ static PyObject *
 test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *obj = PyList_New(0);
-    if (obj == NULL) {
-        return NULL;
+    if (obj == _Py_NULL) {
+        return _Py_NULL;
     }
     Py_ssize_t refcnt = Py_REFCNT(obj);
 
@@ -53,7 +53,7 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(Py_REFCNT(obj) == (refcnt + 1));
     Py_DECREF(xref);
 
-    assert(Py_XNewRef(NULL) == NULL);
+    assert(Py_XNewRef(_Py_NULL) == _Py_NULL);
 
     // Py_SETREF()
     PyObject *setref = Py_NewRef(obj);
@@ -65,20 +65,20 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(Py_REFCNT(obj) == refcnt);
     Py_INCREF(setref);
 
-    Py_SETREF(setref, NULL);
-    assert(setref == NULL);
+    Py_SETREF(setref, _Py_NULL);
+    assert(setref == _Py_NULL);
 
     // Py_XSETREF()
-    PyObject *xsetref = NULL;
+    PyObject *xsetref = _Py_NULL;
 
     Py_INCREF(obj);
     assert(Py_REFCNT(obj) == (refcnt + 1));
     Py_XSETREF(xsetref, obj);
     assert(xsetref == obj);
 
-    Py_XSETREF(xsetref, NULL);
+    Py_XSETREF(xsetref, _Py_NULL);
     assert(Py_REFCNT(obj) == refcnt);
-    assert(xsetref == NULL);
+    assert(xsetref == _Py_NULL);
 
     // Py_SET_REFCNT
     Py_SET_REFCNT(obj, Py_REFCNT(obj));
@@ -103,8 +103,8 @@ test_py_is(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyObject *o_true = Py_True;
     PyObject *o_false = Py_False;
     PyObject *obj = PyList_New(0);
-    if (obj == NULL) {
-        return NULL;
+    if (obj == _Py_NULL) {
+        return _Py_NULL;
     }
 
     /* test Py_Is() */
@@ -138,9 +138,9 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     // test PyThreadState_GetFrame()
     PyFrameObject *frame = PyThreadState_GetFrame(tstate);
-    if (frame == NULL) {
+    if (frame == _Py_NULL) {
         PyErr_SetString(PyExc_AssertionError, "PyThreadState_GetFrame failed");
-        return NULL;
+        return _Py_NULL;
     }
 
     // test _PyThreadState_GetFrameBorrow()
@@ -151,7 +151,7 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     // test PyFrame_GetCode()
     PyCodeObject *code = PyFrame_GetCode(frame);
-    assert(code != NULL);
+    assert(code != _Py_NULL);
     assert(PyCode_Check(code));
 
     // test _PyFrame_GetCodeBorrow()
@@ -163,12 +163,12 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     // PyFrame_GetBack()
     PyFrameObject* back = PyFrame_GetBack(frame);
-    if (back != NULL) {
+    if (back != _Py_NULL) {
         assert(PyFrame_Check(back));
     }
 
     // test _PyFrame_GetBackBorrow()
-    if (back != NULL) {
+    if (back != _Py_NULL) {
         Py_ssize_t back_refcnt = Py_REFCNT(back);
         PyFrameObject *back2 = _PyFrame_GetBackBorrow(frame);
         assert(back2 == back);
@@ -182,17 +182,17 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     // test PyFrame_GetLocals()
     PyObject *locals = PyFrame_GetLocals(frame);
-    assert(locals != NULL);
+    assert(locals != _Py_NULL);
     assert(PyDict_Check(locals));
 
     // test PyFrame_GetGlobals()
     PyObject *globals = PyFrame_GetGlobals(frame);
-    assert(globals != NULL);
+    assert(globals != _Py_NULL);
     assert(PyDict_Check(globals));
 
     // test PyFrame_GetBuiltins()
     PyObject *builtins = PyFrame_GetBuiltins(frame);
-    assert(builtins != NULL);
+    assert(builtins != _Py_NULL);
     assert(PyDict_Check(builtins));
 
     assert(locals != globals);
@@ -220,12 +220,12 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     // test PyThreadState_GetInterpreter()
     PyInterpreterState *interp = PyThreadState_GetInterpreter(tstate);
-    assert(interp != NULL);
+    assert(interp != _Py_NULL);
 
 #if !defined(PYPY_VERSION)
     // test PyThreadState_GetFrame()
     PyFrameObject *frame = PyThreadState_GetFrame(tstate);
-    if (frame != NULL) {
+    if (frame != _Py_NULL) {
         assert(PyFrame_Check(frame));
     }
     Py_XDECREF(frame);
@@ -251,7 +251,7 @@ test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     // test PyInterpreterState_Get()
     PyInterpreterState *interp = PyInterpreterState_Get();
-    assert(interp != NULL);
+    assert(interp != _Py_NULL);
     PyThreadState *tstate = PyThreadState_Get();
     PyInterpreterState *interp2 = PyThreadState_GetInterpreter(tstate);
     assert(interp == interp2);
@@ -267,21 +267,21 @@ test_calls(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     // test PyObject_CallNoArgs(): str() returns ''
     PyObject *res = PyObject_CallNoArgs(func);
-    if (res == NULL) {
-        return NULL;
+    if (res == _Py_NULL) {
+        return _Py_NULL;
     }
     assert(PyUnicode_Check(res));
     Py_DECREF(res);
 
     // test PyObject_CallOneArg(): str(1) returns '1'
     PyObject *arg = PyLong_FromLong(1);
-    if (arg == NULL) {
-        return NULL;
+    if (arg == _Py_NULL) {
+        return _Py_NULL;
     }
     res = PyObject_CallOneArg(func, arg);
     Py_DECREF(arg);
-    if (res == NULL) {
-        return NULL;
+    if (res == _Py_NULL) {
+        return _Py_NULL;
     }
     assert(PyUnicode_Check(res));
     Py_DECREF(res);
@@ -334,7 +334,7 @@ test_module_add_type(PyObject *module)
     ASSERT_REFCNT(Py_REFCNT(type) == refcnt + 1);
 
     PyObject *attr = PyObject_GetAttrString(module, type_name);
-    if (attr == NULL) {
+    if (attr == _Py_NULL) {
         return -1;
     }
     assert(attr == (PyObject *)type);
@@ -370,7 +370,7 @@ test_module_addobjectref(PyObject *module)
     ASSERT_REFCNT(Py_REFCNT(obj) == refcnt);
 
     // PyModule_AddObjectRef() with value=NULL must not crash
-    int res = PyModule_AddObjectRef(module, name, NULL);
+    int res = PyModule_AddObjectRef(module, name, _Py_NULL);
     assert(res < 0);
     PyErr_Clear();
 
@@ -382,8 +382,8 @@ static PyObject *
 test_module(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *module = PyImport_ImportModule("sys");
-    if (module == NULL) {
-        return NULL;
+    if (module == _Py_NULL) {
+        return _Py_NULL;
     }
     assert(PyModule_Check(module));
 
@@ -400,7 +400,7 @@ test_module(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
 error:
     Py_DECREF(module);
-    return NULL;
+    return _Py_NULL;
 }
 
 
@@ -466,14 +466,14 @@ test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyThreadState *tstate = PyThreadState_Get();
     PyFrameObject *frame = PyThreadState_GetFrame(tstate);
-    if (frame == NULL) {
+    if (frame == _Py_NULL) {
         PyErr_SetString(PyExc_AssertionError, "PyThreadState_GetFrame failed");
-        return NULL;
+        return _Py_NULL;
     }
     PyCodeObject *code = PyFrame_GetCode(frame);
 
     PyObject *co_code = PyCode_GetCode(code);
-    assert(co_code != NULL);
+    assert(co_code != _Py_NULL);
     assert(PyBytes_Check(co_code));
     Py_DECREF(co_code);
 
@@ -484,24 +484,85 @@ test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 #endif
 
 
+#ifdef __cplusplus
+// Class to test operator casting an object to PyObject*
+class StrongRef
+{
+public:
+    StrongRef(PyObject *obj) : m_obj(obj) {
+        Py_INCREF(this->m_obj);
+    }
+
+    ~StrongRef() {
+        Py_DECREF(this->m_obj);
+    }
+
+    // Cast to PyObject*: get a borrowed reference
+    inline operator PyObject*() const { return this->m_obj; }
+
+private:
+    PyObject *m_obj;  // Strong reference
+};
+#endif
+
+
+static PyObject *
+test_api_casts(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *obj = Py_BuildValue("(ii)", 1, 2);
+    if (obj == _Py_NULL) {
+        return _Py_NULL;
+    }
+    Py_ssize_t refcnt = Py_REFCNT(obj);
+    assert(refcnt >= 1);
+
+    // gh-92138: For backward compatibility, functions of Python C API accepts
+    // "const PyObject*". Check that using it does not emit C++ compiler
+    // warnings.
+    const PyObject *const_obj = obj;
+    Py_INCREF(const_obj);
+    Py_DECREF(const_obj);
+    PyTypeObject *type = Py_TYPE(const_obj);
+    assert(Py_REFCNT(const_obj) == refcnt);
+    assert(type == &PyTuple_Type);
+    assert(PyTuple_GET_SIZE(const_obj) == 2);
+    PyObject *one = PyTuple_GET_ITEM(const_obj, 0);
+    assert(PyLong_AsLong(one) == 1);
+
+#ifdef __cplusplus
+    // gh-92898: StrongRef doesn't inherit from PyObject but has an operator to
+    // cast to PyObject*.
+    StrongRef strong_ref(obj);
+    assert(Py_TYPE(strong_ref) == &PyTuple_Type);
+    assert(Py_REFCNT(strong_ref) == (refcnt + 1));
+    Py_INCREF(strong_ref);
+    Py_DECREF(strong_ref);
+#endif
+
+    Py_DECREF(obj);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
-    {"test_object", test_object, METH_NOARGS, NULL},
-    {"test_py_is", test_py_is, METH_NOARGS, NULL},
+    {"test_object", test_object, METH_NOARGS, _Py_NULL},
+    {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
 #if !defined(PYPY_VERSION)
-    {"test_frame", test_frame, METH_NOARGS, NULL},
+    {"test_frame", test_frame, METH_NOARGS, _Py_NULL},
 #endif
-    {"test_thread_state", test_thread_state, METH_NOARGS, NULL},
-    {"test_interpreter", test_interpreter, METH_NOARGS, NULL},
-    {"test_calls", test_calls, METH_NOARGS, NULL},
-    {"test_gc", test_gc, METH_NOARGS, NULL},
-    {"test_module", test_module, METH_NOARGS, NULL},
+    {"test_thread_state", test_thread_state, METH_NOARGS, _Py_NULL},
+    {"test_interpreter", test_interpreter, METH_NOARGS, _Py_NULL},
+    {"test_calls", test_calls, METH_NOARGS, _Py_NULL},
+    {"test_gc", test_gc, METH_NOARGS, _Py_NULL},
+    {"test_module", test_module, METH_NOARGS, _Py_NULL},
 #if (PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) && !defined(PYPY_VERSION)
-    {"test_float_pack", test_float_pack, METH_NOARGS, NULL},
+    {"test_float_pack", test_float_pack, METH_NOARGS, _Py_NULL},
 #endif
 #if !defined(PYPY_VERSION)
-    {"test_code", test_code, METH_NOARGS, NULL},
+    {"test_code", test_code, METH_NOARGS, _Py_NULL},
 #endif
-    {NULL, NULL, 0, NULL}
+    {"test_api_casts", test_api_casts, METH_NOARGS, _Py_NULL},
+    {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
 
@@ -552,8 +613,8 @@ INIT_FUNC(void)
 {
     Py_InitModule4(MODULE_NAME_STR,
                    methods,
-                   NULL,
-                   NULL,
+                   _Py_NULL,
+                   _Py_NULL,
                    PYTHON_API_VERSION);
 }
 #endif
