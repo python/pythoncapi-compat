@@ -27,7 +27,10 @@ CPPFLAGS = COMMON_FLAGS + [
 ]
 
 def main():
-    from distutils.core import setup, Extension
+    try:
+        from setuptools import setup, Extension
+    except ImportError:
+        from distutils.core import setup, Extension
     import sys
 
     if len(sys.argv) >= 3 and sys.argv[2] == '--build-cppext':
