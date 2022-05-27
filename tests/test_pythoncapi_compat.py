@@ -150,8 +150,9 @@ def main():
     VERBOSE = ("-v" in sys.argv[1:] or "--verbose" in sys.argv[1:])
 
     # Implementing PyFrame_GetLocals() and PyCode_GetCode() require the
-    # internal C API in Python 3.11 alpha versions
-    if 0x30b0000 <= sys.hexversion < 0x30b00b1:
+    # internal C API in Python 3.11 alpha versions. Skip also Python 3.11b1
+    # which has issues with C++ casts: _Py_CAST() macro.
+    if 0x30b0000 <= sys.hexversion <= 0x30b00b1:
         version = sys.version.split()[0]
         print("SKIP TESTS: Python %s is not supported" % version)
         return
