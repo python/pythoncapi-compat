@@ -263,7 +263,7 @@ test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 static PyObject *
 test_calls(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
-    PyObject *func = (PyObject *)&PyUnicode_Type;
+    PyObject *func = _Py_CAST(PyObject*, &PyUnicode_Type);
 
     // test PyObject_CallNoArgs(): str() returns ''
     PyObject *res = PyObject_CallNoArgs(func);
@@ -337,7 +337,7 @@ test_module_add_type(PyObject *module)
     if (attr == _Py_NULL) {
         return -1;
     }
-    assert(attr == (PyObject *)type);
+    assert(attr == _Py_CAST(PyObject*, type));
     Py_DECREF(attr);
 
     if (PyObject_DelAttrString(module, type_name) < 0) {
