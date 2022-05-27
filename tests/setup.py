@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os.path
+import sys
 
 
 TEST_CPP = False
@@ -22,16 +23,19 @@ CFLAGS = COMMON_FLAGS + [
     # mixture of designated and non-designated initializers
     '-std=c99',
 ]
-CPPFLAGS = COMMON_FLAGS + [
-    # no C++ option yet
-]
+CPPFLAGS = list(COMMON_FLAGS)
+if sys.version_info >= (3, 12):
+    CPPFLAGS.extend((
+        '-Wold-style-cast',
+        '-Wzero-as-null-pointer-constant',
+    ))
+
 
 def main():
     try:
         from setuptools import setup, Extension
     except ImportError:
         from distutils.core import setup, Extension
-    import sys
 
     if len(sys.argv) >= 3 and sys.argv[2] == '--build-cppext':
         global TEST_CPP
