@@ -60,14 +60,20 @@ def main():
 
     if TEST_CPP:
         # C++ extension
-        versions = [('test_pythoncapi_compat_cpp11ext', 'c++11')]
+
+        # MSVC has /std flag but doesn't support /std:c++11
         if not MSVC:
-            versions.append(('test_pythoncapi_compat_cpp03ext', 'c++03'))
-        for name, std in versions:
+            versions = [
+                ('test_pythoncapi_compat_cpp03ext', '-std=c++03'),
+                ('test_pythoncapi_compat_cpp11ext', '-std=c++11'),
+            ]
+        else:
+            versions = [
+                ('test_pythoncapi_compat_cpp11ext', '/std:c++14'),
+            ]
+        for name, flag in versions:
             flags = list(cppflags)
-            # MSVC has /std flag but doesn't support /std:c++11
-            if not MSVC:
-                flags.append('-std=' + std)
+            flags.append(flag)
             cpp_ext = Extension(
                 name,
                 sources=['test_pythoncapi_compat_cppext.cpp'],

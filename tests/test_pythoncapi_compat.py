@@ -34,8 +34,14 @@ if 0x30b0000 <= sys.hexversion <= 0x30b00b3:
     TEST_CPP = False
 # test_pythoncapi_compat_cpp03ext is not built with MSVC
 TEST_CPP03 = (not MSVC)
-if not TEST_CPP:
-    TEST_CPP03 = False
+
+TESTS = [("test_pythoncapi_compat_cext", "C")]
+if TEST_CPP:
+    if TEST_CPP03:
+        TESTS.append(("test_pythoncapi_compat_cpp03ext", "C++03"))
+    TESTS.append(("test_pythoncapi_compat_cpp11ext", "C++11"))
+
+
 VERBOSE = False
 
 
@@ -174,11 +180,8 @@ def main():
 
     build_ext()
 
-    run_tests("test_pythoncapi_compat_cext", "C")
-    if TEST_CPP:
-        if TEST_CPP03:
-            run_tests("test_pythoncapi_compat_cpp03ext", "C++03")
-        run_tests("test_pythoncapi_compat_cpp11ext", "C++11")
+    for module_name, lang in TESTS:
+        run_tests(module_name, lang)
 
 
 if __name__ == "__main__":
