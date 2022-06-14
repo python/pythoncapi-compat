@@ -57,13 +57,19 @@ def main():
     extensions = [c_ext]
 
     if TEST_CPP:
-        # C++ extension
-        cpp_ext = Extension(
-            'test_pythoncapi_compat_cppext',
-            sources=['test_pythoncapi_compat_cppext.cpp'],
-            extra_compile_args=cppflags,
-            language='c++')
-        extensions.append(cpp_ext)
+        for name, std in (
+            ('test_pythoncapi_compat_cpp03ext', 'c++03'),
+            ('test_pythoncapi_compat_cpp11ext', 'c++11'),
+        ):
+            # C++ extension
+            flags = list(cppflags)
+            flags.append('-std=' + std)
+            cpp_ext = Extension(
+                name,
+                sources=['test_pythoncapi_compat_cppext.cpp'],
+                extra_compile_args=flags,
+                language='c++')
+            extensions.append(cpp_ext)
 
     setup(name="test_pythoncapi_compat",
           ext_modules=extensions)

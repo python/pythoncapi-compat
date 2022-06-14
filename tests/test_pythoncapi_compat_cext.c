@@ -11,13 +11,20 @@
 #  define PYTHON3 1
 #endif
 
-#ifdef __cplusplus
-#  define MODULE_NAME test_pythoncapi_compat_cppext
-#  define MODULE_NAME_STR "test_pythoncapi_compat_cppext"
+#if defined(__cplusplus) && __cplusplus >= 201103
+#  define MODULE_NAME test_pythoncapi_compat_cpp11ext
+#elif defined(__cplusplus)
+#  define MODULE_NAME test_pythoncapi_compat_cpp03ext
 #else
 #  define MODULE_NAME test_pythoncapi_compat_cext
-#  define MODULE_NAME_STR "test_pythoncapi_compat_cext"
 #endif
+
+#define _STR(NAME) #NAME
+#define STR(NAME) _STR(NAME)
+#define _CONCAT(a, b) a ## b
+#define CONCAT(a, b) _CONCAT(a, b)
+
+#define MODULE_NAME_STR STR(MODULE_NAME)
 
 // Ignore reference count checks on PyPy
 #if !defined(PYPY_VERSION)
@@ -29,8 +36,6 @@
 #else
 #  define ASSERT_REFCNT(expr)
 #endif
-
-#define CONCAT(a, b) a ## b
 
 static PyObject *
 test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
@@ -539,6 +544,15 @@ test_api_casts(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(strong_ref);
 #endif
 
+    // gh-93442: Pass 0 as NULL for PyObject*
+    Py_XINCREF(0);
+    Py_XDECREF(0);
+#if _cplusplus >= 201103
+    // Test nullptr passed as PyObject*
+    Py_XINCREF(nullptr);
+    Py_XDECREF(nullptr);
+#endif
+
     Py_DECREF(obj);
     Py_RETURN_NONE;
 }
@@ -584,8 +598,7 @@ static struct PyModuleDef module = {
 };
 
 
-#define _INIT_FUNC(name) CONCAT(PyInit_, name)
-#define INIT_FUNC _INIT_FUNC(MODULE_NAME)
+#define INIT_FUNC CONCAT(PyInit_, MODULE_NAME)
 
 #if PY_VERSION_HEX >= 0x03050000
 PyMODINIT_FUNC
@@ -605,8 +618,7 @@ INIT_FUNC(void)
 #else
 // Python 2
 
-#define _INIT_FUNC(name) CONCAT(init, name)
-#define INIT_FUNC _INIT_FUNC(MODULE_NAME)
+#define INIT_FUNC CONCAT(init, MODULE_NAME)
 
 PyMODINIT_FUNC
 INIT_FUNC(void)

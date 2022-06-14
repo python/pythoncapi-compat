@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2022-06-14: Fix compatibility with C++ older than C++11.
 * 2022-05-03: Add ``PyCode_GetCode()`` function.
 * 2022-04-26: Rename the project from ``pythoncapi_compat`` to
   ``pythoncapi-compat``: replace the underscore separator with a dash.

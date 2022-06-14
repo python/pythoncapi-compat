@@ -98,11 +98,7 @@ def _check_refleak(test_func, verbose):
             raise AssertionError("refcnt leak, diff: %s" % diff)
 
 
-def run_tests(module_name):
-    if "cppext" in module_name:
-        lang = "C++"
-    else:
-        lang = "C"
+def run_tests(module_name, lang):
     title = "Test %s (%s)" % (module_name, lang)
     display_title(title)
 
@@ -150,9 +146,9 @@ def main():
     VERBOSE = ("-v" in sys.argv[1:] or "--verbose" in sys.argv[1:])
 
     # Implementing PyFrame_GetLocals() and PyCode_GetCode() require the
-    # internal C API in Python 3.11 alpha versions. Skip also Python 3.11b1
+    # internal C API in Python 3.11 alpha versions. Skip also Python 3.11b3
     # which has issues with C++ casts: _Py_CAST() macro.
-    if 0x30b0000 <= sys.hexversion <= 0x30b00b1:
+    if 0x30b0000 <= sys.hexversion <= 0x30b00b3:
         version = sys.version.split()[0]
         print("SKIP TESTS: Python %s is not supported" % version)
         return
@@ -166,9 +162,10 @@ def main():
 
     build_ext()
 
-    run_tests("test_pythoncapi_compat_cext")
+    run_tests("test_pythoncapi_compat_cext", "C")
     if TEST_CPP:
-        run_tests("test_pythoncapi_compat_cppext")
+        run_tests("test_pythoncapi_compat_cpp03ext", "C++03")
+        run_tests("test_pythoncapi_compat_cpp11ext", "C++11")
 
 
 if __name__ == "__main__":
