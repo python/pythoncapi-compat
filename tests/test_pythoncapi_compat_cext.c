@@ -607,7 +607,7 @@ static PyModuleDef_Slot module_slots[] = {
 
 
 #ifdef PYTHON3
-static struct PyModuleDef module = {
+static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,
     MODULE_NAME_STR,     // m_name
     _Py_NULL,            // m_doc
@@ -630,14 +630,14 @@ static struct PyModuleDef module = {
 PyMODINIT_FUNC
 INIT_FUNC(void)
 {
-    return PyModuleDef_Init(&module);
+    return PyModuleDef_Init(&module_def);
 }
 #else
 // Python 3.4
 PyMODINIT_FUNC
 INIT_FUNC(void)
 {
-    PyObject *module = PyModule_Create(&module);
+    PyObject *module = PyModule_Create(&module_def);
     if (module == NULL) {
         return NULL;
     }
