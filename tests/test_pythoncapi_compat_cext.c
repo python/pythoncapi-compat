@@ -580,6 +580,32 @@ static struct PyMethodDef methods[] = {
 };
 
 
+#ifdef __cplusplus
+static int
+module_exec(PyObject *module)
+{
+    if (PyModule_AddIntMacro(module, __cplusplus)) {
+        return -1;
+    }
+    return 0;
+}
+#else
+static int
+module_exec(PyObject *Py_UNUSED(module))
+{
+    return 0;
+}
+#endif
+
+
+#if PY_VERSION_HEX >= 0x03050000
+static PyModuleDef_Slot module_slots[] = {
+    {Py_mod_exec, _Py_CAST(void*, module_exec)},
+    {0, _Py_NULL}
+};
+#endif
+
+
 #ifdef PYTHON3
 static struct PyModuleDef module = {
     PyModuleDef_HEAD_INIT,
@@ -588,13 +614,13 @@ static struct PyModuleDef module = {
     0,                   // m_doc
     methods,             // m_methods
 #if PY_VERSION_HEX >= 0x03050000
-    _Py_NULL,           // m_slots
+    module_slots,        // m_slots
 #else
-    _Py_NULL,           // m_reload
+    _Py_NULL,            // m_reload
 #endif
-    _Py_NULL,           // m_traverse
-    _Py_NULL,           // m_clear
-    _Py_NULL,           // m_free
+    _Py_NULL,            // m_traverse
+    _Py_NULL,            // m_clear
+    _Py_NULL,            // m_free
 };
 
 
@@ -611,7 +637,15 @@ INIT_FUNC(void)
 PyMODINIT_FUNC
 INIT_FUNC(void)
 {
-    return PyModule_Create(&module);
+    PyObject *module = PyModule_Create(&module);
+    if (module == NULL) {
+        return NULL;
+    }
+    if (module_exec(module) < 0) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    return module;
 }
 #endif
 
@@ -623,10 +657,18 @@ INIT_FUNC(void)
 PyMODINIT_FUNC
 INIT_FUNC(void)
 {
-    Py_InitModule4(MODULE_NAME_STR,
-                   methods,
-                   _Py_NULL,
-                   _Py_NULL,
-                   PYTHON_API_VERSION);
+    PyObject *module;
+    module = Py_InitModule4(MODULE_NAME_STR,
+                            methods,
+                            _Py_NULL,
+                            _Py_NULL,
+                            PYTHON_API_VERSION);
+    if (module == NULL) {
+        return;
+    }
+
+    if (module_exec(module) < 0) {
+        return;
+    }
 }
 #endif

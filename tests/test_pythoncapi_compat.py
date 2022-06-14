@@ -114,6 +114,8 @@ def run_tests(module_name, lang):
     display_title(title)
 
     testmod = import_tests(module_name)
+    if VERBOSE and hasattr(testmod, "__cplusplus"):
+        print("__cplusplus: %s" % testmod.__cplusplus)
 
     check_refleak = hasattr(sys, 'gettotalrefcount')
 
