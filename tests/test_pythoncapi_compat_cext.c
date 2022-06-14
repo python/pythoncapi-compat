@@ -11,13 +11,22 @@
 #  define PYTHON3 1
 #endif
 
-#ifdef __cplusplus
+#if defined(_MSC_VER) && defined(__cplusplus)
 #  define MODULE_NAME test_pythoncapi_compat_cppext
-#  define MODULE_NAME_STR "test_pythoncapi_compat_cppext"
+#elif defined(__cplusplus) && __cplusplus >= 201103
+#  define MODULE_NAME test_pythoncapi_compat_cpp11ext
+#elif defined(__cplusplus)
+#  define MODULE_NAME test_pythoncapi_compat_cpp03ext
 #else
 #  define MODULE_NAME test_pythoncapi_compat_cext
-#  define MODULE_NAME_STR "test_pythoncapi_compat_cext"
 #endif
+
+#define _STR(NAME) #NAME
+#define STR(NAME) _STR(NAME)
+#define _CONCAT(a, b) a ## b
+#define CONCAT(a, b) _CONCAT(a, b)
+
+#define MODULE_NAME_STR STR(MODULE_NAME)
 
 // Ignore reference count checks on PyPy
 #if !defined(PYPY_VERSION)
@@ -29,8 +38,6 @@
 #else
 #  define ASSERT_REFCNT(expr)
 #endif
-
-#define CONCAT(a, b) a ## b
 
 static PyObject *
 test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
@@ -539,6 +546,15 @@ test_api_casts(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(strong_ref);
 #endif
 
+    // gh-93442: Pass 0 as NULL for PyObject*
+    Py_XINCREF(0);
+    Py_XDECREF(0);
+#if _cplusplus >= 201103
+    // Test nullptr passed as PyObject*
+    Py_XINCREF(nullptr);
+    Py_XDECREF(nullptr);
+#endif
+
     Py_DECREF(obj);
     Py_RETURN_NONE;
 }
@@ -566,55 +582,95 @@ static struct PyMethodDef methods[] = {
 };
 
 
+#ifdef __cplusplus
+static int
+module_exec(PyObject *module)
+{
+    if (PyModule_AddIntMacro(module, __cplusplus)) {
+        return -1;
+    }
+    return 0;
+}
+#else
+static int
+module_exec(PyObject *Py_UNUSED(module))
+{
+    return 0;
+}
+#endif
+
+
+#if PY_VERSION_HEX >= 0x03050000
+static PyModuleDef_Slot module_slots[] = {
+    {Py_mod_exec, _Py_CAST(void*, module_exec)},
+    {0, _Py_NULL}
+};
+#endif
+
+
 #ifdef PYTHON3
-static struct PyModuleDef module = {
+static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,
     MODULE_NAME_STR,     // m_name
     _Py_NULL,            // m_doc
     0,                   // m_doc
     methods,             // m_methods
 #if PY_VERSION_HEX >= 0x03050000
-    _Py_NULL,           // m_slots
+    module_slots,        // m_slots
 #else
-    _Py_NULL,           // m_reload
+    _Py_NULL,            // m_reload
 #endif
-    _Py_NULL,           // m_traverse
-    _Py_NULL,           // m_clear
-    _Py_NULL,           // m_free
+    _Py_NULL,            // m_traverse
+    _Py_NULL,            // m_clear
+    _Py_NULL,            // m_free
 };
 
 
-#define _INIT_FUNC(name) CONCAT(PyInit_, name)
-#define INIT_FUNC _INIT_FUNC(MODULE_NAME)
+#define INIT_FUNC CONCAT(PyInit_, MODULE_NAME)
 
 #if PY_VERSION_HEX >= 0x03050000
 PyMODINIT_FUNC
 INIT_FUNC(void)
 {
-    return PyModuleDef_Init(&module);
+    return PyModuleDef_Init(&module_def);
 }
 #else
 // Python 3.4
 PyMODINIT_FUNC
 INIT_FUNC(void)
 {
-    return PyModule_Create(&module);
+    PyObject *module = PyModule_Create(&module_def);
+    if (module == NULL) {
+        return NULL;
+    }
+    if (module_exec(module) < 0) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    return module;
 }
 #endif
 
 #else
 // Python 2
 
-#define _INIT_FUNC(name) CONCAT(init, name)
-#define INIT_FUNC _INIT_FUNC(MODULE_NAME)
+#define INIT_FUNC CONCAT(init, MODULE_NAME)
 
 PyMODINIT_FUNC
 INIT_FUNC(void)
 {
-    Py_InitModule4(MODULE_NAME_STR,
-                   methods,
-                   _Py_NULL,
-                   _Py_NULL,
-                   PYTHON_API_VERSION);
+    PyObject *module;
+    module = Py_InitModule4(MODULE_NAME_STR,
+                            methods,
+                            _Py_NULL,
+                            _Py_NULL,
+                            PYTHON_API_VERSION);
+    if (module == NULL) {
+        return;
+    }
+
+    if (module_exec(module) < 0) {
+        return;
+    }
 }
 #endif

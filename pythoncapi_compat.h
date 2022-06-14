@@ -32,39 +32,14 @@ extern "C" {
 #endif
 
 
-// C++ compatibility: _Py_CAST() and _Py_NULL
 #ifndef _Py_CAST
-#  ifdef __cplusplus
-extern "C++" {
-    namespace {
-        template <typename type, typename expr_type>
-            inline type _Py_CAST_impl(expr_type *expr) {
-                return reinterpret_cast<type>(expr);
-            }
-
-        template <typename type, typename expr_type>
-            inline type _Py_CAST_impl(expr_type const *expr) {
-                return reinterpret_cast<type>(const_cast<expr_type *>(expr));
-            }
-
-        template <typename type, typename expr_type>
-            inline type _Py_CAST_impl(expr_type &expr) {
-                return static_cast<type>(expr);
-            }
-
-        template <typename type, typename expr_type>
-            inline type _Py_CAST_impl(expr_type const &expr) {
-                return static_cast<type>(const_cast<expr_type &>(expr));
-            }
-    }
-}
-#    define _Py_CAST(type, expr) _Py_CAST_impl<type>(expr)
-#  else
-#    define _Py_CAST(type, expr) ((type)(expr))
-#  endif
+#  define _Py_CAST(type, expr) ((type)(expr))
 #endif
+
+// On C++11 and newer, _Py_NULL is defined as nullptr on C++11,
+// otherwise it is defined as NULL.
 #ifndef _Py_NULL
-#  ifdef __cplusplus
+#  if defined(__cplusplus) && __cplusplus >= 201103
 #    define _Py_NULL nullptr
 #  else
 #    define _Py_NULL NULL

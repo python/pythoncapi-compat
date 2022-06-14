@@ -23,8 +23,13 @@ except ImportError:
 from utils import run_command, command_stdout
 
 
-# C++ is only supported on Python 3.6 and newer
-TEST_CPP = (sys.version_info >= (3, 6))
+TESTS = [
+    ("test_pythoncapi_compat_cext", "C"),
+    ("test_pythoncapi_compat_cppext", "C++"),
+    ("test_pythoncapi_compat_cpp03ext", "C++03"),
+    ("test_pythoncapi_compat_cpp11ext", "C++11"),
+]
+
 VERBOSE = False
 
 
@@ -42,15 +47,10 @@ def display_title(title):
 
 
 def build_ext():
-    if TEST_CPP:
-        display_title("Build the C and C++ extensions")
-    else:
-        display_title("Build the C extension")
+    display_title("Build test extensions")
     if os.path.exists("build"):
         shutil.rmtree("build")
     cmd = [sys.executable, "setup.py", "build"]
-    if TEST_CPP:
-        cmd.append('--build-cppext')
     if VERBOSE:
         run_command(cmd)
         print()
@@ -98,15 +98,42 @@ def _check_refleak(test_func, verbose):
             raise AssertionError("refcnt leak, diff: %s" % diff)
 
 
-def run_tests(module_name):
-    if "cppext" in module_name:
-        lang = "C++"
+def python_version():
+    ver = sys.version_info
+    build = 'debug' if hasattr(sys, 'gettotalrefcount') else 'release'
+    if hasattr(sys, 'implementation'):
+        python_impl = sys.implementation.name
+        if python_impl == 'cpython':
+            python_impl = 'CPython'
+        elif python_impl == 'pypy':
+            python_impl = 'PyPy'
     else:
-        lang = "C"
+        if "PyPy" in sys.version:
+            python_impl = "PyPy"
+        else:
+            python_impl = 'Python'
+    return "%s %s.%s (%s build)" % (python_impl, ver.major, ver.minor, build)
+
+
+def run_tests(module_name, lang):
     title = "Test %s (%s)" % (module_name, lang)
     display_title(title)
 
-    testmod = import_tests(module_name)
+    try:
+        testmod = import_tests(module_name)
+    except ImportError:
+        # The C extension must always be available
+        if lang == "C":
+            raise
+
+        if VERBOSE:
+            print("%s: skip %s, missing %s extension"
+                  % (python_version(), lang, module_name))
+            print()
+        return
+
+    if VERBOSE and hasattr(testmod, "__cplusplus"):
+        print("__cplusplus: %s" % testmod.__cplusplus)
 
     check_refleak = hasattr(sys, 'gettotalrefcount')
 
@@ -125,21 +152,8 @@ def run_tests(module_name):
     if VERBOSE:
         print()
 
-    ver = sys.version_info
-    build = 'debug' if hasattr(sys, 'gettotalrefcount') else 'release'
     msg = "%s %s tests succeeded!" % (len(tests), lang)
-    if hasattr(sys, 'implementation'):
-        python_impl = sys.implementation.name
-        if python_impl == 'cpython':
-            python_impl = 'CPython'
-        elif python_impl == 'pypy':
-            python_impl = 'PyPy'
-    else:
-        if "PyPy" in sys.version:
-            python_impl = "PyPy"
-        else:
-            python_impl = 'Python'
-    msg = "%s %s.%s (%s build): %s" % (python_impl, ver.major, ver.minor, build, msg)
+    msg = "%s: %s" % (python_version(), msg)
     if check_refleak:
         msg = "%s (no reference leak detected)" % msg
     print(msg)
@@ -150,9 +164,8 @@ def main():
     VERBOSE = ("-v" in sys.argv[1:] or "--verbose" in sys.argv[1:])
 
     # Implementing PyFrame_GetLocals() and PyCode_GetCode() require the
-    # internal C API in Python 3.11 alpha versions. Skip also Python 3.11b1
-    # which has issues with C++ casts: _Py_CAST() macro.
-    if 0x30b0000 <= sys.hexversion <= 0x30b00b1:
+    # internal C API in Python 3.11 alpha versions.
+    if 0x30b0000 <= sys.hexversion < 0x30b00b1:
         version = sys.version.split()[0]
         print("SKIP TESTS: Python %s is not supported" % version)
         return
@@ -166,9 +179,8 @@ def main():
 
     build_ext()
 
-    run_tests("test_pythoncapi_compat_cext")
-    if TEST_CPP:
-        run_tests("test_pythoncapi_compat_cppext")
+    for module_name, lang in TESTS:
+        run_tests(module_name, lang)
 
 
 if __name__ == "__main__":
