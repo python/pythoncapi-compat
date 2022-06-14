@@ -23,12 +23,19 @@ except ImportError:
 from utils import run_command, command_stdout
 
 
+# Windows uses MSVC compiler
+MSVC = (os.name == "nt")
+
 # C++ is only supported on Python 3.6 and newer
 TEST_CPP = (sys.version_info >= (3, 6))
 if 0x30b0000 <= sys.hexversion <= 0x30b00b3:
     # Don't test C++ on Python 3.11b1 - 3.11b3: these versions have C++
     # compatibility issues.
     TEST_CPP = False
+# test_pythoncapi_compat_cpp03ext is not built with MSVC
+TEST_CPP03 = (not MSVC)
+if not TEST_CPP:
+    TEST_CPP03 = False
 VERBOSE = False
 
 
@@ -167,7 +174,8 @@ def main():
 
     run_tests("test_pythoncapi_compat_cext", "C")
     if TEST_CPP:
-        run_tests("test_pythoncapi_compat_cpp03ext", "C++03")
+        if TEST_CPP03:
+            run_tests("test_pythoncapi_compat_cpp03ext", "C++03")
         run_tests("test_pythoncapi_compat_cpp11ext", "C++11")
 
 

@@ -6,6 +6,9 @@ import sys
 TEST_CPP = False
 SRC_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 
+# Windows uses MSVC compiler
+MSVC = (os.name == "nt")
+
 # C compiler flags for GCC and clang
 COMMON_FLAGS = [
     # Treat warnings as error
@@ -44,8 +47,7 @@ def main():
 
     cflags = ['-I' + SRC_DIR]
     cppflags = list(cflags)
-    # Windows uses MSVC compiler
-    if os.name != "nt":
+    if not MSVC:
         cflags.extend(CFLAGS)
         cppflags.extend(CPPFLAGS)
 
@@ -57,13 +59,15 @@ def main():
     extensions = [c_ext]
 
     if TEST_CPP:
-        for name, std in (
-            ('test_pythoncapi_compat_cpp03ext', 'c++03'),
-            ('test_pythoncapi_compat_cpp11ext', 'c++11'),
-        ):
-            # C++ extension
+        # C++ extension
+        versions = [('test_pythoncapi_compat_cpp11ext', 'c++11')]
+        if not MSVC:
+            versions.append(('test_pythoncapi_compat_cpp03ext', 'c++03'))
+        for name, std in versions:
             flags = list(cppflags)
-            flags.append('-std=' + std)
+            # MSVC has /std flag but doesn't support /std:c++11
+            if not MSVC:
+                flags.append('-std=' + std)
             cpp_ext = Extension(
                 name,
                 sources=['test_pythoncapi_compat_cppext.cpp'],
