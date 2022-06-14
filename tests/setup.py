@@ -70,7 +70,7 @@ def main():
             ]
         else:
             versions = [
-                ('test_pythoncapi_compat_cpp03ext', None),
+                ('test_pythoncapi_compat_cppext', None),
                 ('test_pythoncapi_compat_cpp11ext', '/std:c++14'),
             ]
         for name, flag in versions:

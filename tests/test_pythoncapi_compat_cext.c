@@ -11,7 +11,9 @@
 #  define PYTHON3 1
 #endif
 
-#if defined(__cplusplus) && __cplusplus >= 201103
+#if defined(_MSC_VER) && defined(__cplusplus)
+#  define MODULE_NAME test_pythoncapi_compat_cppext
+#elif defined(__cplusplus) && __cplusplus >= 201103
 #  define MODULE_NAME test_pythoncapi_compat_cpp11ext
 #elif defined(__cplusplus)
 #  define MODULE_NAME test_pythoncapi_compat_cpp03ext

@@ -25,6 +25,7 @@ from utils import run_command, command_stdout
 
 TESTS = [
     ("test_pythoncapi_compat_cext", "C"),
+    ("test_pythoncapi_compat_cppext", "C++"),
     ("test_pythoncapi_compat_cpp03ext", "C++03"),
     ("test_pythoncapi_compat_cpp11ext", "C++11"),
 ]
@@ -121,9 +122,13 @@ def run_tests(module_name, lang):
     try:
         testmod = import_tests(module_name)
     except ImportError:
-        print("%s: skip %s, missing %s extension"
-              % (python_version(), lang, module_name))
+        # The C extension must always be available
+        if lang == "C":
+            raise
+
         if VERBOSE:
+            print("%s: skip %s, missing %s extension"
+                  % (python_version(), lang, module_name))
             print()
         return
 
