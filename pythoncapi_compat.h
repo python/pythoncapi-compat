@@ -32,12 +32,14 @@ extern "C" {
 #endif
 
 
-// C++ compatibility: _Py_CAST() and _Py_NULL
 #ifndef _Py_CAST
 #  define _Py_CAST(type, expr) ((type)(expr))
 #endif
+
+// On C++11 and newer, _Py_NULL is defined as nullptr on C++11,
+// otherwise it is defined as NULL.
 #ifndef _Py_NULL
-#  ifdef __cplusplus
+#  if defined(__cplusplus) && __cplusplus >= 201103
 #    define _Py_NULL nullptr
 #  else
 #    define _Py_NULL NULL
