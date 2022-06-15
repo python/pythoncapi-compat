@@ -89,6 +89,7 @@ def _check_refleak(test_func, verbose):
             if i > 1:
                 print()
             print("Run %s/%s:" % (i, nrun))
+            sys.stdout.flush()
 
         init_refcnt = sys.gettotalrefcount()
         test_func()
