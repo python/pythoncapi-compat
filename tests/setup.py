@@ -33,7 +33,9 @@ CFLAGS = COMMON_FLAGS + [
     '-std=c99',
 ]
 CPPFLAGS = list(COMMON_FLAGS)
-if sys.version_info >= (3, 12):
+# FIXME: _Py_CAST() emits C++ compilers on Python 3.12.
+# See: https://github.com/python/cpython/issues/94731
+if 0:
     CPPFLAGS.extend((
         '-Wold-style-cast',
         '-Wzero-as-null-pointer-constant',

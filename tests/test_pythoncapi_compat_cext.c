@@ -479,10 +479,40 @@ test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     }
     PyCodeObject *code = PyFrame_GetCode(frame);
 
-    PyObject *co_code = PyCode_GetCode(code);
-    assert(co_code != _Py_NULL);
-    assert(PyBytes_Check(co_code));
-    Py_DECREF(co_code);
+    // PyCode_GetCode()
+    {
+        PyObject *co_code = PyCode_GetCode(code);
+        assert(co_code != _Py_NULL);
+        assert(PyBytes_Check(co_code));
+        Py_DECREF(co_code);
+    }
+
+    // PyCode_GetVarnames
+    {
+        PyObject *co_varnames = PyCode_GetVarnames(code);
+        assert(co_varnames != NULL);
+        assert(PyTuple_CheckExact(co_varnames));
+        assert(PyTuple_GET_SIZE(co_varnames) != 0);
+        Py_DECREF(co_varnames);
+    }
+
+    // PyCode_GetCellvars
+    {
+        PyObject *co_cellvars = PyCode_GetCellvars(code);
+        assert(co_cellvars != NULL);
+        assert(PyTuple_CheckExact(co_cellvars));
+        assert(PyTuple_GET_SIZE(co_cellvars) == 0);
+        Py_DECREF(co_cellvars);
+    }
+
+    // PyCode_GetFreevars
+    {
+        PyObject *co_freevars = PyCode_GetFreevars(code);
+        assert(co_freevars != NULL);
+        assert(PyTuple_CheckExact(co_freevars));
+        assert(PyTuple_GET_SIZE(co_freevars) == 0);
+        Py_DECREF(co_freevars);
+    }
 
     Py_DECREF(code);
     Py_DECREF(frame);

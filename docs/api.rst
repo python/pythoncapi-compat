@@ -27,9 +27,27 @@ Latest version of the header file:
 Python 3.11
 -----------
 
+.. c:function:: PyObject* PyCode_GetCellvars(PyCodeObject *code)
+
+   See `PyCode_GetCellvars() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetCellvars>`__.
+
+   Not available on PyPy.
+
 .. c:function:: PyObject* PyCode_GetCode(PyCodeObject *code)
 
    See `PyCode_GetCode() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetCode>`__.
+
+   Not available on PyPy.
+
+.. c:function:: PyObject* PyCode_GetFreevars(PyCodeObject *code)
+
+   See `PyCode_GetFreevars() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetFreevars>`__.
+
+   Not available on PyPy.
+
+.. c:function:: PyObject* PyCode_GetVarnames(PyCodeObject *code)
+
+   See `PyCode_GetVarnames() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetVarnames>`__.
 
    Not available on PyPy.
 
