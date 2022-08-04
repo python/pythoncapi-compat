@@ -478,6 +478,34 @@ PyCode_GetCode(PyCodeObject *code)
 #endif
 
 
+// gh-95008 added PyCode_GetVarnames() to Python 3.11.0rc1
+#if PY_VERSION_HEX < 0x030B00C1 && !defined(PYPY_VERSION)
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
+PyCode_GetVarnames(PyCodeObject *code)
+{
+    return Py_NewRef(code->co_varnames);
+}
+#endif
+
+// gh-95008 added PyCode_GetFreevars() to Python 3.11.0rc1
+#if PY_VERSION_HEX < 0x030B00C1 && !defined(PYPY_VERSION)
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
+PyCode_GetFreevars(PyCodeObject *code)
+{
+    return Py_NewRef(code->co_freevars);
+}
+#endif
+
+// gh-95008 added PyCode_GetCellvars() to Python 3.11.0rc1
+#if PY_VERSION_HEX < 0x030B00C1 && !defined(PYPY_VERSION)
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
+PyCode_GetCellvars(PyCodeObject *code)
+{
+    return Py_NewRef(code->co_cellvars);
+}
+#endif
+
+
 // Py_UNUSED() was added to Python 3.4.0b2.
 #if PY_VERSION_HEX < 0x030400B2 && !defined(Py_UNUSED)
 #  if defined(__GNUC__) || defined(__clang__)
