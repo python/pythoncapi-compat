@@ -428,6 +428,15 @@ _Py_IS_TYPE(PyObject *ob, PyTypeObject *type) {
 #define Py_IS_TYPE(ob, type) _Py_IS_TYPE(_PyObject_CAST(ob), type)
 #endif
 
+// bpo-39481 added Py_GenericAlias to Python 3.9.0a6.
+#if PY_VERSION_HEX < 0x030900A6 && !defined(Py_GenericAlias)
+PYCAPI_COMPAT_STATIC_INLINE(PyObject *)
+Py_GenericAlias(PyObject *type, PyObject *item)
+{
+    Py_INCREF(type);
+    return type;
+}
+#endif
 
 // bpo-46906 added PyFloat_Pack2() and PyFloat_Unpack2() to Python 3.11a7.
 // bpo-11734 added _PyFloat_Pack2() and _PyFloat_Unpack2() to Python 3.6.0b1.
