@@ -242,6 +242,57 @@ PyFrame_GetLasti(PyFrameObject *frame)
 #endif
 
 
+// gh-91248 added PyFrame_GetVar() to Python 3.12.0a2
+#if PY_VERSION_HEX < 0x030C00A2 && !defined(PYPY_VERSION)
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
+PyFrame_GetVar(PyFrameObject *frame, PyObject *name)
+{
+    PyObject *locals, *value;
+
+    locals = PyFrame_GetLocals(frame);
+    if (locals == NULL) {
+        return NULL;
+    }
+#if PY_VERSION_HEX >= 0x03000000
+    value = PyDict_GetItemWithError(locals, name);
+#else
+    value = PyDict_GetItem(locals, name);
+#endif
+    Py_DECREF(locals);
+
+    if (value == NULL) {
+        if (PyErr_Occurred()) {
+            return NULL;
+        }
+#if PY_VERSION_HEX >= 0x03000000
+        PyErr_Format(PyExc_NameError, "variable %R does not exist", name);
+#else
+        PyErr_SetString(PyExc_NameError, "variable does not exist");
+#endif
+        return NULL;
+    }
+    return Py_NewRef(value);
+}
+#endif
+
+
+// gh-91248 added PyFrame_GetVarString() to Python 3.12.0a2
+#if PY_VERSION_HEX < 0x030C00A2 && !defined(PYPY_VERSION)
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
+PyFrame_GetVarString(PyFrameObject *frame, const char *name)
+{
+    PyObject *name_obj, *value;
+    name_obj = PyUnicode_FromString(name);
+    if (name_obj == NULL) {
+        return NULL;
+    }
+    value = PyFrame_GetVar(frame, name_obj);
+    Py_DECREF(name_obj);
+    return value;
+}
+#endif
+
+
 // bpo-39947 added PyThreadState_GetInterpreter() to Python 3.9.0a5
 #if PY_VERSION_HEX < 0x030900A5
 PYCAPI_COMPAT_STATIC_INLINE(PyInterpreterState *)

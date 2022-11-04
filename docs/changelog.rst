@@ -1,6 +1,8 @@
 Changelog
 =========
 
+* 2022-11-04: Add ``PyFrame_GetVar()`` and ``PyFrame_GetVarString()``
+  functions.
 * 2022-08-04: Add ``PyCode_GetVarnames()``, ``PyCode_GetFreevars()``
   and ``PyCode_GetCellvars()`` functions.
 * 2022-06-14: Fix compatibility with C++ older than C++11.
