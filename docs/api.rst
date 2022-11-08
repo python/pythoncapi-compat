@@ -24,6 +24,22 @@ Latest version of the header file:
 `pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/master/pythoncapi_compat.h>`_.
 
 
+Python 3.12
+-----------
+
+.. c:function:: PyObject* PyFrame_GetVar(PyFrameObject *frame, PyObject *name)
+
+   See `PyFrame_GetVar() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetVar>`__.
+
+   Not available on PyPy.
+
+.. c:function:: PyObject* PyFrame_GetVarString(PyFrameObject *frame, const char *name)
+
+   See `PyFrame_GetVarString() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetVarString>`__.
+
+   Not available on PyPy.
+
+
 Python 3.11
 -----------
 

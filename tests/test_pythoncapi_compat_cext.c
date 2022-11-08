@@ -3,6 +3,10 @@
 
 #include "pythoncapi_compat.h"
 
+#ifdef NDEBUG
+#  error "assertions must be enabled"
+#endif
+
 #ifdef Py_LIMITED_API
 #  error "Py_LIMITED_API is not supported"
 #endif
@@ -138,6 +142,41 @@ test_py_is(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
 
 #if !defined(PYPY_VERSION)
+static void
+test_frame_getvar(PyFrameObject *frame)
+{
+    // Make the assumption that test_frame_getvar() is only called by
+    // _run_tests() of test_pythoncapi_compat.py and so that the "name"
+    // variable exists.
+
+    // test PyFrame_GetVar() and PyFrame_GetVarString()
+    PyObject *attr = PyUnicode_FromString("name");
+    assert(attr != NULL);
+    PyObject *name1 = PyFrame_GetVar(frame, attr);
+    Py_DECREF(attr);
+    assert(name1 != NULL);
+    Py_DECREF(name1);
+
+    PyObject *name2 = PyFrame_GetVarString(frame, "name");
+    assert(name2 != NULL);
+    Py_DECREF(name2);
+
+    // test PyFrame_GetVar() and PyFrame_GetVarString() NameError
+    PyObject *attr3 = PyUnicode_FromString("dontexist");
+    assert(attr3 != NULL);
+    PyObject *name3 = PyFrame_GetVar(frame, attr3);
+    Py_DECREF(attr3);
+    assert(name3 == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_NameError));
+    PyErr_Clear();
+
+    PyObject *name4 = PyFrame_GetVarString(frame, "dontexist");
+    assert(name4 == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_NameError));
+    PyErr_Clear();
+}
+
+
 static PyObject *
 test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -214,6 +253,10 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     int lasti = PyFrame_GetLasti(frame);
     assert(lasti >= 0);
 
+    // test PyFrame_GetVar() and PyFrame_GetVarString()
+    test_frame_getvar(frame);
+
+    // done
     Py_DECREF(frame);
     Py_RETURN_NONE;
 }
