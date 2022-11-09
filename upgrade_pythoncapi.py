@@ -7,7 +7,6 @@ import sys
 
 
 FORCE_NEWREF = False
-FORCE_STEALREF = False
 
 
 PYTHONCAPI_COMPAT_URL = ('https://raw.githubusercontent.com/python/'
@@ -25,9 +24,18 @@ C_FILE_EXT = (
 IGNORE_DIRS = (".git", ".tox")
 
 
-# Match a C identifier: 'identifier', 'var_3', 'NameCamelCase'
+# Match spaces but not newline characters.
+# Similar to \s but exclude newline characters and only look for ASCII spaces
+SPACE_REGEX = r'[ \t\f\v]'
+# Match the end of a line: newline characters of a single line
+NEWLINE_REGEX = r'(?:\n|\r|\r\n)'
+# Match the indentation at the beginning of a line
+INDENTATION_REGEX = fr'^{SPACE_REGEX}*'
+
+
+# Match a C identifier: 'identifier', 'var_3', 'NameCamelCase', '_var'
 # Use \b to only match a full word: match "a_b", but not just "b" in "a_b".
-ID_REGEX = r'\b[a-zA-Z][a-zA-Z0-9_]*\b'
+ID_REGEX = r'\b[a-zA-Z_][a-zA-Z0-9_]*\b'
 # Match 'array[3]'
 SUBEXPR_REGEX = fr'{ID_REGEX}(?:\[[^]]+\])*'
 # Match a C expression like "frame", "frame.attr", "obj->attr" or "*obj".
@@ -35,6 +43,10 @@ SUBEXPR_REGEX = fr'{ID_REGEX}(?:\[[^]]+\])*'
 EXPR_REGEX = (fr"\*?"  # "*" prefix
               fr"{SUBEXPR_REGEX}"  # "var"
               fr"(?:(?:->|\.){SUBEXPR_REGEX})*")  # "->attr" or ".attr"
+
+
+def same_indentation(group):
+    return fr'{SPACE_REGEX}*(?:{NEWLINE_REGEX}{group})?'
 
 
 def get_member_regex_str(member):
@@ -229,8 +241,16 @@ class PyThreadState_GetFrame(Operation):
 class Py_INCREF_return(Operation):
     NAME = "Py_INCREF_return"
     REPLACE = (
-        (re.compile(r'Py_INCREF\((%s)\);\s*return \1;' % ID_REGEX),
-         r'return Py_NewRef(\1);'),
+        # "Py_INCREF(x); return x;" => "return Py_NewRef(x);"
+        # "Py_XINCREF(x); return x;" => "return Py_XNewRef(x);"
+        # The two statements must be at the same indentation, otherwise the
+        # regex does not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'Py_(X?)INCREF\(({EXPR_REGEX})\)\s*;'
+                    + same_indentation(r'\1')
+                    + r'return \3;',
+                    re.MULTILINE),
+         r'\1return Py_\2NewRef(\3);'),
     )
     # Need Py_NewRef(): new in Python 3.10
     NEED_PYTHONCAPI_COMPAT = True
@@ -239,43 +259,25 @@ class Py_INCREF_return(Operation):
 class Py_INCREF_assign(Operation):
     NAME = "Py_INCREF_assign"
     REPLACE = (
-        (re.compile(r'Py_INCREF\((%s)\);\s*' % ID_REGEX
-                    + assign_regex_str(r'(%s)' % EXPR_REGEX, r'\1')),
-         r'\2 = Py_NewRef(\1);'),
+        # "y = x; Py_INCREF(x);" => "y = Py_NewRef(x);"
+        # "y = x; Py_INCREF(y);" => "y = Py_NewRef(x);"
+        # "y = x; Py_XINCREF(x);" => "y = Py_XNewRef(x);"
+        # "y = x; Py_XINCREF(y);" => "y = Py_XNewRef(x);"
+        # The two statements must have the same indentation, otherwise the
+        # regex does not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + assign_regex_str(r'(%s)' % EXPR_REGEX, r'(%s)' % EXPR_REGEX)
+                    + same_indentation(r'\1')
+                    + r'Py_(X?)INCREF\((?:\2|\3)\);',
+                    re.MULTILINE),
+         r'\1\2 = Py_\4NewRef(\3);'),
+        # "Py_INCREF(x); y = x;" => "y = Py_NewRef(x)"
+        # "Py_XINCREF(x); y = x;" => "y = Py_XNewRef(x)"
+        (re.compile(r'Py_(X?)INCREF\((%s)\);\s*' % EXPR_REGEX
+                    + assign_regex_str(r'(%s)' % EXPR_REGEX, r'\2')),
+         r'\3 = Py_\1NewRef(\2);'),
     )
     # Need Py_NewRef(): new in Python 3.10
-    NEED_PYTHONCAPI_COMPAT = True
-
-
-class Py_DECREF_return(Operation):
-    NAME = "Py_DECREF_return"
-    REPLACE = (
-        (re.compile(r'Py_DECREF\((%s)\);\s*return \1;' % ID_REGEX),
-         r'return _Py_StealRef(\1);'),
-    )
-    # Need _Py_StealRef(): new in Python 3.10
-    NEED_PYTHONCAPI_COMPAT = True
-
-
-class Py_DECREF_assign(Operation):
-    NAME = "Py_DECREF_assign"
-
-    def replace2(regs):
-        x = regs.group(1)
-        y = regs.group(2)
-        if y == 'NULL':
-            return regs.group(0)
-        return f'{x} = _Py_StealRef({y});'
-
-    REPLACE = (
-        (re.compile(r'Py_DECREF\((%s)\);\s*' % ID_REGEX
-                    + assign_regex_str(r'(%s)' % EXPR_REGEX, r'\1')),
-         r'\2 = _Py_StealRef(\1);'),
-        (re.compile(assign_regex_str(r'(%s)' % EXPR_REGEX, r'(%s)' % ID_REGEX)
-                    + r"\s*Py_DECREF\((?:\1|\2)\);"),
-         replace2),
-    )
-    # Need Py_Borrowef(): new in Python 3.10
     NEED_PYTHONCAPI_COMPAT = True
 
 
@@ -328,11 +330,6 @@ if FORCE_NEWREF:
     OPERATIONS.extend((
         Py_INCREF_return,
         Py_INCREF_assign,
-    ))
-if FORCE_STEALREF:
-    OPERATIONS.extend((
-        Py_DECREF_return,
-        Py_DECREF_assign,
     ))
 
 
