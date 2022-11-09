@@ -145,7 +145,7 @@ _Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
 
 
 // bpo-40421 added PyFrame_GetCode() to Python 3.9.0b1
-#if PY_VERSION_HEX < 0x030900B1
+#if PY_VERSION_HEX < 0x030900B1 || defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(PyCodeObject*)
 PyFrame_GetCode(PyFrameObject *frame)
 {
@@ -294,7 +294,7 @@ PyFrame_GetVarString(PyFrameObject *frame, const char *name)
 
 
 // bpo-39947 added PyThreadState_GetInterpreter() to Python 3.9.0a5
-#if PY_VERSION_HEX < 0x030900A5
+#if PY_VERSION_HEX < 0x030900A5 || defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(PyInterpreterState *)
 PyThreadState_GetInterpreter(PyThreadState *tstate)
 {
@@ -326,7 +326,7 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 
 
 // bpo-39947 added PyInterpreterState_Get() to Python 3.9.0a5
-#if PY_VERSION_HEX < 0x030900A5
+#if PY_VERSION_HEX < 0x030900A5 || defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(PyInterpreterState*)
 PyInterpreterState_Get(void)
 {
@@ -388,7 +388,7 @@ PyThreadState_LeaveTracing(PyThreadState *tstate)
 
 
 // bpo-37194 added PyObject_CallNoArgs() to Python 3.9.0a1
-#if PY_VERSION_HEX < 0x030900A1
+#if PY_VERSION_HEX < 0x030900A1 || defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyObject_CallNoArgs(PyObject *func)
 {
@@ -399,7 +399,7 @@ PyObject_CallNoArgs(PyObject *func)
 
 // bpo-39245 made PyObject_CallOneArg() public (previously called
 // _PyObject_CallOneArg) in Python 3.9.0a4
-#if PY_VERSION_HEX < 0x030900A4
+#if PY_VERSION_HEX < 0x030900A4 || defined(PYPY_VERSION)
 PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyObject_CallOneArg(PyObject *func, PyObject *arg)
 {
