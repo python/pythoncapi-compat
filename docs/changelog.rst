@@ -1,6 +1,8 @@
 Changelog
 =========
 
+* 2022-11-09: Fix ``Py_SETREF()`` and ``Py_XSETREF()`` macros
+  for `gh-98724 <https://github.com/python/cpython/issues/98724>`_.
 * 2022-11-04: Add ``PyFrame_GetVar()`` and ``PyFrame_GetVarString()``
   functions.
 * 2022-08-04: Add ``PyCode_GetVarnames()``, ``PyCode_GetFreevars()``
