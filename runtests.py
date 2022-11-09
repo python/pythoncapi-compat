@@ -47,6 +47,8 @@ PYTHONS = (
     "pypy3",
     "pypy3.6",
     "pypy3.7",
+    "pypy3.8",
+    "pypy3.9",
 )
 
 
