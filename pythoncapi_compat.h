@@ -90,18 +90,20 @@ _Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
 // Py_SETREF() and Py_XSETREF() were added to Python 3.5.2.
 // It is excluded from the limited C API.
 #if (PY_VERSION_HEX < 0x03050200 && !defined(Py_SETREF)) && !defined(Py_LIMITED_API)
-#define Py_SETREF(op, op2)                      \
-    do {                                        \
-        PyObject *_py_tmp = _PyObject_CAST(op); \
-        (op) = (op2);                           \
-        Py_DECREF(_py_tmp);                     \
+#define Py_SETREF(dst, src)                                     \
+    do {                                                        \
+        PyObject **_tmp_dst_ptr = _Py_CAST(PyObject**, &(dst)); \
+        PyObject *_tmp_dst = (*_tmp_dst_ptr);                   \
+        *_tmp_dst_ptr = _PyObject_CAST(src);                    \
+        Py_DECREF(_tmp_dst);                                    \
     } while (0)
 
-#define Py_XSETREF(op, op2)                     \
-    do {                                        \
-        PyObject *_py_tmp = _PyObject_CAST(op); \
-        (op) = (op2);                           \
-        Py_XDECREF(_py_tmp);                    \
+#define Py_XSETREF(dst, src)                                    \
+    do {                                                        \
+        PyObject **_tmp_dst_ptr = _Py_CAST(PyObject**, &(dst)); \
+        PyObject *_tmp_dst = (*_tmp_dst_ptr);                   \
+        *_tmp_dst_ptr = _PyObject_CAST(src);                    \
+        Py_XDECREF(_tmp_dst);                                   \
     } while (0)
 #endif
 
