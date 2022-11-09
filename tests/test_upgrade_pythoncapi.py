@@ -394,17 +394,24 @@ class Tests(unittest.TestCase):
     @unittest.skipUnless(upgrade_pythoncapi.FORCE_NEWREF, 'FORCE_NEWREF=False')
     def test_py_incref_return(self):
         self.check_replace("""
-            PyObject* new_ref(PyObject *obj)
-            {
+            PyObject* new_ref(PyObject *obj) {
                 Py_INCREF(obj);
+                return obj;
+            }
+
+            PyObject* new_xref(PyObject *obj) {
+                Py_XINCREF(obj);
                 return obj;
             }
         """, """
             #include "pythoncapi_compat.h"
 
-            PyObject* new_ref(PyObject *obj)
-            {
+            PyObject* new_ref(PyObject *obj) {
                 return Py_NewRef(obj);
+            }
+
+            PyObject* new_xref(PyObject *obj) {
+                return Py_XNewRef(obj);
             }
         """)
 
@@ -413,68 +420,72 @@ class Tests(unittest.TestCase):
         self.check_replace("""
             void set_attr(MyStruct *obj, PyObject *value)
             {
+                // 1
                 Py_INCREF(value);
                 obj->attr = value;
+                // 2
+                obj->attr = value;
+                Py_INCREF(value);
+                // 3
+                obj->attr = value;
+                Py_INCREF(obj->attr);
+                // 4
+                obj->attr = value; Py_INCREF(obj->attr);
             }
         """, """
             #include "pythoncapi_compat.h"
 
             void set_attr(MyStruct *obj, PyObject *value)
             {
+                // 1
+                obj->attr = Py_NewRef(value);
+                // 2
+                obj->attr = Py_NewRef(value);
+                // 3
+                obj->attr = Py_NewRef(value);
+                // 4
                 obj->attr = Py_NewRef(value);
             }
         """)
 
-    @unittest.skipUnless(upgrade_pythoncapi.FORCE_STEALREF, 'FORCE_STEALREF=False')
-    def test_py_decref_return(self):
         self.check_replace("""
-            PyObject* steal_ref(PyObject *obj)
+            void set_xattr(MyStruct *obj, PyObject *value)
             {
-                Py_DECREF(obj);
-                return obj;
+                // 1
+                Py_XINCREF(value);
+                obj->attr = value;
+                // 2
+                obj->attr = value;
+                Py_XINCREF(value);
+                // 3
+                obj->attr = value;
+                Py_XINCREF(obj->attr);
             }
         """, """
             #include "pythoncapi_compat.h"
 
-            PyObject* steal_ref(PyObject *obj)
+            void set_xattr(MyStruct *obj, PyObject *value)
             {
-                return _Py_StealRef(obj);
+                // 1
+                obj->attr = Py_XNewRef(value);
+                // 2
+                obj->attr = Py_XNewRef(value);
+                // 3
+                obj->attr = Py_XNewRef(value);
             }
         """)
 
-    @unittest.skipUnless(upgrade_pythoncapi.FORCE_STEALREF, 'FORCE_STEALREF=False')
-    def test_py_decref_assign(self):
-        self.check_replace("""
-            void set_attr(MyStruct *obj, PyObject *value)
-            {
-                Py_DECREF(value);
-                obj->attr1 = value;
-
-                obj->attr2 = value;
-                Py_DECREF(value);
-            }
-        """, """
-            #include "pythoncapi_compat.h"
-
-            void set_attr(MyStruct *obj, PyObject *value)
-            {
-                obj->attr1 = _Py_StealRef(value);
-
-                obj->attr2 = _Py_StealRef(value);
-            }
-        """)
-
-        # The regex matchs "value" in "obj->value" of case 2
         self.check_dont_replace("""
-            void set_attr(MyStruct *obj, PyObject *value)
+            void true_false(int test)
             {
-                // Case 1
-                Py_DECREF(value);
-                obj->value = NULL;
+                PyObject *res;
+                if (test)
+                    res = Py_True;
+                else
+                    res = Py_False;
+                Py_INCREF(res);
 
-                // Case 2
-                obj->value = NULL;
-                Py_DECREF(value);
+                Py_DECREF(res);
             }
         """)
 
