@@ -399,6 +399,10 @@ class Tests(unittest.TestCase):
                 return obj;
             }
 
+            PyObject* same_line(PyObject *obj) {
+                Py_INCREF(obj); return obj;
+            }
+
             PyObject* new_xref(PyObject *obj) {
                 Py_XINCREF(obj);
                 return obj;
@@ -410,6 +414,10 @@ class Tests(unittest.TestCase):
                 return Py_NewRef(obj);
             }
 
+            PyObject* same_line(PyObject *obj) {
+                return Py_NewRef(obj);
+            }
+
             PyObject* new_xref(PyObject *obj) {
                 return Py_XNewRef(obj);
             }
@@ -418,7 +426,7 @@ class Tests(unittest.TestCase):
     @unittest.skipUnless(upgrade_pythoncapi.FORCE_NEWREF, 'FORCE_NEWREF=False')
     def test_py_incref_assign(self):
         self.check_replace("""
-            void set_attr(MyStruct *obj, PyObject *value)
+            void set_attr(MyStruct *obj, PyObject *value, int test)
             {
                 // 1
                 Py_INCREF(value);
@@ -429,13 +437,25 @@ class Tests(unittest.TestCase):
                 // 3
                 obj->attr = value;
                 Py_INCREF(obj->attr);
-                // 4
-                obj->attr = value; Py_INCREF(obj->attr);
+
+                // same line 1
+                obj->attr = value; Py_INCREF(value);
+                // same line 2
+                if (test) { obj->attr = value; Py_INCREF(obj->attr); }
+                // same line 3
+                if (test) { Py_INCREF(value); obj->attr = value; }
+
+                // cast 1
+                Py_INCREF(value);
+                obj->attr = (PyObject*)value;
+                // cast 2
+                obj->attr = (PyObject*)value;
+                Py_INCREF(value);
             }
         """, """
             #include "pythoncapi_compat.h"
 
-            void set_attr(MyStruct *obj, PyObject *value)
+            void set_attr(MyStruct *obj, PyObject *value, int test)
             {
                 // 1
                 obj->attr = Py_NewRef(value);
@@ -443,7 +463,17 @@ class Tests(unittest.TestCase):
                 obj->attr = Py_NewRef(value);
                 // 3
                 obj->attr = Py_NewRef(value);
-                // 4
+
+                // same line 1
+                obj->attr = Py_NewRef(value);
+                // same line 2
+                if (test) { obj->attr = Py_NewRef(value); }
+                // same line 3
+                if (test) { obj->attr = Py_NewRef(value); }
+
+                // cast 1
+                obj->attr = Py_NewRef(value);
+                // cast 2
                 obj->attr = Py_NewRef(value);
             }
         """)
@@ -476,7 +506,7 @@ class Tests(unittest.TestCase):
         """)
 
         self.check_dont_replace("""
-            void true_false(int test)
+            void test1(int test)
             {
                 PyObject *res;
                 if (test)
@@ -486,6 +516,17 @@ class Tests(unittest.TestCase):
                 Py_INCREF(res);
 
                 Py_DECREF(res);
+            }
+
+            int test2(struct datetime* result, PyObject *tzinfo)
+            {
+                int res = 0;
+                if (test)
+                 res = 1;
+                else
+                 Py_INCREF(tzinfo);
+                result->tzinfo = tzinfo;
+                return res;
             }
         """)
 

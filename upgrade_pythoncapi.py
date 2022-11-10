@@ -46,12 +46,13 @@ EXPR_REGEX = (fr"\*?"  # "*" prefix
 
 
 def same_indentation(group):
+    # the regex must have re.MULTILINE flag
     return fr'{SPACE_REGEX}*(?:{NEWLINE_REGEX}{group})?'
 
 
 def get_member_regex_str(member):
     # Match "var->member".
-    return fr'\b({EXPR_REGEX}) *-> *%s\b' % member
+    return fr'\b({EXPR_REGEX}) *-> *{member}\b'
 
 
 def get_member_regex(member):
@@ -67,7 +68,7 @@ def get_member_regex(member):
 
 def assign_regex_str(var, expr):
     # Match "var = expr;".
-    return (r'%s\s*=\s*%s\s*;' % (var, expr))
+    return fr'{var}\s*=\s*{expr}\s*;'
 
 
 def set_member_regex(member):
@@ -80,7 +81,7 @@ def call_assign_regex(name):
     # Match "Py_TYPE(expr) = expr;".
     # Don't match "assert(Py_TYPE(expr) == expr);".
     # Tolerate spaces
-    regex = (r'%s *\( *(.+) *\) *= *([^=].*) *;' % name)
+    regex = fr'{name} *\( *(.+) *\) *= *([^=].*) *;'
     return re.compile(regex)
 
 
@@ -251,10 +252,21 @@ class Py_INCREF_return(Operation):
                     + r'return \3;',
                     re.MULTILINE),
          r'\1return Py_\2NewRef(\3);'),
+
+        # Same regex than the previous one,
+        # but the two statements are on the same line.
+        (re.compile(fr'Py_(X?)INCREF\(({EXPR_REGEX})\)\s*;'
+                    + fr'{SPACE_REGEX}*'
+                    + r'return \2;',
+                    re.MULTILINE),
+         r'return Py_\1NewRef(\2);'),
     )
     # Need Py_NewRef(): new in Python 3.10
     NEED_PYTHONCAPI_COMPAT = True
 
+
+def optional_ptr_cast(to_type):
+     return fr'(?:\({to_type}\s*\*\))?'
 
 class Py_INCREF_assign(Operation):
     NAME = "Py_INCREF_assign"
@@ -263,18 +275,43 @@ class Py_INCREF_assign(Operation):
         # "y = x; Py_INCREF(y);" => "y = Py_NewRef(x);"
         # "y = x; Py_XINCREF(x);" => "y = Py_XNewRef(x);"
         # "y = x; Py_XINCREF(y);" => "y = Py_XNewRef(x);"
+        # "y = (PyObject*)x; Py_XINCREF(y);" => "y = Py_XNewRef(x);"
         # The two statements must have the same indentation, otherwise the
         # regex does not match.
         (re.compile(fr'({INDENTATION_REGEX})'
-                    + assign_regex_str(r'(%s)' % EXPR_REGEX, r'(%s)' % EXPR_REGEX)
+                    + assign_regex_str(fr'({EXPR_REGEX})',
+                                       optional_ptr_cast('PyObject') + fr'({EXPR_REGEX})')
                     + same_indentation(r'\1')
                     + r'Py_(X?)INCREF\((?:\2|\3)\);',
                     re.MULTILINE),
          r'\1\2 = Py_\4NewRef(\3);'),
+
+        # Same regex than the previous one,
+        # but the two statements are on the same line.
+        (re.compile(assign_regex_str(fr'({EXPR_REGEX})',
+                                       optional_ptr_cast('PyObject') + fr'({EXPR_REGEX})')
+                    + fr'{SPACE_REGEX}*'
+                    + r'Py_(X?)INCREF\((?:\1|\2)\);'),
+         r'\1 = Py_\3NewRef(\2);'),
+
         # "Py_INCREF(x); y = x;" => "y = Py_NewRef(x)"
         # "Py_XINCREF(x); y = x;" => "y = Py_XNewRef(x)"
-        (re.compile(r'Py_(X?)INCREF\((%s)\);\s*' % EXPR_REGEX
-                    + assign_regex_str(r'(%s)' % EXPR_REGEX, r'\2')),
+        # The two statements must have the same indentation, otherwise the
+        # regex does not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
+                    + same_indentation(r'\1')
+                    + assign_regex_str(fr'({EXPR_REGEX})',
+                                       optional_ptr_cast('PyObject') + r'\3'),
+                    re.MULTILINE),
+         r'\1\4 = Py_\2NewRef(\3);'),
+
+        # Same regex than the previous one,
+        # but the two statements are on the same line.
+        (re.compile(fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
+                    + fr'{SPACE_REGEX}*'
+                    + assign_regex_str(fr'({EXPR_REGEX})',
+                                       optional_ptr_cast('PyObject') + r'\2')),
          r'\3 = Py_\1NewRef(\2);'),
     )
     # Need Py_NewRef(): new in Python 3.10
@@ -292,7 +329,7 @@ class Py_Is(Operation):
         return f'{x} = _Py_StealRef({y});'
 
     REPLACE = []
-    expr = r'(%s)' % EXPR_REGEX
+    expr = fr'({EXPR_REGEX})'
     for name in ('None', 'True', 'False'):
         REPLACE.extend((
             (re.compile(fr'{expr} == Py_{name}\b'),
@@ -351,7 +388,7 @@ class Patcher:
         print(msg, file=sys.stderr, flush=True)
 
     def warning(self, msg):
-        self.log("WARNING: %s" % msg)
+        self.log(f"WARNING: {msg}")
 
     def _get_operations(self, parser):
         args_names = self.args.operations.split(',')
@@ -381,7 +418,7 @@ class Patcher:
             operations.append(operation)
 
         if wanted:
-            print("invalid operations: %s" % ','.join(wanted))
+            print(f"invalid operations: {','.join(wanted)}")
             print()
             self.usage(parser)
             sys.exit(1)
@@ -479,8 +516,7 @@ class Patcher:
                     empty = False
 
         if empty:
-            self.warning("Directory %s doesn't contain any "
-                         "C file" % path)
+            self.warning(f"Directory {path} doesn't contain any C file")
             self.exitcode = 1
 
     def walk(self, paths):
@@ -491,7 +527,7 @@ class Patcher:
             elif os.path.exists(path):
                 yield path
             else:
-                self.warning("Path %s does not exist" % path)
+                self.warning(f"Path {path} does not exist")
                 self.exitcode = 1
 
     def get_latest_header(self, base_dir):
