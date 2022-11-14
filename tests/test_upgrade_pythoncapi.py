@@ -11,10 +11,17 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import upgrade_pythoncapi   # noqa
 
 
+OPERATIONS = ["all"]
+for op in upgrade_pythoncapi.EXCLUDE_FROM_ALL:
+    OPERATIONS.append(op.NAME)
+OPERATIONS = ','.join(OPERATIONS)
+
+
 def patch(source, no_compat=False):
-    args = ['script', 'mod.c']
+    args = ['script', 'mod.c', '-o', OPERATIONS]
     if no_compat:
         args.append('--no-compat')
+
     patcher = upgrade_pythoncapi.Patcher(args)
     return patcher.patch(source)
 
@@ -391,7 +398,6 @@ class Tests(unittest.TestCase):
             { return _PyThreadState_GetFrameBorrow(tstate); }
         """)
 
-    @unittest.skipUnless(upgrade_pythoncapi.FORCE_NEWREF, 'FORCE_NEWREF=False')
     def test_py_incref_return(self):
         self.check_replace("""
             PyObject* new_ref(PyObject *obj) {
@@ -432,8 +438,8 @@ class Tests(unittest.TestCase):
             }
         """)
 
-    @unittest.skipUnless(upgrade_pythoncapi.FORCE_NEWREF, 'FORCE_NEWREF=False')
     def test_py_incref_assign(self):
+        # INCREF, assign
         self.check_replace("""
             void set_attr(MyStruct *obj, PyObject *value, int test)
             {
@@ -446,20 +452,6 @@ class Tests(unittest.TestCase):
                 // 3
                 obj->attr = value;
                 Py_INCREF(obj->attr);
-
-                // same line 1
-                obj->attr = value; Py_INCREF(value);
-                // same line 2
-                if (test) { obj->attr = value; Py_INCREF(obj->attr); }
-                // same line 3
-                if (test) { Py_INCREF(value); obj->attr = value; }
-
-                // cast 1
-                Py_INCREF(value);
-                obj->attr = (PyObject*)value;
-                // cast 2
-                obj->attr = (PyObject*)value;
-                Py_INCREF(value);
             }
         """, """
             #include "pythoncapi_compat.h"
@@ -472,21 +464,87 @@ class Tests(unittest.TestCase):
                 obj->attr = Py_NewRef(value);
                 // 3
                 obj->attr = Py_NewRef(value);
+            }
+        """)
 
+        # Same line
+        self.check_replace("""
+            void set_attr(MyStruct *obj, PyObject *value, int test)
+            {
+                // same line 1
+                obj->attr = value; Py_INCREF(value);
+                // same line 2
+                if (test) { obj->attr = value; Py_INCREF(obj->attr); }
+                // same line 3
+                if (test) { Py_INCREF(value); obj->attr = value; }
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set_attr(MyStruct *obj, PyObject *value, int test)
+            {
                 // same line 1
                 obj->attr = Py_NewRef(value);
                 // same line 2
                 if (test) { obj->attr = Py_NewRef(value); }
                 // same line 3
                 if (test) { obj->attr = Py_NewRef(value); }
+            }
+        """)
 
+        # Cast
+        self.check_replace("""
+            void set_attr(MyStruct *obj, PyObject *value, int test)
+            {
+                // cast 1
+                Py_INCREF(value);
+                obj->attr = (PyObject*)value;
+                // cast 2
+                obj->attr = (PyObject*)value;
+                Py_INCREF(value);
+
+                // assign var, incref
+                PyCodeObject *code_obj = (PyCodeObject *)code;
+                Py_INCREF(code_obj);
+                // assign var, incref
+                PyCodeObject* code_obj = (PyCodeObject *)code;
+                Py_INCREF(code);
+                // assign var, xincref
+                PyCodeObject * code_obj = (PyCodeObject *)code;
+                Py_XINCREF(code_obj);
+
+                // incref, assign var
+                Py_INCREF(code);
+                PyCodeObject* code_obj = (PyCodeObject *)code;
+                // xincref, assign var
+                Py_XINCREF(code);
+                PyCodeObject *code_obj = (PyCodeObject *)code;
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set_attr(MyStruct *obj, PyObject *value, int test)
+            {
                 // cast 1
                 obj->attr = Py_NewRef(value);
                 // cast 2
                 obj->attr = Py_NewRef(value);
+
+                // assign var, incref
+                PyCodeObject *code_obj = (PyCodeObject *)Py_NewRef(code);
+                // assign var, incref
+                PyCodeObject* code_obj = (PyCodeObject *)Py_NewRef(code);
+                // assign var, xincref
+                PyCodeObject * code_obj = (PyCodeObject *)Py_XNewRef(code);
+
+                // incref, assign var
+                PyCodeObject* code_obj = (PyCodeObject *)Py_NewRef(code);
+                // xincref, assign var
+                PyCodeObject *code_obj = (PyCodeObject *)Py_XNewRef(code);
             }
         """)
 
+        # Py_XINCREF
         self.check_replace("""
             void set_xattr(MyStruct *obj, PyObject *value)
             {
@@ -563,6 +621,188 @@ class Tests(unittest.TestCase):
                  Py_INCREF(tzinfo);
                 result->tzinfo = tzinfo;
                 return res;
+            }
+        """)
+
+    def test_py_clear(self):
+        self.check_replace("""
+            void clear(PyObject **obj)
+            {
+                // 1
+                Py_DECREF(*obj);
+                *obj = NULL;
+                // 2
+                Py_XDECREF(*obj);
+                *obj = NULL;
+            }
+        """, """
+            void clear(PyObject **obj)
+            {
+                // 1
+                Py_CLEAR(*obj);
+                // 2
+                Py_CLEAR(*obj);
+            }
+        """)
+
+    def test_py_setref(self):
+        self.check_replace("""
+            void set(PyObject **obj, PyObject *t)
+            {
+                // DECREF
+                Py_DECREF(*obj);
+                *obj = t;
+
+                // XDECREF
+                Py_XDECREF(*obj);
+                *obj = t;
+
+                // DECREF, INCREF
+                Py_DECREF(*obj);
+                Py_INCREF(t);
+                *obj = t;
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set(PyObject **obj, PyObject *t)
+            {
+                // DECREF
+                Py_SETREF(*obj, t);
+
+                // XDECREF
+                Py_XSETREF(*obj, t);
+
+                // DECREF, INCREF
+                Py_SETREF(*obj, Py_NewRef(t));
+            }
+        """)
+
+        self.check_replace("""
+            void set(PyObject **obj, PyObject *value)
+            {
+                // 1
+                PyObject *old = *obj;
+                *obj = value;
+                Py_DECREF(old);
+                // 2
+                PyObject *old = *obj;
+                *obj = Py_XNewRef(value);
+                Py_DECREF(old);
+                // 3
+                PyObject *old = *obj;
+                *obj = value;
+                Py_XDECREF(old);
+                // 4
+                PyObject *old = *obj;
+                *obj = Py_NewRef(value);
+                Py_XDECREF(old);
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set(PyObject **obj, PyObject *value)
+            {
+                // 1
+                Py_SETREF(*obj, value);
+                // 2
+                Py_SETREF(*obj, Py_XNewRef(value));
+                // 3
+                Py_XSETREF(*obj, value);
+                // 4
+                Py_XSETREF(*obj, Py_NewRef(value));
+            }
+        """)
+
+        # INCREF, DECREF, assign
+        self.check_replace("""
+            void set(void)
+            {
+                // 1
+                Py_INCREF(value);
+                Py_DECREF(obj);
+                obj = value;
+                // 2
+                Py_INCREF(value);
+                Py_XDECREF(obj);
+                obj = value;
+                // 3
+                Py_XINCREF(value);
+                Py_DECREF(obj);
+                obj = value;
+                // 4
+                Py_XINCREF(value);
+                Py_XDECREF(obj);
+                obj = value;
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set(void)
+            {
+                // 1
+                Py_SETREF(obj, Py_NewRef(value));
+                // 2
+                Py_XSETREF(obj, Py_NewRef(value));
+                // 3
+                Py_SETREF(obj, Py_XNewRef(value));
+                // 4
+                Py_XSETREF(obj, Py_XNewRef(value));
+            }
+        """)
+
+        # old variable
+        self.check_replace("""
+            void set(PyObject **obj, PyObject *value)
+            {
+                // 1
+                PyObject *old_next = (PyObject*)self->tb_next;
+                self->tb_next = (PyTracebackObject *)Py_XNewRef(new_next);
+                Py_XDECREF(old_next);
+                // 2
+                old_next = (PyObject*)self->tb_next;
+                self->tb_next = (PyTracebackObject *)Py_XNewRef(new_next);
+                Py_XDECREF(old_next);
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set(PyObject **obj, PyObject *value)
+            {
+                // 1
+                Py_XSETREF(self->tb_next, (PyTracebackObject *)Py_XNewRef(new_next));
+                // 2
+                Py_XSETREF(self->tb_next, (PyTracebackObject *)Py_XNewRef(new_next));
+            }
+        """)
+
+        # Py_CLEAR
+        self.check_replace("""
+            void set(PyObject **obj, PyObject *value)
+            {
+                // 1
+                Py_CLEAR(self->tb_next);
+                self->tb_next = value;
+                // 2
+                Py_INCREF(value);
+                Py_CLEAR(self->tb_next);
+                self->tb_next = value;
+                // 3
+                Py_XINCREF(value);
+                Py_CLEAR(self->tb_next);
+                self->tb_next = value;
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set(PyObject **obj, PyObject *value)
+            {
+                // 1
+                Py_XSETREF(self->tb_next, value);
+                // 2
+                Py_XSETREF(self->tb_next, Py_NewRef(value));
+                // 3
+                Py_XSETREF(self->tb_next, Py_XNewRef(value));
             }
         """)
 

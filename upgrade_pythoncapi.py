@@ -6,7 +6,7 @@ import urllib.request
 import sys
 
 
-FORCE_NEWREF = False
+MIN_PYTHON = (2, 7)
 
 
 PYTHONCAPI_COMPAT_URL = ('https://raw.githubusercontent.com/python/'
@@ -44,6 +44,12 @@ EXPR_REGEX = (fr"\*?"  # "*" prefix
               fr"{SUBEXPR_REGEX}"  # "var"
               fr"(?:(?:->|\.){SUBEXPR_REGEX})*")  # "->attr" or ".attr"
 
+# # Match 'PyObject *var' and 'struct MyStruct* var'
+TYPE_PTR_REGEX = fr'{ID_REGEX} *\*'
+
+# Match '(PyObject*)' and nothing
+OPT_CAST_REGEX = fr'(?:\({TYPE_PTR_REGEX} *\){SPACE_REGEX}*)?'
+
 
 def same_indentation(group):
     # the regex must have re.MULTILINE flag
@@ -68,7 +74,7 @@ def get_member_regex(member):
 
 def assign_regex_str(var, expr):
     # Match "var = expr;".
-    return fr'{var}\s*=\s*{expr}\s*;'
+    return fr'{var} *= *{expr}\s*;'
 
 
 def set_member_regex(member):
@@ -83,10 +89,6 @@ def call_assign_regex(name):
     # Tolerate spaces
     regex = fr'{name} *\( *(.+) *\) *= *([^=].*) *;'
     return re.compile(regex)
-
-
-def optional_ptr_cast(to_type):
-     return fr'(?:\({to_type}\s*\*\){SPACE_REGEX}*)?'
 
 
 def is_c_filename(filename):
@@ -141,7 +143,7 @@ class Py_SET_TYPE(Operation):
         (set_member_regex('ob_type'), r'Py_SET_TYPE(\1, \2);'),
     )
     # Need Py_SET_TYPE(): new in Python 3.9.
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 9))
 
 
 class Py_SET_SIZE(Operation):
@@ -151,7 +153,7 @@ class Py_SET_SIZE(Operation):
         (set_member_regex('ob_size'), r'Py_SET_SIZE(\1, \2);'),
     )
     # Need Py_SET_SIZE(): new in Python 3.9.
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 9))
 
 
 class Py_SET_REFCNT(Operation):
@@ -161,7 +163,7 @@ class Py_SET_REFCNT(Operation):
         (set_member_regex('ob_refcnt'), r'Py_SET_REFCNT(\1, \2);'),
     )
     # Need Py_SET_REFCNT(): new in Python 3.9.
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 9))
 
 
 class PyObject_NEW(Operation):
@@ -211,7 +213,7 @@ class PyFrame_GetBack(Operation):
         (get_member_regex('f_back'), r'_PyFrame_GetBackBorrow(\1)'),
     )
     # Need _PyFrame_GetBackBorrow() (PyFrame_GetBack() is new in Python 3.9)
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 9))
 
 
 class PyFrame_GetCode(Operation):
@@ -221,7 +223,7 @@ class PyFrame_GetCode(Operation):
         (get_member_regex('f_code'), r'_PyFrame_GetCodeBorrow(\1)'),
     )
     # Need _PyFrame_GetCodeBorrow() (PyFrame_GetCode() is new in Python 3.9)
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 9))
 
 
 class PyThreadState_GetInterpreter(Operation):
@@ -230,7 +232,7 @@ class PyThreadState_GetInterpreter(Operation):
         (get_member_regex('interp'), r'PyThreadState_GetInterpreter(\1)'),
     )
     # Need PyThreadState_GetInterpreter() (new in Python 3.9)
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 9))
 
 
 class PyThreadState_GetFrame(Operation):
@@ -240,7 +242,7 @@ class PyThreadState_GetFrame(Operation):
     )
     # Need _PyThreadState_GetFrameBorrow()
     # (PyThreadState_GetFrame() is new in Python 3.9)
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 9))
 
 
 class Py_INCREF_return(Operation):
@@ -253,7 +255,7 @@ class Py_INCREF_return(Operation):
         (re.compile(fr'({INDENTATION_REGEX})'
                     + fr'Py_(X?)INCREF\(({EXPR_REGEX})\)\s*;'
                     + same_indentation(r'\1')
-                    + r'return ' + optional_ptr_cast('PyObject') + r'\3;',
+                    + fr'return {OPT_CAST_REGEX}\3;',
                     re.MULTILINE),
          r'\1return Py_\2NewRef(\3);'),
 
@@ -261,12 +263,12 @@ class Py_INCREF_return(Operation):
         # but the two statements are on the same line.
         (re.compile(fr'Py_(X?)INCREF\(({EXPR_REGEX})\)\s*;'
                     + fr'{SPACE_REGEX}*'
-                    + r'return ' + optional_ptr_cast('PyObject') + r'\2;',
+                    + fr'return {OPT_CAST_REGEX}\2;',
                     re.MULTILINE),
          r'return Py_\1NewRef(\2);'),
     )
     # Need Py_NewRef(): new in Python 3.10
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 10))
 
 
 class Py_INCREF_assign(Operation):
@@ -283,7 +285,7 @@ class Py_INCREF_assign(Operation):
                     + fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
                     + same_indentation(r'\1')
                     + assign_regex_str(fr'({EXPR_REGEX})',
-                                       optional_ptr_cast('PyObject') + r'\3'),
+                                       fr'{OPT_CAST_REGEX}\3'),
                     re.MULTILINE),
          r'\1\4 = Py_\2NewRef(\3);'),
 
@@ -292,7 +294,7 @@ class Py_INCREF_assign(Operation):
         (re.compile(fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
                     + fr'{SPACE_REGEX}*'
                     + assign_regex_str(fr'({EXPR_REGEX})',
-                                       optional_ptr_cast('PyObject') + r'\2')),
+                                       fr'{OPT_CAST_REGEX}\2')),
          r'\3 = Py_\1NewRef(\2);'),
 
         # "y = x; Py_INCREF(x);" => "y = Py_NewRef(x);"
@@ -304,7 +306,7 @@ class Py_INCREF_assign(Operation):
         # regex does not match.
         (re.compile(fr'({INDENTATION_REGEX})'
                     + assign_regex_str(fr'({EXPR_REGEX})',
-                                       optional_ptr_cast('PyObject') + fr'({EXPR_REGEX})')
+                                       fr'{OPT_CAST_REGEX}({EXPR_REGEX})')
                     + same_indentation(r'\1')
                     + r'Py_(X?)INCREF\((?:\2|\3)\);',
                     re.MULTILINE),
@@ -313,13 +315,125 @@ class Py_INCREF_assign(Operation):
         # Same regex than the previous one,
         # but the two statements are on the same line.
         (re.compile(assign_regex_str(fr'({EXPR_REGEX})',
-                                       optional_ptr_cast('PyObject') + fr'({EXPR_REGEX})')
+                                     fr'{OPT_CAST_REGEX}({EXPR_REGEX})')
                     + fr'{SPACE_REGEX}*'
                     + r'Py_(X?)INCREF\((?:\1|\2)\);'),
          r'\1 = Py_\3NewRef(\2);'),
+
+        # "PyObject *var = x; Py_INCREF(x);" => "PyObject *var = Py_NewRef(x);"
+        # The two statements must have the same indentation, otherwise the
+        # regex does not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                      # "type* var = expr;"
+                    + assign_regex_str(fr'({TYPE_PTR_REGEX} *)({EXPR_REGEX})',
+                                       fr'({OPT_CAST_REGEX})({EXPR_REGEX})')
+                    + same_indentation(r'\1')
+                      # "Py_INCREF(var);"
+                    + r'Py_(X?)INCREF\((?:\3|\5)\);',
+                    re.MULTILINE),
+         r'\1\2\3 = \4Py_\6NewRef(\5);'),
+
+        # "Py_INCREF(x); PyObject *var = x;" => "PyObject *var = Py_NewRef(x);"
+        # The two statements must have the same indentation, otherwise the
+        # regex does not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                      # "Py_INCREF(var);"
+                    + fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
+                    + same_indentation(r'\1')
+                      # "type* var = expr;"
+                    + assign_regex_str(fr'({TYPE_PTR_REGEX} *{EXPR_REGEX})',
+                                       fr'({OPT_CAST_REGEX})\3'),
+                    re.MULTILINE),
+         r'\1\4 = \5Py_\2NewRef(\3);'),
     )
     # Need Py_NewRef(): new in Python 3.10
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 10))
+
+
+class Py_CLEAR(Operation):
+    NAME = "Py_CLEAR"
+    REPLACE = (
+        # "Py_DECREF(x); x = NULL;" => "Py_CLEAR(x)";
+        # The two statements must have the same indentation, otherwise the
+        # regex does not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'Py_X?DECREF\(({EXPR_REGEX})\) *;'
+                    + same_indentation(r'\1')
+                    + assign_regex_str(r'\2', r'NULL'),
+                    re.MULTILINE),
+         r'\1Py_CLEAR(\2);'),
+    )
+
+
+SETREF_VALUE = fr'{OPT_CAST_REGEX}(?:{EXPR_REGEX}|Py_X?NewRef\({EXPR_REGEX}\))'
+
+
+class Py_SETREF(Operation):
+    NAME = "Py_SETREF"
+    REPLACE = (
+        # "Py_INCREF(y); Py_CLEAR(x); x = y;" => "Py_XSETREF(x, y)";
+        # Statements must have the same indentation, otherwise the regex does
+        # not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'Py_(X?)INCREF\(({EXPR_REGEX})\) *;'
+                    + same_indentation(r'\1')
+                    + fr'Py_CLEAR\(({EXPR_REGEX})\) *;'
+                    + same_indentation(r'\1')
+                    + assign_regex_str(r'\4', r'\3'),
+                    re.MULTILINE),
+         r'\1Py_XSETREF(\4, Py_\2NewRef(\3));'),
+
+        # "Py_CLEAR(x); x = y;" => "Py_XSETREF(x, y)";
+        # Statements must have the same indentation, otherwise the regex does
+        # not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'Py_CLEAR\(({EXPR_REGEX})\) *;'
+                    + same_indentation(r'\1')
+                    + assign_regex_str(r'\2',
+                                       fr'({SETREF_VALUE})'),
+                    re.MULTILINE),
+         r'\1Py_XSETREF(\2, \3);'),
+
+        # "Py_INCREF(y); Py_DECREF(x); x = y;" => "Py_SETREF(x, y)";
+        # Statements must have the same indentation, otherwise the regex does
+        # not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'Py_(X?)INCREF\(({EXPR_REGEX})\) *;'
+                    + same_indentation(r'\1')
+                    + fr'Py_(X?)DECREF\(({EXPR_REGEX})\) *;'
+                    + same_indentation(r'\1')
+                    + assign_regex_str(r'\5', r'\3'),
+                    re.MULTILINE),
+         r'\1Py_\4SETREF(\5, Py_\2NewRef(\3));'),
+
+        # "Py_DECREF(x); x = y;" => "Py_SETREF(x, y)";
+        # "Py_DECREF(x); x = Py_NewRef(y);" => "Py_SETREF(x, Py_NewRef(y))";
+        # Statements must have the same indentation, otherwise the regex does
+        # not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'Py_(X?)DECREF\(({EXPR_REGEX})\) *;'
+                    + same_indentation(r'\1')
+                    + assign_regex_str(r'\3',
+                                       fr'({SETREF_VALUE})'),
+                    re.MULTILINE),
+         r'\1Py_\2SETREF(\3, \4);'),
+
+        # "old = var; var = new; Py_DECREF(old);" => "Py_SETREF(var, new);"
+        # "PyObject *old = var; var = new; Py_DECREF(old);" => "Py_SETREF(var, new);"
+        # Statements must have the same indentation, otherwise the regex does
+        # not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'(?:{ID_REGEX} *\* *)?({ID_REGEX}) *= *{OPT_CAST_REGEX}({EXPR_REGEX}) *;'
+                    + same_indentation(r'\1')
+                    + assign_regex_str(r'\3',
+                                       fr'({SETREF_VALUE})')
+                    + same_indentation(r'\1')
+                    + fr'Py_(X?)DECREF\(\2\) *;',
+                    re.MULTILINE),
+         r'\1Py_\5SETREF(\3, \4);'),
+    )
+    # Need Py_NewRef(): new in Python 3.5
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 5))
 
 
 class Py_Is(Operation):
@@ -343,10 +457,10 @@ class Py_Is(Operation):
         ))
 
     # Need Py_IsNone(), Py_IsTrue(), Py_IsFalse(): new in Python 3.10
-    NEED_PYTHONCAPI_COMPAT = True
+    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 10))
 
 
-OPERATIONS = [
+OPERATIONS = (
     Py_SET_TYPE,
     Py_SET_SIZE,
     Py_SET_REFCNT,
@@ -366,12 +480,25 @@ OPERATIONS = [
 
     PyThreadState_GetInterpreter,
     PyThreadState_GetFrame,
-]
-if FORCE_NEWREF:
-    OPERATIONS.extend((
-        Py_INCREF_return,
-        Py_INCREF_assign,
-    ))
+
+    # Code style: excluded from "all"
+    Py_INCREF_return,
+    Py_INCREF_assign,
+    Py_CLEAR,
+    Py_SETREF,
+)
+
+EXCLUDE_FROM_ALL = (
+    Py_INCREF_return,
+    Py_INCREF_assign,
+    Py_CLEAR,
+    Py_SETREF,
+)
+
+
+def all_operations():
+    return set(operation_class.NAME for operation_class in OPERATIONS
+               if operation_class not in EXCLUDE_FROM_ALL)
 
 
 class Patcher:
@@ -404,8 +531,7 @@ class Patcher:
                 continue
 
             if name == "all":
-                wanted |= set(operation_class.NAME
-                              for operation_class in OPERATIONS)
+                wanted |= all_operations()
             elif name.startswith("-"):
                 name = name[1:]
                 wanted.discard(name)
