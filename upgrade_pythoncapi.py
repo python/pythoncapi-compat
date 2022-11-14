@@ -85,6 +85,10 @@ def call_assign_regex(name):
     return re.compile(regex)
 
 
+def optional_ptr_cast(to_type):
+     return fr'(?:\({to_type}\s*\*\){SPACE_REGEX}*)?'
+
+
 def is_c_filename(filename):
     return filename.endswith(C_FILE_EXT)
 
@@ -249,7 +253,7 @@ class Py_INCREF_return(Operation):
         (re.compile(fr'({INDENTATION_REGEX})'
                     + fr'Py_(X?)INCREF\(({EXPR_REGEX})\)\s*;'
                     + same_indentation(r'\1')
-                    + r'return \3;',
+                    + r'return ' + optional_ptr_cast('PyObject') + r'\3;',
                     re.MULTILINE),
          r'\1return Py_\2NewRef(\3);'),
 
@@ -257,7 +261,7 @@ class Py_INCREF_return(Operation):
         # but the two statements are on the same line.
         (re.compile(fr'Py_(X?)INCREF\(({EXPR_REGEX})\)\s*;'
                     + fr'{SPACE_REGEX}*'
-                    + r'return \2;',
+                    + r'return ' + optional_ptr_cast('PyObject') + r'\2;',
                     re.MULTILINE),
          r'return Py_\1NewRef(\2);'),
     )
@@ -265,12 +269,32 @@ class Py_INCREF_return(Operation):
     NEED_PYTHONCAPI_COMPAT = True
 
 
-def optional_ptr_cast(to_type):
-     return fr'(?:\({to_type}\s*\*\))?'
-
 class Py_INCREF_assign(Operation):
     NAME = "Py_INCREF_assign"
+    # "Py_INCREF(x); y = x;" must be replaced before "y = x; Py_INCREF(y);",
+    # to not miss consecutive "Py_INCREF; assign; Py_INCREF; assign; ..."
+    # (see unit tests)
     REPLACE = (
+        # "Py_INCREF(x); y = x;" => "y = Py_NewRef(x)"
+        # "Py_XINCREF(x); y = x;" => "y = Py_XNewRef(x)"
+        # The two statements must have the same indentation, otherwise the
+        # regex does not match.
+        (re.compile(fr'({INDENTATION_REGEX})'
+                    + fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
+                    + same_indentation(r'\1')
+                    + assign_regex_str(fr'({EXPR_REGEX})',
+                                       optional_ptr_cast('PyObject') + r'\3'),
+                    re.MULTILINE),
+         r'\1\4 = Py_\2NewRef(\3);'),
+
+        # Same regex than the previous one,
+        # but the two statements are on the same line.
+        (re.compile(fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
+                    + fr'{SPACE_REGEX}*'
+                    + assign_regex_str(fr'({EXPR_REGEX})',
+                                       optional_ptr_cast('PyObject') + r'\2')),
+         r'\3 = Py_\1NewRef(\2);'),
+
         # "y = x; Py_INCREF(x);" => "y = Py_NewRef(x);"
         # "y = x; Py_INCREF(y);" => "y = Py_NewRef(x);"
         # "y = x; Py_XINCREF(x);" => "y = Py_XNewRef(x);"
@@ -293,26 +317,6 @@ class Py_INCREF_assign(Operation):
                     + fr'{SPACE_REGEX}*'
                     + r'Py_(X?)INCREF\((?:\1|\2)\);'),
          r'\1 = Py_\3NewRef(\2);'),
-
-        # "Py_INCREF(x); y = x;" => "y = Py_NewRef(x)"
-        # "Py_XINCREF(x); y = x;" => "y = Py_XNewRef(x)"
-        # The two statements must have the same indentation, otherwise the
-        # regex does not match.
-        (re.compile(fr'({INDENTATION_REGEX})'
-                    + fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
-                    + same_indentation(r'\1')
-                    + assign_regex_str(fr'({EXPR_REGEX})',
-                                       optional_ptr_cast('PyObject') + r'\3'),
-                    re.MULTILINE),
-         r'\1\4 = Py_\2NewRef(\3);'),
-
-        # Same regex than the previous one,
-        # but the two statements are on the same line.
-        (re.compile(fr'Py_(X?)INCREF\(({EXPR_REGEX})\);'
-                    + fr'{SPACE_REGEX}*'
-                    + assign_regex_str(fr'({EXPR_REGEX})',
-                                       optional_ptr_cast('PyObject') + r'\2')),
-         r'\3 = Py_\1NewRef(\2);'),
     )
     # Need Py_NewRef(): new in Python 3.10
     NEED_PYTHONCAPI_COMPAT = True

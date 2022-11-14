@@ -407,6 +407,11 @@ class Tests(unittest.TestCase):
                 Py_XINCREF(obj);
                 return obj;
             }
+
+            PyObject* cast(PyLongObject *obj) {
+                Py_XINCREF(obj);
+                return (PyObject *)obj;
+            }
         """, """
             #include "pythoncapi_compat.h"
 
@@ -419,6 +424,10 @@ class Tests(unittest.TestCase):
             }
 
             PyObject* new_xref(PyObject *obj) {
+                return Py_XNewRef(obj);
+            }
+
+            PyObject* cast(PyLongObject *obj) {
                 return Py_XNewRef(obj);
             }
         """)
@@ -505,6 +514,33 @@ class Tests(unittest.TestCase):
             }
         """)
 
+        # the first Py_INCREF should be replaced before the second one,
+        # otherwise the first Py_INCREF is not replaced.
+        self.check_replace("""
+            void set(void)
+            {
+                PyObject *x, *y;
+                Py_INCREF(Py_None);
+                x = Py_None;
+                Py_INCREF(Py_None);
+                x = Py_None;
+                Py_DECREF(x);
+                Py_DECREF(y);
+            }
+        """, """
+            #include "pythoncapi_compat.h"
+
+            void set(void)
+            {
+                PyObject *x, *y;
+                x = Py_NewRef(Py_None);
+                x = Py_NewRef(Py_None);
+                Py_DECREF(x);
+                Py_DECREF(y);
+            }
+        """)
+
+        # Indentation matters for conditional code
         self.check_dont_replace("""
             void test1(int test)
             {
