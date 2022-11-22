@@ -11,14 +11,24 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import upgrade_pythoncapi   # noqa
 
 
-OPERATIONS = ["all"]
-for op in upgrade_pythoncapi.EXCLUDE_FROM_ALL:
-    OPERATIONS.append(op.NAME)
-OPERATIONS = ','.join(OPERATIONS)
+def operations(disable=None):
+    if isinstance(disable, str):
+        disable = (disable,)
+    elif not disable:
+        disable = ()
+    operations = ["all"]
+    for op in upgrade_pythoncapi.EXCLUDE_FROM_ALL:
+        if op.NAME in disable:
+            continue
+        operations.append(op.NAME)
+    for name in disable:
+        operations.append(f'-{name}')
+    operations = ','.join(operations)
+    return operations
 
 
-def patch(source, no_compat=False):
-    args = ['script', 'mod.c', '-o', OPERATIONS]
+def patch(source, no_compat=False, disable=None):
+    args = ['script', 'mod.c', '-o', operations(disable=disable)]
     if no_compat:
         args.append('--no-compat')
 
@@ -113,9 +123,9 @@ class Tests(unittest.TestCase):
         expected = reformat(expected)
         self.assertEqual(patch(source, **kwargs), expected)
 
-    def check_dont_replace(self, source):
+    def check_dont_replace(self, source, disable=None):
         source = reformat(source)
-        self.assertEqual(patch(source), source)
+        self.assertEqual(patch(source, disable=disable), source)
 
     def test_expr_regex(self):
         # Test EXPR_REGEX
@@ -626,24 +636,39 @@ class Tests(unittest.TestCase):
 
     def test_py_clear(self):
         self.check_replace("""
-            void clear(PyObject **obj)
+            void clear(int test)
             {
-                // 1
-                Py_DECREF(*obj);
-                *obj = NULL;
-                // 2
-                Py_XDECREF(*obj);
-                *obj = NULL;
+                PyObject *obj;
+
+                // two lines
+                Py_XDECREF(obj);
+                obj = NULL;
+
+                // inside if
+                if (test) { Py_XDECREF(obj); obj = NULL; }
             }
         """, """
-            void clear(PyObject **obj)
+            void clear(int test)
             {
-                // 1
-                Py_CLEAR(*obj);
-                // 2
-                Py_CLEAR(*obj);
+                PyObject *obj;
+
+                // two lines
+                Py_CLEAR(obj);
+
+                // inside if
+                if (test) { Py_CLEAR(obj); }
             }
         """)
+
+        # Don't replace Py_DECREF()
+        self.check_dont_replace("""
+            void dont_clear(void)
+            {
+                PyObject *obj;
+                Py_DECREF(obj);
+                obj = NULL;
+            }
+        """, disable="Py_SETREF")
 
     def test_py_setref(self):
         self.check_replace("""

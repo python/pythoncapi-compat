@@ -353,15 +353,21 @@ class Py_INCREF_assign(Operation):
 class Py_CLEAR(Operation):
     NAME = "Py_CLEAR"
     REPLACE = (
-        # "Py_DECREF(x); x = NULL;" => "Py_CLEAR(x)";
+        # "Py_XDECREF(x); x = NULL;" => "Py_CLEAR(x)";
         # The two statements must have the same indentation, otherwise the
         # regex does not match.
         (re.compile(fr'({INDENTATION_REGEX})'
-                    + fr'Py_X?DECREF\(({EXPR_REGEX})\) *;'
+                    + fr'Py_XDECREF\(({EXPR_REGEX})\) *;'
                     + same_indentation(r'\1')
                     + assign_regex_str(r'\2', r'NULL'),
                     re.MULTILINE),
          r'\1Py_CLEAR(\2);'),
+
+        # "Py_XDECREF(x); x = NULL;" => "Py_CLEAR(x)";
+        (re.compile(fr'Py_XDECREF\(({EXPR_REGEX})\) *;'
+                    + fr'{SPACE_REGEX}*'
+                    + assign_regex_str(r'\1', r'NULL')),
+         r'Py_CLEAR(\1);'),
     )
 
 
