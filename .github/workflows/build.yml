@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-20.04]
         # The list of all available versions can be found here:
         # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
         python:
@@ -34,9 +34,9 @@ jobs:
             python: 3.4
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
       - name: Display the Python version
