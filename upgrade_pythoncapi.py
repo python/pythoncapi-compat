@@ -245,8 +245,8 @@ class PyThreadState_GetFrame(Operation):
     NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 9))
 
 
-class Py_INCREF_return(Operation):
-    NAME = "Py_INCREF_return"
+class Py_NewRef(Operation):
+    NAME = "Py_NewRef"
     REPLACE = (
         # "Py_INCREF(x); return x;" => "return Py_NewRef(x);"
         # "Py_XINCREF(x); return x;" => "return Py_XNewRef(x);"
@@ -266,17 +266,11 @@ class Py_INCREF_return(Operation):
                     + fr'return {OPT_CAST_REGEX}\2;',
                     re.MULTILINE),
          r'return Py_\1NewRef(\2);'),
-    )
-    # Need Py_NewRef(): new in Python 3.10
-    NEED_PYTHONCAPI_COMPAT = (MIN_PYTHON < (3, 10))
 
+        # "Py_INCREF(x); y = x;" must be replaced before
+        # "y = x; Py_INCREF(y);", to not miss consecutive
+        # "Py_INCREF; assign; Py_INCREF; assign; ..." (see unit tests).
 
-class Py_INCREF_assign(Operation):
-    NAME = "Py_INCREF_assign"
-    # "Py_INCREF(x); y = x;" must be replaced before "y = x; Py_INCREF(y);",
-    # to not miss consecutive "Py_INCREF; assign; Py_INCREF; assign; ..."
-    # (see unit tests)
-    REPLACE = (
         # "Py_INCREF(x); y = x;" => "y = Py_NewRef(x)"
         # "Py_XINCREF(x); y = x;" => "y = Py_XNewRef(x)"
         # The two statements must have the same indentation, otherwise the
@@ -488,15 +482,13 @@ OPERATIONS = (
     PyThreadState_GetFrame,
 
     # Code style: excluded from "all"
-    Py_INCREF_return,
-    Py_INCREF_assign,
+    Py_NewRef,
     Py_CLEAR,
     Py_SETREF,
 )
 
 EXCLUDE_FROM_ALL = (
-    Py_INCREF_return,
-    Py_INCREF_assign,
+    Py_NewRef,
     Py_CLEAR,
     Py_SETREF,
 )

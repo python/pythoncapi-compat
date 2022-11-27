@@ -2,7 +2,7 @@ Changelog
 =========
 
 * 2022-11-15: Add experimental operations to the upgrade_pythoncapi script:
-  ``Py_INCREF_return``, ``Py_INCREF_assign``, ``Py_CLEAR`` and ``Py_SETREF``.
+  ``Py_NewRef``, ``Py_CLEAR`` and ``Py_SETREF``.
 * 2022-11-09: Fix ``Py_SETREF()`` and ``Py_XSETREF()`` macros
   for `gh-98724 <https://github.com/python/cpython/issues/98724>`_.
 * 2022-11-04: Add ``PyFrame_GetVar()`` and ``PyFrame_GetVarString()``

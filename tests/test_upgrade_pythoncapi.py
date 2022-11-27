@@ -408,7 +408,7 @@ class Tests(unittest.TestCase):
             { return _PyThreadState_GetFrameBorrow(tstate); }
         """)
 
-    def test_py_incref_return(self):
+    def test_py_newref_return(self):
         self.check_replace("""
             PyObject* new_ref(PyObject *obj) {
                 Py_INCREF(obj);
@@ -448,7 +448,7 @@ class Tests(unittest.TestCase):
             }
         """)
 
-    def test_py_incref_assign(self):
+    def test_py_newref(self):
         # INCREF, assign
         self.check_replace("""
             void set_attr(MyStruct *obj, PyObject *value, int test)
