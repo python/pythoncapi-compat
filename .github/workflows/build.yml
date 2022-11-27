@@ -15,28 +15,47 @@ jobs:
         # The list of all available versions can be found here:
         # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
         python:
-          - "2.7"
-          - "3.5"
-          - "3.6"
+          # CPython
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
-          - "pypy2"
-          - "pypy3"
+          # CPython 3.12 final is scheduled for October 2013:
+          # https://peps.python.org/pep-0693/
+          - "3.12-dev"
+          # PyPy
+          - "pypy2.7"
+          - "pypy3.7"
+          - "pypy3.8"
+          - "pypy3.9"
         include:
+          # Windows: test old and new Python
           - os: windows-latest
             python: 3.6
+          - os: windows-latest
+            python: 3.11
+          # macOS: test old and new Python
           - os: macos-latest
             python: 3.6
+          - os: macos-latest
+            python: 3.11
+          # Python 2.7-3.6: use old Ubuntu 20.04
+          - os: ubuntu-20.04
+            python: 2.7
           - os: ubuntu-18.04
             python: 3.4
+          - os: ubuntu-20.04
+            python: 3.5
+          - os: ubuntu-20.04
+            python: 3.6
 
     steps:
-      - uses: actions/checkout@v2
+        # https://github.com/actions/checkout
+      - uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        # https://github.com/actions/setup-python
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
       - name: Display the Python version
