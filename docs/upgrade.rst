@@ -151,12 +151,9 @@ Example: ``-o all,Py_SETREF``.
 
 Experimental operations:
 
-* ``Py_INCREF_return``:
+* ``Py_NewRef``:
 
   * Replace ``Py_INCREF(res); return res;`` with ``return Py_NewRef(res);``
-
-* ``Py_INCREF_assign``:
-
   * Replace ``x = y; Py_INCREF(x);`` with ``x = Py_NewRef(y);``
   * Replace ``x = y; Py_INCREF(y);`` with ``x = Py_NewRef(y);``
   * Replace ``Py_INCREF(y); x = y;`` with ``x = Py_NewRef(y);``
