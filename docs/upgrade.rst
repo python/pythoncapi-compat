@@ -141,3 +141,31 @@ PyThreadState_GetFrame
 ----------------------
 
 * Replace ``tstate->frame`` with ``_PyThreadState_GetFrameBorrow(tstate)``.
+
+Experimental operations
+-----------------------
+
+The following operations are experimental (ex: can introduce compiler warnings)
+and so not included in the ``all`` group, they have to be selected explicitly.
+Example: ``-o all,Py_SETREF``.
+
+Experimental operations:
+
+* ``Py_INCREF_return``:
+
+  * Replace ``Py_INCREF(res); return res;`` with ``return Py_NewRef(res);``
+
+* ``Py_INCREF_assign``:
+
+  * Replace ``x = y; Py_INCREF(x);`` with ``x = Py_NewRef(y);``
+  * Replace ``x = y; Py_INCREF(y);`` with ``x = Py_NewRef(y);``
+  * Replace ``Py_INCREF(y); x = y;`` with ``x = Py_NewRef(y);``
+
+* ``Py_CLEAR``:
+
+  * Replace ``Py_XDECREF(var); var = NULL;`` with ``Py_CLEAR(var);``
+
+* ``Py_SETREF``:
+
+  * Replace ``Py_DECREF(x); x = y;`` with ``Py_SETREF(x, y);``
+  * Replace ``Py_XDECREF(x); x = y;`` with ``Py_XSETREF(x, y);``
