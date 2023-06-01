@@ -9,6 +9,7 @@ Usage::
 """
 from __future__ import absolute_import
 from __future__ import print_function
+import gc
 import os.path
 import shutil
 import subprocess
@@ -82,6 +83,14 @@ def _run_tests(tests, verbose):
         test_func()
 
 
+_HAS_CLEAR_TYPE_CACHE = hasattr(sys, '_clear_type_cache')
+
+def _refleak_cleanup():
+    if _HAS_CLEAR_TYPE_CACHE:
+        sys._clear_type_cache()
+    gc.collect()
+
+
 def _check_refleak(test_func, verbose):
     nrun = 6
     for i in range(1, nrun + 1):
@@ -93,6 +102,7 @@ def _check_refleak(test_func, verbose):
 
         init_refcnt = sys.gettotalrefcount()
         test_func()
+        _refleak_cleanup()
         diff = sys.gettotalrefcount() - init_refcnt
 
         if i > 3 and diff:
