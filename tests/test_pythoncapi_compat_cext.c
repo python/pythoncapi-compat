@@ -37,6 +37,13 @@
 #  define CHECK_REFCNT
 #endif
 
+// CPython 3.12 beta 1 implements immortal objects (PEP 683)
+#if 0x030C00B1 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+   // Don't check reference count of Python 3.12 immortal objects (ex: bool
+   // and str types)
+#  define IMMORTAL_OBJS
+#endif
+
 #ifdef CHECK_REFCNT
 #  define ASSERT_REFCNT(expr) assert(expr)
 #else
@@ -381,7 +388,9 @@ test_module_add_type(PyObject *module)
     if (PyModule_AddType(module, type) < 0) {
         return -1;
     }
+#ifndef IMMORTAL_OBJS
     ASSERT_REFCNT(Py_REFCNT(type) == refcnt + 1);
+#endif
 
     PyObject *attr = PyObject_GetAttrString(module, type_name);
     if (attr == _Py_NULL) {
@@ -412,7 +421,9 @@ test_module_addobjectref(PyObject *module)
         ASSERT_REFCNT(Py_REFCNT(obj) == refcnt);
         return -1;
     }
+#ifndef IMMORTAL_OBJS
     ASSERT_REFCNT(Py_REFCNT(obj) == refcnt + 1);
+#endif
 
     if (PyObject_DelAttrString(module, name) < 0) {
         return -1;
