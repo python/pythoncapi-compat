@@ -53,15 +53,17 @@ PYTHONS = (
 
 
 def run_tests_exe(executable, verbose, tested):
-    executable = os.path.realpath(executable)
-    if executable in tested:
+    tested_key = os.path.realpath(executable)
+    if tested_key in tested:
         return
 
+    # Don't use realpath() for the executed command to support virtual
+    # environments
     cmd = [executable, TEST_COMPAT]
     if verbose:
         cmd.append('-v')
     run_command(cmd)
-    tested.add(executable)
+    tested.add(tested_key)
 
 
 def run_tests(python, verbose, tested):
