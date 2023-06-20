@@ -31,6 +31,9 @@ Python 3.13
 
    See `PyImport_AddModuleRef() documentation <https://docs.python.org/dev/c-api/import.html#c.PyImport_AddModuleRef>`__.
 
+.. c:function:: int PyWeakref_GetRef(PyObject *ref, PyObject **pobj)
+
+   See `PyWeakref_GetRef() documentation <https://docs.python.org/dev/c-api/weakref.html#c.PyWeakref_GetRef>`__.
 
 Python 3.12
 -----------

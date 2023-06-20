@@ -570,12 +570,40 @@ PyCode_GetCellvars(PyCodeObject *code)
 #  endif
 #endif
 
+
 // gh-105922 added PyImport_AddModuleRef() to Python 3.13.0a1
 #if PY_VERSION_HEX < 0x030D00A0
 PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyImport_AddModuleRef(const char *name)
 {
     return Py_XNewRef(PyImport_AddModule(name));
+}
+#endif
+
+
+// gh-105927 added PyWeakref_GetRef() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D0000
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyWeakref_GetRef(PyObject *ref, PyObject **pobj)
+{
+    PyObject *obj;
+    if (ref != NULL && !PyWeakref_Check(ref)) {
+        *pobj = NULL;
+        PyErr_SetString(PyExc_TypeError, "expected a weakref");
+        return -1;
+    }
+    obj = PyWeakref_GetObject(ref);
+    if (obj == NULL) {
+        // SystemError if ref is NULL
+        *pobj = NULL;
+        return -1;
+    }
+    if (obj == Py_None) {
+        *pobj = NULL;
+        return 0;
+    }
+    *pobj = Py_NewRef(obj);
+    return 0;
 }
 #endif
 

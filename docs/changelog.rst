@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2023-06-21: Add ``PyWeakref_GetRef()`` function.
 * 2023-06-20: Add ``PyImport_AddModuleRef()`` function.
 * 2022-11-15: Add experimental operations to the ``upgrade_pythoncapi.py``
   script: ``Py_NewRef``, ``Py_CLEAR`` and ``Py_SETREF``.
