@@ -24,6 +24,14 @@ Latest version of the header file:
 `pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/master/pythoncapi_compat.h>`_.
 
 
+Python 3.13
+-----------
+
+.. c:function:: PyObject* PyImport_AddModuleRef(const char *name)
+
+   See `PyImport_AddModuleRef() documentation <https://docs.python.org/dev/c-api/import.html#c.PyImport_AddModuleRef>`__.
+
+
 Python 3.12
 -----------
 

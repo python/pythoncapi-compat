@@ -1,8 +1,9 @@
 Changelog
 =========
 
-* 2022-11-15: Add experimental operations to the upgrade_pythoncapi script:
-  ``Py_NewRef``, ``Py_CLEAR`` and ``Py_SETREF``.
+* 2023-06-20: Add ``PyImport_AddModuleRef()`` function.
+* 2022-11-15: Add experimental operations to the ``upgrade_pythoncapi.py``
+  script: ``Py_NewRef``, ``Py_CLEAR`` and ``Py_SETREF``.
 * 2022-11-09: Fix ``Py_SETREF()`` and ``Py_XSETREF()`` macros
   for `gh-98724 <https://github.com/python/cpython/issues/98724>`_.
 * 2022-11-04: Add ``PyFrame_GetVar()`` and ``PyFrame_GetVarString()``

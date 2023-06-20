@@ -570,6 +570,15 @@ PyCode_GetCellvars(PyCodeObject *code)
 #  endif
 #endif
 
+// gh-105922 added PyImport_AddModuleRef() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A0
+PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
+PyImport_AddModuleRef(const char *name)
+{
+    return Py_XNewRef(PyImport_AddModule(name));
+}
+#endif
+
 
 #ifdef __cplusplus
 }
