@@ -33,7 +33,7 @@
 #define MODULE_NAME_STR STR(MODULE_NAME)
 
 // Ignore reference count checks on PyPy
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
 #  define CHECK_REFCNT
 #endif
 
@@ -148,7 +148,7 @@ test_py_is(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
 static void
 test_frame_getvar(PyFrameObject *frame)
 {
@@ -279,7 +279,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyInterpreterState *interp = PyThreadState_GetInterpreter(tstate);
     assert(interp != _Py_NULL);
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     // test PyThreadState_GetFrame()
     PyFrameObject *frame = PyThreadState_GetFrame(tstate);
     if (frame != _Py_NULL) {
@@ -293,7 +293,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(id > 0);
 #endif
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     // PyThreadState_EnterTracing(), PyThreadState_LeaveTracing()
     PyThreadState_EnterTracing(tstate);
     PyThreadState_LeaveTracing(tstate);
@@ -668,10 +668,90 @@ test_import(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static void
+gc_collect(void)
+{
+#if defined(PYPY_VERSION)
+    PyObject *mod = PyImport_ImportModule("gc");
+    assert(mod != NULL);
+
+    PyObject *res = PyObject_CallMethod(mod, "collect", NULL);
+    Py_DECREF(mod);
+    assert(res != NULL);
+    Py_DECREF(res);
+#else
+    PyGC_Collect();
+#endif
+}
+
+
+static PyObject *
+test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    // Create a new heap type, create an instance of this type, and delete the
+    // type. This object supports weak references.
+    PyObject *new_type = PyObject_CallFunction((PyObject*)&PyType_Type,
+                                               "s(){}", "TypeName");
+    if (new_type == NULL) {
+        return NULL;
+    }
+    PyObject *obj = PyObject_CallNoArgs(new_type);
+    Py_DECREF(new_type);
+    if (obj == NULL) {
+        return NULL;
+    }
+    Py_ssize_t refcnt = Py_REFCNT(obj);
+
+    // create a weak reference
+    PyObject *weakref = PyWeakref_NewRef(obj, NULL);
+    if (weakref == NULL) {
+        return NULL;
+    }
+
+    // test PyWeakref_GetRef(), reference is alive
+    PyObject *ref = Py_True;  // marker to check that value was set
+    assert(PyWeakref_GetRef(weakref, &ref) == 0);
+    assert(ref == obj);
+    assert(Py_REFCNT(obj) == (refcnt + 1));
+    Py_DECREF(ref);
+
+    // delete the referenced object: clear the weakref
+    Py_DECREF(obj);
+    gc_collect();
+
+    // test PyWeakref_GetRef(), reference is dead
+    ref = Py_True;
+    assert(PyWeakref_GetRef(weakref, &ref) == 0);
+    assert(ref == NULL);
+
+    // test PyWeakref_GetRef(), invalid type
+    PyObject *invalid_weakref = Py_None;
+    assert(!PyErr_Occurred());
+    ref = Py_True;
+    assert(PyWeakref_GetRef(invalid_weakref, &ref) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_TypeError));
+    assert(ref == NULL);
+    PyErr_Clear();
+
+#ifndef PYPY_VERSION
+    // test PyWeakref_GetRef(NULL)
+    ref = Py_True;
+    assert(PyWeakref_GetRef(NULL, &ref) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    assert(ref == NULL);
+    PyErr_Clear();
+#endif
+
+    Py_DECREF(weakref);
+
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     {"test_frame", test_frame, METH_NOARGS, _Py_NULL},
 #endif
     {"test_thread_state", test_thread_state, METH_NOARGS, _Py_NULL},
@@ -682,11 +762,12 @@ static struct PyMethodDef methods[] = {
 #if (PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) && !defined(PYPY_VERSION)
     {"test_float_pack", test_float_pack, METH_NOARGS, _Py_NULL},
 #endif
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     {"test_code", test_code, METH_NOARGS, _Py_NULL},
 #endif
     {"test_api_casts", test_api_casts, METH_NOARGS, _Py_NULL},
     {"test_import", test_import, METH_NOARGS, _Py_NULL},
+    {"test_weakref", test_weakref, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
