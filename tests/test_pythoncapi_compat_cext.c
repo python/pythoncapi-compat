@@ -709,36 +709,36 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     }
 
     // test PyWeakref_GetRef(), reference is alive
-    PyObject *ref1;
-    assert(PyWeakref_GetRef(weakref, &ref1) == 0);
-    assert(ref1 == obj);
+    PyObject *ref = Py_True;  // marker to check that value was set
+    assert(PyWeakref_GetRef(weakref, &ref) == 0);
+    assert(ref == obj);
     assert(Py_REFCNT(obj) == (refcnt + 1));
-    Py_DECREF(ref1);
+    Py_DECREF(ref);
 
-    // delete the referenced object
+    // delete the referenced object: clear the weakref
     Py_DECREF(obj);
     gc_collect();
 
     // test PyWeakref_GetRef(), reference is dead
-    PyObject *ref2 = Py_True;  // marker to check that value was set
-    assert(PyWeakref_GetRef(weakref, &ref2) == 0);
-    assert(ref2 == NULL);
+    ref = Py_True;
+    assert(PyWeakref_GetRef(weakref, &ref) == 0);
+    assert(ref == NULL);
 
     // test PyWeakref_GetRef(), invalid type
     PyObject *invalid_weakref = Py_None;
     assert(!PyErr_Occurred());
-    PyObject *ref3 = Py_True;  // marker to check that value was set
-    assert(PyWeakref_GetRef(invalid_weakref, &ref3) == -1);
+    ref = Py_True;
+    assert(PyWeakref_GetRef(invalid_weakref, &ref) == -1);
     assert(PyErr_ExceptionMatches(PyExc_TypeError));
-    assert(ref3 == NULL);
+    assert(ref == NULL);
     PyErr_Clear();
 
 #ifndef PYPY_VERSION
     // test PyWeakref_GetRef(NULL)
-    PyObject *ref4 = Py_True;  // marker to check that value was set
-    assert(PyWeakref_GetRef(NULL, &ref4) == -1);
+    ref = Py_True;
+    assert(PyWeakref_GetRef(NULL, &ref) == -1);
     assert(PyErr_ExceptionMatches(PyExc_SystemError));
-    assert(ref4 == NULL);
+    assert(ref == NULL);
     PyErr_Clear();
 #endif
 
