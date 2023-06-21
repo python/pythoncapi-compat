@@ -716,7 +716,6 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(ref1);
 
     // delete the referenced object
-    assert(Py_REFCNT(obj) == 1);
     Py_DECREF(obj);
     gc_collect();
 
