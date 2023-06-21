@@ -33,7 +33,7 @@
 #define MODULE_NAME_STR STR(MODULE_NAME)
 
 // Ignore reference count checks on PyPy
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
 #  define CHECK_REFCNT
 #endif
 
@@ -148,7 +148,7 @@ test_py_is(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
 static void
 test_frame_getvar(PyFrameObject *frame)
 {
@@ -279,7 +279,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyInterpreterState *interp = PyThreadState_GetInterpreter(tstate);
     assert(interp != _Py_NULL);
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     // test PyThreadState_GetFrame()
     PyFrameObject *frame = PyThreadState_GetFrame(tstate);
     if (frame != _Py_NULL) {
@@ -293,7 +293,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(id > 0);
 #endif
 
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     // PyThreadState_EnterTracing(), PyThreadState_LeaveTracing()
     PyThreadState_EnterTracing(tstate);
     PyThreadState_LeaveTracing(tstate);
@@ -733,6 +733,15 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(ref3 == NULL);
     PyErr_Clear();
 
+#ifndef PYPY_VERSION
+    // test PyWeakref_GetRef(NULL)
+    PyObject *ref4 = Py_True;  // marker to check that value was set
+    assert(PyWeakref_GetRef(NULL, &ref4) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    assert(ref4 == NULL);
+    PyErr_Clear();
+#endif
+
     Py_DECREF(weakref);
 
     Py_RETURN_NONE;
@@ -742,7 +751,7 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     {"test_frame", test_frame, METH_NOARGS, _Py_NULL},
 #endif
     {"test_thread_state", test_thread_state, METH_NOARGS, _Py_NULL},
@@ -753,7 +762,7 @@ static struct PyMethodDef methods[] = {
 #if (PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) && !defined(PYPY_VERSION)
     {"test_float_pack", test_float_pack, METH_NOARGS, _Py_NULL},
 #endif
-#if !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     {"test_code", test_code, METH_NOARGS, _Py_NULL},
 #endif
     {"test_api_casts", test_api_casts, METH_NOARGS, _Py_NULL},
