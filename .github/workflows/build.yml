@@ -40,15 +40,14 @@ jobs:
             python: 3.6
           - os: macos-latest
             python: 3.11
-          # Python 2.7-3.6: use old Ubuntu 20.04
-          - os: ubuntu-20.04
-            python: 2.7
           - os: ubuntu-18.04
             python: 3.4
           - os: ubuntu-20.04
             python: 3.5
           - os: ubuntu-20.04
             python: 3.6
+          # Python 2.7 was removed from GHA setup-python in June 2023:
+          # https://github.com/actions/setup-python/issues/672
 
     steps:
         # https://github.com/actions/checkout
