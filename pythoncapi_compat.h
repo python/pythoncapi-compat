@@ -603,7 +603,7 @@ PyWeakref_GetRef(PyObject *ref, PyObject **pobj)
         return 0;
     }
     *pobj = Py_NewRef(obj);
-    return 0;
+    return (*pobj != NULL);
 }
 #endif
 
