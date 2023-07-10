@@ -686,6 +686,31 @@ gc_collect(void)
 
 
 static PyObject *
+func_varargs(PyObject *Py_UNUSED(module), PyObject *args, PyObject *kwargs)
+{
+    if (kwargs != NULL) {
+        return PyTuple_Pack(2, args, kwargs);
+    }
+    else {
+        return PyTuple_Pack(1, args);
+    }
+}
+
+
+static void
+check_int(PyObject *obj, int value)
+{
+#ifdef PYTHON3
+    assert(PyLong_Check(obj));
+    assert(PyLong_AsLong(obj) == value);
+#else
+    assert(PyInt_Check(obj));
+    assert(PyInt_AsLong(obj) == value);
+#endif
+}
+
+
+static PyObject *
 test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
     // Create a new heap type, create an instance of this type, and delete the
@@ -743,7 +768,164 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif
 
     Py_DECREF(weakref);
+    Py_RETURN_NONE;
+}
 
+
+static void
+test_vectorcall_noargs(PyObject *func_varargs)
+{
+    PyObject *res = PyObject_Vectorcall(func_varargs, NULL, 0, NULL);
+    assert(res != NULL);
+
+    assert(PyTuple_Check(res));
+    assert(PyTuple_GET_SIZE(res) == 1);
+    PyObject *posargs = PyTuple_GET_ITEM(res, 0);
+
+    assert(PyTuple_Check(posargs));
+    assert(PyTuple_GET_SIZE(posargs) == 0);
+
+    Py_DECREF(res);
+}
+
+
+static void
+test_vectorcall_args(PyObject *func_varargs)
+{
+    PyObject *args_tuple = Py_BuildValue("ii", 1, 2);
+    assert(args_tuple != NULL);
+    size_t nargs = (size_t)PyTuple_GET_SIZE(args_tuple);
+    PyObject **args = &PyTuple_GET_ITEM(args_tuple, 0);
+
+    PyObject *res = PyObject_Vectorcall(func_varargs, args, nargs, NULL);
+    Py_DECREF(args_tuple);
+    assert(res != NULL);
+
+    assert(PyTuple_Check(res));
+    assert(PyTuple_GET_SIZE(res) == 1);
+    PyObject *posargs = PyTuple_GET_ITEM(res, 0);
+
+    assert(PyTuple_Check(posargs));
+    assert(PyTuple_GET_SIZE(posargs) == 2);
+    check_int(PyTuple_GET_ITEM(posargs, 0), 1);
+    check_int(PyTuple_GET_ITEM(posargs, 1), 2);
+
+    Py_DECREF(res);
+}
+
+
+static void
+test_vectorcall_args_offset(PyObject *func_varargs)
+{
+    // args contains 3 values, but only pass 2 last values
+    PyObject *args_tuple = Py_BuildValue("iii", 1, 2, 3);
+    assert(args_tuple != NULL);
+    size_t nargs = 2 | PY_VECTORCALL_ARGUMENTS_OFFSET;
+    PyObject **args = &PyTuple_GET_ITEM(args_tuple, 1);
+    PyObject *arg0 = PyTuple_GET_ITEM(args_tuple, 0);
+
+    PyObject *res = PyObject_Vectorcall(func_varargs, args, nargs, NULL);
+    assert(PyTuple_GET_ITEM(args_tuple, 0) == arg0);
+    Py_DECREF(args_tuple);
+    assert(res != NULL);
+
+    assert(PyTuple_Check(res));
+    assert(PyTuple_GET_SIZE(res) == 1);
+    PyObject *posargs = PyTuple_GET_ITEM(res, 0);
+
+    assert(PyTuple_Check(posargs));
+    assert(PyTuple_GET_SIZE(posargs) == 2);
+    check_int(PyTuple_GET_ITEM(posargs, 0), 2);
+    check_int(PyTuple_GET_ITEM(posargs, 1), 3);
+
+    Py_DECREF(res);
+}
+
+
+static void
+test_vectorcall_args_kwnames(PyObject *func_varargs)
+{
+    PyObject *args_tuple = Py_BuildValue("iiiii", 1, 2, 3, 4, 5);
+    assert(args_tuple != NULL);
+    PyObject **args = &PyTuple_GET_ITEM(args_tuple, 0);
+
+#ifdef PYTHON3
+    PyObject *key1 = PyUnicode_FromString("key1");
+    PyObject *key2 = PyUnicode_FromString("key2");
+#else
+    PyObject *key1 = PyString_FromString("key1");
+    PyObject *key2 = PyString_FromString("key2");
+#endif
+    assert(key1 != NULL);
+    assert(key2 != NULL);
+    PyObject *kwnames = PyTuple_Pack(2, key1, key2);
+    assert(kwnames != NULL);
+    size_t nargs = (size_t)(PyTuple_GET_SIZE(args_tuple) - PyTuple_GET_SIZE(kwnames));
+
+    PyObject *res = PyObject_Vectorcall(func_varargs, args, nargs, kwnames);
+    Py_DECREF(args_tuple);
+    Py_DECREF(kwnames);
+    assert(res != NULL);
+
+    assert(PyTuple_Check(res));
+    assert(PyTuple_GET_SIZE(res) == 2);
+    PyObject *posargs = PyTuple_GET_ITEM(res, 0);
+    PyObject *kwargs = PyTuple_GET_ITEM(res, 1);
+
+    assert(PyTuple_Check(posargs));
+    assert(PyTuple_GET_SIZE(posargs) == 3);
+    check_int(PyTuple_GET_ITEM(posargs, 0), 1);
+    check_int(PyTuple_GET_ITEM(posargs, 1), 2);
+    check_int(PyTuple_GET_ITEM(posargs, 2), 3);
+
+    assert(PyDict_Check(kwargs));
+    assert(PyDict_Size(kwargs) == 2);
+
+    Py_ssize_t pos = 0;
+    PyObject *key, *value;
+    while (PyDict_Next(kwargs, &pos, &key, &value)) {
+#ifdef PYTHON3
+        assert(PyUnicode_Check(key));
+#else
+        assert(PyString_Check(key));
+#endif
+        if (PyObject_RichCompareBool(key, key1, Py_EQ)) {
+            check_int(value, 4);
+        }
+        else {
+            assert(PyObject_RichCompareBool(key, key2, Py_EQ));
+            check_int(value, 5);
+        }
+    }
+
+    Py_DECREF(res);
+    Py_DECREF(key1);
+    Py_DECREF(key2);
+}
+
+
+static PyObject *
+test_vectorcall(PyObject *module, PyObject *Py_UNUSED(args))
+{
+#ifndef PYTHON3
+    module = PyImport_ImportModule(MODULE_NAME_STR);
+    assert(module != NULL);
+#endif
+    PyObject *func_varargs = PyObject_GetAttrString(module, "func_varargs");
+#ifndef PYTHON3
+    Py_DECREF(module);
+#endif
+    if (func_varargs == NULL) {
+        return NULL;
+    }
+
+    // test PyObject_Vectorcall()
+    test_vectorcall_noargs(func_varargs);
+    test_vectorcall_args(func_varargs);
+    test_vectorcall_args_offset(func_varargs);
+    test_vectorcall_args_kwnames(func_varargs);
+
+    Py_DECREF(func_varargs);
     Py_RETURN_NONE;
 }
 
@@ -768,6 +950,8 @@ static struct PyMethodDef methods[] = {
     {"test_api_casts", test_api_casts, METH_NOARGS, _Py_NULL},
     {"test_import", test_import, METH_NOARGS, _Py_NULL},
     {"test_weakref", test_weakref, METH_NOARGS, _Py_NULL},
+    {"func_varargs", (PyCFunction)(void*)func_varargs, METH_VARARGS | METH_KEYWORDS, _Py_NULL},
+    {"test_vectorcall", test_vectorcall, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

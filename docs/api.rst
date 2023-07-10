@@ -211,6 +211,18 @@ PyObject
 
    See `PyObject_CallOneArg() documentation <https://docs.python.org/dev/c-api/call.html#c.PyObject_CallOneArg>`__.
 
+.. c:function:: PyObject* PyObject_Vectorcall(PyObject *callable, PyObject *const *args, size_t nargsf, PyObject *kwnames)
+
+   See `PyObject_Vectorcall() documentation <https://docs.python.org/dev/c-api/call.html#c.PyObject_Vectorcall>`__.
+
+.. c:function:: Py_ssize_t PyVectorcall_NARGS(size_t nargsf)
+
+   See `PyVectorcall_NARGS() documentation <https://docs.python.org/dev/c-api/call.html#c.PyVectorcall_NARGS>`__.
+
+.. c:macro:: PY_VECTORCALL_ARGUMENTS_OFFSET
+
+   See `PY_VECTORCALL_ARGUMENTS_OFFSET documentation <https://docs.python.org/dev/c-api/call.html#PY_VECTORCALL_ARGUMENTS_OFFSET>`__.
+
 
 PyFrameObject
 ^^^^^^^^^^^^^
