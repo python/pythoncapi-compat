@@ -50,6 +50,21 @@
 #  define ASSERT_REFCNT(expr)
 #endif
 
+
+static PyObject*
+create_string(const char *str)
+{
+    PyObject *obj;
+#ifdef PYTHON3
+    obj = PyUnicode_FromString(str);
+#else
+    obj = PyString_FromString(str);
+#endif
+    assert(obj != NULL);
+    return obj;
+}
+
+
 static PyObject *
 test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -930,6 +945,51 @@ test_vectorcall(PyObject *module, PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_getattr(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    assert(!PyErr_Occurred());
+
+    PyObject *obj = PyImport_ImportModule("sys");
+    if (obj == NULL) {
+        return NULL;
+    }
+    PyObject *attr_name;
+    PyObject *value;
+
+    // test PyObject_GetOptionalAttr(): attribute exists
+    attr_name = create_string("version");
+    value = Py_True;  // marker value
+    assert(PyObject_GetOptionalAttr(obj, attr_name, &value) == 1);
+    assert(value != NULL);
+    Py_DECREF(value);
+    Py_DECREF(attr_name);
+
+    // test PyObject_GetOptionalAttrString(): attribute exists
+    value = Py_True;  // marker value
+    assert(PyObject_GetOptionalAttrString(obj, "version", &value) == 1);
+    assert(value != NULL);
+    Py_DECREF(value);
+
+    // test PyObject_GetOptionalAttr(): attribute doesn't exist
+    attr_name = create_string("nonexistant_attr_name");
+    value = Py_True;  // marker value
+    assert(PyObject_GetOptionalAttr(obj, attr_name, &value) == 0);
+    assert(value == NULL);
+    Py_DECREF(attr_name);
+    assert(!PyErr_Occurred());
+
+    // test PyObject_GetOptionalAttrString(): attribute doesn't exist
+    value = Py_True;  // marker value
+    assert(PyObject_GetOptionalAttrString(obj, "nonexistant_attr_name", &value) == 0);
+    assert(value == NULL);
+    assert(!PyErr_Occurred());
+
+    Py_DECREF(obj);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -952,6 +1012,7 @@ static struct PyMethodDef methods[] = {
     {"test_weakref", test_weakref, METH_NOARGS, _Py_NULL},
     {"func_varargs", (PyCFunction)(void*)func_varargs, METH_VARARGS | METH_KEYWORDS, _Py_NULL},
     {"test_vectorcall", test_vectorcall, METH_NOARGS, _Py_NULL},
+    {"test_getattr", test_getattr, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

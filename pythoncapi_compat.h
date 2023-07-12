@@ -698,6 +698,49 @@ error:
 #endif
 
 
+// gh-106521 added PyObject_GetOptionalAttr() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyObject_GetOptionalAttr(PyObject *obj, PyObject *name, PyObject **result)
+{
+    // bpo-32571 added _PyObject_LookupAttr() to Python 3.7.0b1
+#if PY_VERSION_HEX >= 0x030700B1 && !defined(PYPY_VERSION)
+    return _PyObject_LookupAttr(obj, name, result);
+#else
+    *result = PyObject_GetAttr(obj, name);
+    if (*result != NULL) {
+        return 1;
+    }
+    if (!PyErr_Occurred()) {
+        return 0;
+    }
+    if (PyErr_ExceptionMatches(PyExc_AttributeError)) {
+        PyErr_Clear();
+        return 0;
+    }
+    return -1;
+#endif
+}
+
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyObject_GetOptionalAttrString(PyObject *obj, const char *name, PyObject **presult)
+{
+    PyObject *name_obj;
+#if PY_VERSION_HEX >= 0x03000000
+    name_obj = PyUnicode_FromString(name);
+#else
+    name_obj = PyString_FromString(name);
+#endif
+    if (name_obj == NULL) {
+        return -1;
+    }
+    int res = PyObject_GetOptionalAttr(obj, name_obj, presult);
+    Py_DECREF(name_obj);
+    return res;
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -35,6 +35,15 @@ Python 3.13
 
    See `PyWeakref_GetRef() documentation <https://docs.python.org/dev/c-api/weakref.html#c.PyWeakref_GetRef>`__.
 
+.. c:function:: int PyObject_GetOptionalAttr(PyObject *obj, PyObject *attr_name, PyObject **result)
+
+   See `PyObject_GetOptionalAttr() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_GetOptionalAttr>`__.
+
+.. c:function:: int PyObject_GetOptionalAttrString(PyObject *obj, const char *name, PyObject **result)
+
+   See `PyObject_GetOptionalAttrString() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_GetOptionalAttrString>`__.
+
+
 Python 3.12
 -----------
 
