@@ -284,7 +284,11 @@ PYCAPI_COMPAT_STATIC_INLINE(PyObject*)
 PyFrame_GetVarString(PyFrameObject *frame, const char *name)
 {
     PyObject *name_obj, *value;
+#if PY_VERSION_HEX >= 0x03000000
     name_obj = PyUnicode_FromString(name);
+#else
+    name_obj = PyString_FromString(name);
+#endif
     if (name_obj == NULL) {
         return NULL;
     }
@@ -723,9 +727,10 @@ PyObject_GetOptionalAttr(PyObject *obj, PyObject *name, PyObject **result)
 }
 
 PYCAPI_COMPAT_STATIC_INLINE(int)
-PyObject_GetOptionalAttrString(PyObject *obj, const char *name, PyObject **presult)
+PyObject_GetOptionalAttrString(PyObject *obj, const char *name, PyObject **result)
 {
     PyObject *name_obj;
+    int rc;
 #if PY_VERSION_HEX >= 0x03000000
     name_obj = PyUnicode_FromString(name);
 #else
@@ -734,9 +739,45 @@ PyObject_GetOptionalAttrString(PyObject *obj, const char *name, PyObject **presu
     if (name_obj == NULL) {
         return -1;
     }
-    int res = PyObject_GetOptionalAttr(obj, name_obj, presult);
+    rc = PyObject_GetOptionalAttr(obj, name_obj, result);
     Py_DECREF(name_obj);
-    return res;
+    return rc;
+}
+#endif
+
+
+// gh-106307 added PyObject_GetOptionalAttr() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyMapping_GetOptionalItem(PyObject *obj, PyObject *key, PyObject **result)
+{
+    *result = PyObject_GetItem(obj, key);
+    if (*result) {
+        return 1;
+    }
+    if (!PyErr_ExceptionMatches(PyExc_KeyError)) {
+        return -1;
+    }
+    PyErr_Clear();
+    return 0;
+}
+
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyMapping_GetOptionalItemString(PyObject *obj, const char *key, PyObject **result)
+{
+    PyObject *key_obj;
+    int rc;
+#if PY_VERSION_HEX >= 0x03000000
+    key_obj = PyUnicode_FromString(key);
+#else
+    key_obj = PyString_FromString(key);
+#endif
+    if (key_obj == NULL) {
+        return -1;
+    }
+    rc = PyMapping_GetOptionalItem(obj, key_obj, result);
+    Py_DECREF(key_obj);
+    return rc;
 }
 #endif
 

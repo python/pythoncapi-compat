@@ -990,6 +990,50 @@ test_getattr(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_getitem(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    assert(!PyErr_Occurred());
+
+    PyObject *value = Py_BuildValue("s", "value");
+    assert(value != NULL);
+    PyObject *obj = Py_BuildValue("{sO}", "key", value);
+    assert(obj != NULL);
+    PyObject *key;
+    PyObject *item;
+
+    // test PyMapping_GetOptionalItem(): key is present
+    key = create_string("key");
+    item = Py_True;  // marker value
+    assert(PyMapping_GetOptionalItem(obj, key, &item) == 1);
+    assert(item == value);
+    Py_DECREF(item);
+    Py_DECREF(key);
+
+    // test PyMapping_GetOptionalItemString(): key is present
+    item = Py_True;  // marker value
+    assert(PyMapping_GetOptionalItemString(obj, "key", &item) == 1);
+    assert(item == value);
+    Py_DECREF(item);
+
+    // test PyMapping_GetOptionalItem(): missing key
+    key = create_string("dontexist");
+    item = Py_True;  // marker value
+    assert(PyMapping_GetOptionalItem(obj, key, &item) == 0);
+    assert(item == NULL);
+    Py_DECREF(key);
+
+    // test PyMapping_GetOptionalItemString(): missing key
+    item = Py_True;  // marker value
+    assert(PyMapping_GetOptionalItemString(obj, "dontexist", &item) == 0);
+    assert(item == NULL);
+
+    Py_DECREF(obj);
+    Py_DECREF(value);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1013,6 +1057,7 @@ static struct PyMethodDef methods[] = {
     {"func_varargs", (PyCFunction)(void*)func_varargs, METH_VARARGS | METH_KEYWORDS, _Py_NULL},
     {"test_vectorcall", test_vectorcall, METH_NOARGS, _Py_NULL},
     {"test_getattr", test_getattr, METH_NOARGS, _Py_NULL},
+    {"test_getitem", test_getitem, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

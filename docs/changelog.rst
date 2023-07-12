@@ -1,8 +1,10 @@
 Changelog
 =========
 
-* 2023-07-12: Add ``PyObject_GetOptionalAttr()`` and
-  ``PyObject_GetOptionalAttrString()`` functions.
+* 2023-07-12: Add ``PyObject_GetOptionalAttr()``,
+  ``PyObject_GetOptionalAttrString()``,
+  ``PyMapping_GetOptionalItem()``
+  and ``PyMapping_GetOptionalItemString()`` functions.
 * 2023-07-05: Add ``PyObject_Vectorcall()`` function.
 * 2023-06-21: Add ``PyWeakref_GetRef()`` function.
 * 2023-06-20: Add ``PyImport_AddModuleRef()`` function.
