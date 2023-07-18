@@ -60,7 +60,7 @@ create_string(const char *str)
 #else
     obj = PyString_FromString(str);
 #endif
-    assert(obj != NULL);
+    assert(obj != _Py_NULL);
     return obj;
 }
 
@@ -173,27 +173,27 @@ test_frame_getvar(PyFrameObject *frame)
 
     // test PyFrame_GetVar() and PyFrame_GetVarString()
     PyObject *attr = PyUnicode_FromString("name");
-    assert(attr != NULL);
+    assert(attr != _Py_NULL);
     PyObject *name1 = PyFrame_GetVar(frame, attr);
     Py_DECREF(attr);
-    assert(name1 != NULL);
+    assert(name1 != _Py_NULL);
     Py_DECREF(name1);
 
     PyObject *name2 = PyFrame_GetVarString(frame, "name");
-    assert(name2 != NULL);
+    assert(name2 != _Py_NULL);
     Py_DECREF(name2);
 
     // test PyFrame_GetVar() and PyFrame_GetVarString() NameError
     PyObject *attr3 = PyUnicode_FromString("dontexist");
-    assert(attr3 != NULL);
+    assert(attr3 != _Py_NULL);
     PyObject *name3 = PyFrame_GetVar(frame, attr3);
     Py_DECREF(attr3);
-    assert(name3 == NULL);
+    assert(name3 == _Py_NULL);
     assert(PyErr_ExceptionMatches(PyExc_NameError));
     PyErr_Clear();
 
     PyObject *name4 = PyFrame_GetVarString(frame, "dontexist");
-    assert(name4 == NULL);
+    assert(name4 == _Py_NULL);
     assert(PyErr_ExceptionMatches(PyExc_NameError));
     PyErr_Clear();
 }
@@ -438,7 +438,7 @@ test_module_addobjectref(PyObject *module)
 {
     const char *name = "test_module_addobjectref";
     PyObject *obj = PyUnicode_FromString(name);
-    assert(obj != NULL);
+    assert(obj != _Py_NULL);
 #ifdef CHECK_REFCNT
     Py_ssize_t refcnt = Py_REFCNT(obj);
 #endif
@@ -474,7 +474,7 @@ test_module_add(PyObject *module)
 {
     const char *name = "test_module_add";
     PyObject *obj = PyUnicode_FromString(name);
-    assert(obj != NULL);
+    assert(obj != _Py_NULL);
 #ifdef CHECK_REFCNT
     Py_ssize_t refcnt = Py_REFCNT(obj);
 #endif
@@ -508,8 +508,8 @@ static PyObject *
 test_module(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *module = PyImport_ImportModule("sys");
-    if (module == NULL) {
-        return NULL;
+    if (module == _Py_NULL) {
+        return _Py_NULL;
     }
     assert(PyModule_Check(module));
 
@@ -611,7 +611,7 @@ test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     // PyCode_GetVarnames
     {
         PyObject *co_varnames = PyCode_GetVarnames(code);
-        assert(co_varnames != NULL);
+        assert(co_varnames != _Py_NULL);
         assert(PyTuple_CheckExact(co_varnames));
         assert(PyTuple_GET_SIZE(co_varnames) != 0);
         Py_DECREF(co_varnames);
@@ -620,7 +620,7 @@ test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     // PyCode_GetCellvars
     {
         PyObject *co_cellvars = PyCode_GetCellvars(code);
-        assert(co_cellvars != NULL);
+        assert(co_cellvars != _Py_NULL);
         assert(PyTuple_CheckExact(co_cellvars));
         assert(PyTuple_GET_SIZE(co_cellvars) == 0);
         Py_DECREF(co_cellvars);
@@ -629,7 +629,7 @@ test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     // PyCode_GetFreevars
     {
         PyObject *co_freevars = PyCode_GetFreevars(code);
-        assert(co_freevars != NULL);
+        assert(co_freevars != _Py_NULL);
         assert(PyTuple_CheckExact(co_freevars));
         assert(PyTuple_GET_SIZE(co_freevars) == 0);
         Py_DECREF(co_freevars);
@@ -715,15 +715,15 @@ static PyObject *
 test_import(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
     PyObject *mod = PyImport_ImportModule("sys");
-    if (mod == NULL) {
-        return NULL;
+    if (mod == _Py_NULL) {
+        return _Py_NULL;
     }
     Py_ssize_t refcnt = Py_REFCNT(mod);
 
     // test PyImport_AddModuleRef()
     PyObject *mod2 = PyImport_AddModuleRef("sys");
-    if (mod2 == NULL) {
-        return NULL;
+    if (mod2 == _Py_NULL) {
+        return _Py_NULL;
     }
     assert(PyModule_Check(mod2));
     assert(Py_REFCNT(mod) == (refcnt + 1));
@@ -740,11 +740,11 @@ gc_collect(void)
 {
 #if defined(PYPY_VERSION)
     PyObject *mod = PyImport_ImportModule("gc");
-    assert(mod != NULL);
+    assert(mod != _Py_NULL);
 
-    PyObject *res = PyObject_CallMethod(mod, "collect", NULL);
+    PyObject *res = PyObject_CallMethod(mod, "collect", _Py_NULL);
     Py_DECREF(mod);
-    assert(res != NULL);
+    assert(res != _Py_NULL);
     Py_DECREF(res);
 #else
     PyGC_Collect();
@@ -755,7 +755,7 @@ gc_collect(void)
 static PyObject *
 func_varargs(PyObject *Py_UNUSED(module), PyObject *args, PyObject *kwargs)
 {
-    if (kwargs != NULL) {
+    if (kwargs != _Py_NULL) {
         return PyTuple_Pack(2, args, kwargs);
     }
     else {
@@ -784,20 +784,20 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     // type. This object supports weak references.
     PyObject *new_type = PyObject_CallFunction((PyObject*)&PyType_Type,
                                                "s(){}", "TypeName");
-    if (new_type == NULL) {
-        return NULL;
+    if (new_type == _Py_NULL) {
+        return _Py_NULL;
     }
     PyObject *obj = PyObject_CallNoArgs(new_type);
     Py_DECREF(new_type);
-    if (obj == NULL) {
-        return NULL;
+    if (obj == _Py_NULL) {
+        return _Py_NULL;
     }
     Py_ssize_t refcnt = Py_REFCNT(obj);
 
     // create a weak reference
-    PyObject *weakref = PyWeakref_NewRef(obj, NULL);
-    if (weakref == NULL) {
-        return NULL;
+    PyObject *weakref = PyWeakref_NewRef(obj, _Py_NULL);
+    if (weakref == _Py_NULL) {
+        return _Py_NULL;
     }
 
     // test PyWeakref_GetRef(), reference is alive
@@ -814,7 +814,7 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     // test PyWeakref_GetRef(), reference is dead
     ref = Py_True;
     assert(PyWeakref_GetRef(weakref, &ref) == 0);
-    assert(ref == NULL);
+    assert(ref == _Py_NULL);
 
     // test PyWeakref_GetRef(), invalid type
     PyObject *invalid_weakref = Py_None;
@@ -822,15 +822,15 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     ref = Py_True;
     assert(PyWeakref_GetRef(invalid_weakref, &ref) == -1);
     assert(PyErr_ExceptionMatches(PyExc_TypeError));
-    assert(ref == NULL);
+    assert(ref == _Py_NULL);
     PyErr_Clear();
 
 #ifndef PYPY_VERSION
     // test PyWeakref_GetRef(NULL)
     ref = Py_True;
-    assert(PyWeakref_GetRef(NULL, &ref) == -1);
+    assert(PyWeakref_GetRef(_Py_NULL, &ref) == -1);
     assert(PyErr_ExceptionMatches(PyExc_SystemError));
-    assert(ref == NULL);
+    assert(ref == _Py_NULL);
     PyErr_Clear();
 #endif
 
@@ -842,8 +842,8 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 static void
 test_vectorcall_noargs(PyObject *func_varargs)
 {
-    PyObject *res = PyObject_Vectorcall(func_varargs, NULL, 0, NULL);
-    assert(res != NULL);
+    PyObject *res = PyObject_Vectorcall(func_varargs, _Py_NULL, 0, _Py_NULL);
+    assert(res != _Py_NULL);
 
     assert(PyTuple_Check(res));
     assert(PyTuple_GET_SIZE(res) == 1);
@@ -860,13 +860,13 @@ static void
 test_vectorcall_args(PyObject *func_varargs)
 {
     PyObject *args_tuple = Py_BuildValue("ii", 1, 2);
-    assert(args_tuple != NULL);
+    assert(args_tuple != _Py_NULL);
     size_t nargs = (size_t)PyTuple_GET_SIZE(args_tuple);
     PyObject **args = &PyTuple_GET_ITEM(args_tuple, 0);
 
-    PyObject *res = PyObject_Vectorcall(func_varargs, args, nargs, NULL);
+    PyObject *res = PyObject_Vectorcall(func_varargs, args, nargs, _Py_NULL);
     Py_DECREF(args_tuple);
-    assert(res != NULL);
+    assert(res != _Py_NULL);
 
     assert(PyTuple_Check(res));
     assert(PyTuple_GET_SIZE(res) == 1);
@@ -886,15 +886,15 @@ test_vectorcall_args_offset(PyObject *func_varargs)
 {
     // args contains 3 values, but only pass 2 last values
     PyObject *args_tuple = Py_BuildValue("iii", 1, 2, 3);
-    assert(args_tuple != NULL);
+    assert(args_tuple != _Py_NULL);
     size_t nargs = 2 | PY_VECTORCALL_ARGUMENTS_OFFSET;
     PyObject **args = &PyTuple_GET_ITEM(args_tuple, 1);
     PyObject *arg0 = PyTuple_GET_ITEM(args_tuple, 0);
 
-    PyObject *res = PyObject_Vectorcall(func_varargs, args, nargs, NULL);
+    PyObject *res = PyObject_Vectorcall(func_varargs, args, nargs, _Py_NULL);
     assert(PyTuple_GET_ITEM(args_tuple, 0) == arg0);
     Py_DECREF(args_tuple);
-    assert(res != NULL);
+    assert(res != _Py_NULL);
 
     assert(PyTuple_Check(res));
     assert(PyTuple_GET_SIZE(res) == 1);
@@ -913,7 +913,7 @@ static void
 test_vectorcall_args_kwnames(PyObject *func_varargs)
 {
     PyObject *args_tuple = Py_BuildValue("iiiii", 1, 2, 3, 4, 5);
-    assert(args_tuple != NULL);
+    assert(args_tuple != _Py_NULL);
     PyObject **args = &PyTuple_GET_ITEM(args_tuple, 0);
 
 #ifdef PYTHON3
@@ -923,16 +923,16 @@ test_vectorcall_args_kwnames(PyObject *func_varargs)
     PyObject *key1 = PyString_FromString("key1");
     PyObject *key2 = PyString_FromString("key2");
 #endif
-    assert(key1 != NULL);
-    assert(key2 != NULL);
+    assert(key1 != _Py_NULL);
+    assert(key2 != _Py_NULL);
     PyObject *kwnames = PyTuple_Pack(2, key1, key2);
-    assert(kwnames != NULL);
+    assert(kwnames != _Py_NULL);
     size_t nargs = (size_t)(PyTuple_GET_SIZE(args_tuple) - PyTuple_GET_SIZE(kwnames));
 
     PyObject *res = PyObject_Vectorcall(func_varargs, args, nargs, kwnames);
     Py_DECREF(args_tuple);
     Py_DECREF(kwnames);
-    assert(res != NULL);
+    assert(res != _Py_NULL);
 
     assert(PyTuple_Check(res));
     assert(PyTuple_GET_SIZE(res) == 2);
@@ -976,14 +976,14 @@ test_vectorcall(PyObject *module, PyObject *Py_UNUSED(args))
 {
 #ifndef PYTHON3
     module = PyImport_ImportModule(MODULE_NAME_STR);
-    assert(module != NULL);
+    assert(module != _Py_NULL);
 #endif
     PyObject *func_varargs = PyObject_GetAttrString(module, "func_varargs");
 #ifndef PYTHON3
     Py_DECREF(module);
 #endif
-    if (func_varargs == NULL) {
-        return NULL;
+    if (func_varargs == _Py_NULL) {
+        return _Py_NULL;
     }
 
     // test PyObject_Vectorcall()
@@ -1003,8 +1003,8 @@ test_getattr(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(!PyErr_Occurred());
 
     PyObject *obj = PyImport_ImportModule("sys");
-    if (obj == NULL) {
-        return NULL;
+    if (obj == _Py_NULL) {
+        return _Py_NULL;
     }
     PyObject *attr_name;
     PyObject *value;
@@ -1013,28 +1013,28 @@ test_getattr(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     attr_name = create_string("version");
     value = Py_True;  // marker value
     assert(PyObject_GetOptionalAttr(obj, attr_name, &value) == 1);
-    assert(value != NULL);
+    assert(value != _Py_NULL);
     Py_DECREF(value);
     Py_DECREF(attr_name);
 
     // test PyObject_GetOptionalAttrString(): attribute exists
     value = Py_True;  // marker value
     assert(PyObject_GetOptionalAttrString(obj, "version", &value) == 1);
-    assert(value != NULL);
+    assert(value != _Py_NULL);
     Py_DECREF(value);
 
     // test PyObject_GetOptionalAttr(): attribute doesn't exist
     attr_name = create_string("nonexistant_attr_name");
     value = Py_True;  // marker value
     assert(PyObject_GetOptionalAttr(obj, attr_name, &value) == 0);
-    assert(value == NULL);
+    assert(value == _Py_NULL);
     Py_DECREF(attr_name);
     assert(!PyErr_Occurred());
 
     // test PyObject_GetOptionalAttrString(): attribute doesn't exist
     value = Py_True;  // marker value
     assert(PyObject_GetOptionalAttrString(obj, "nonexistant_attr_name", &value) == 0);
-    assert(value == NULL);
+    assert(value == _Py_NULL);
     assert(!PyErr_Occurred());
 
     Py_DECREF(obj);
@@ -1048,9 +1048,9 @@ test_getitem(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(!PyErr_Occurred());
 
     PyObject *value = Py_BuildValue("s", "value");
-    assert(value != NULL);
+    assert(value != _Py_NULL);
     PyObject *obj = Py_BuildValue("{sO}", "key", value);
-    assert(obj != NULL);
+    assert(obj != _Py_NULL);
     PyObject *key;
     PyObject *item;
 
@@ -1072,13 +1072,13 @@ test_getitem(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     key = create_string("dontexist");
     item = Py_True;  // marker value
     assert(PyMapping_GetOptionalItem(obj, key, &item) == 0);
-    assert(item == NULL);
+    assert(item == _Py_NULL);
     Py_DECREF(key);
 
     // test PyMapping_GetOptionalItemString(): missing key
     item = Py_True;  // marker value
     assert(PyMapping_GetOptionalItemString(obj, "dontexist", &item) == 0);
-    assert(item == NULL);
+    assert(item == _Py_NULL);
 
     Py_DECREF(obj);
     Py_DECREF(value);
@@ -1172,12 +1172,12 @@ PyMODINIT_FUNC
 INIT_FUNC(void)
 {
     PyObject *module = PyModule_Create(&module_def);
-    if (module == NULL) {
-        return NULL;
+    if (module == _Py_NULL) {
+        return _Py_NULL;
     }
     if (module_exec(module) < 0) {
         Py_DECREF(module);
-        return NULL;
+        return _Py_NULL;
     }
     return module;
 }
@@ -1197,7 +1197,7 @@ INIT_FUNC(void)
                             _Py_NULL,
                             _Py_NULL,
                             PYTHON_API_VERSION);
-    if (module == NULL) {
+    if (module == _Py_NULL) {
         return;
     }
 
