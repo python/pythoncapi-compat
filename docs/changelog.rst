@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2023-07-18: Add ``PyModule_Add()`` function.
 * 2023-07-12: Add ``PyObject_GetOptionalAttr()``,
   ``PyObject_GetOptionalAttrString()``,
   ``PyMapping_GetOptionalItem()``

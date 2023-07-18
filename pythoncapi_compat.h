@@ -422,6 +422,15 @@ PYCAPI_COMPAT_STATIC_INLINE(int)
 PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
 {
     int res;
+
+    if (!value && !PyErr_Occurred()) {
+        // PyModule_AddObject() raises TypeError in this case
+        PyErr_SetString(PyExc_SystemError,
+                        "PyModule_AddObjectRef() must be called "
+                        "with an exception raised if value is NULL");
+        return -1;
+    }
+
     Py_XINCREF(value);
     res = PyModule_AddObject(module, name, value);
     if (res < 0) {
@@ -778,6 +787,18 @@ PyMapping_GetOptionalItemString(PyObject *obj, const char *key, PyObject **resul
     rc = PyMapping_GetOptionalItem(obj, key_obj, result);
     Py_DECREF(key_obj);
     return rc;
+}
+#endif
+
+
+// gh-106307 added PyModule_Add() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyModule_Add(PyObject *mod, const char *name, PyObject *value)
+{
+    int res = PyModule_AddObjectRef(mod, name, value);
+    Py_XDECREF(value);
+    return res;
 }
 #endif
 

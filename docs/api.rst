@@ -51,6 +51,10 @@ Python 3.13
 
    See `PyMapping_GetOptionalItemString() documentation <https://docs.python.org/dev/c-api/mapping.html#c.PyMapping_GetOptionalItemString>`__.
 
+.. c:function:: int PyModule_Add(PyObject *module, const char *name, PyObject *value)
+
+   See `PyModule_Add() documentation <https://docs.python.org/dev/c-api/module.html#c.PyModule_Add>`__.
+
 
 Python 3.12
 -----------

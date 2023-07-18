@@ -386,6 +386,23 @@ test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
+static int
+check_module_attr(PyObject *module, const char *name, PyObject *expected)
+{
+    PyObject *attr = PyObject_GetAttrString(module, name);
+    if (attr == _Py_NULL) {
+        return -1;
+    }
+    assert(attr == expected);
+    Py_DECREF(attr);
+
+    if (PyObject_DelAttrString(module, name) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+
 // test PyModule_AddType()
 static int
 test_module_add_type(PyObject *module)
@@ -407,14 +424,7 @@ test_module_add_type(PyObject *module)
     ASSERT_REFCNT(Py_REFCNT(type) == refcnt + 1);
 #endif
 
-    PyObject *attr = PyObject_GetAttrString(module, type_name);
-    if (attr == _Py_NULL) {
-        return -1;
-    }
-    assert(attr == _Py_CAST(PyObject*, type));
-    Py_DECREF(attr);
-
-    if (PyObject_DelAttrString(module, type_name) < 0) {
+    if (check_module_attr(module, type_name, _Py_CAST(PyObject*, type)) < 0) {
         return -1;
     }
     ASSERT_REFCNT(Py_REFCNT(type) == refcnt);
@@ -426,30 +436,70 @@ test_module_add_type(PyObject *module)
 static int
 test_module_addobjectref(PyObject *module)
 {
-    PyObject *obj = Py_True;
     const char *name = "test_module_addobjectref";
+    PyObject *obj = PyUnicode_FromString(name);
+    assert(obj != NULL);
 #ifdef CHECK_REFCNT
     Py_ssize_t refcnt = Py_REFCNT(obj);
 #endif
 
     if (PyModule_AddObjectRef(module, name, obj) < 0) {
         ASSERT_REFCNT(Py_REFCNT(obj) == refcnt);
+        Py_DECREF(obj);
         return -1;
     }
-#ifndef IMMORTAL_OBJS
     ASSERT_REFCNT(Py_REFCNT(obj) == refcnt + 1);
-#endif
 
-    if (PyObject_DelAttrString(module, name) < 0) {
+    if (check_module_attr(module, name, obj) < 0) {
+        Py_DECREF(obj);
         return -1;
     }
     ASSERT_REFCNT(Py_REFCNT(obj) == refcnt);
 
     // PyModule_AddObjectRef() with value=NULL must not crash
+    assert(!PyErr_Occurred());
     int res = PyModule_AddObjectRef(module, name, _Py_NULL);
     assert(res < 0);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
     PyErr_Clear();
 
+    Py_DECREF(obj);
+    return 0;
+}
+
+
+// test PyModule_Add()
+static int
+test_module_add(PyObject *module)
+{
+    const char *name = "test_module_add";
+    PyObject *obj = PyUnicode_FromString(name);
+    assert(obj != NULL);
+#ifdef CHECK_REFCNT
+    Py_ssize_t refcnt = Py_REFCNT(obj);
+#endif
+
+    if (PyModule_Add(module, name, Py_NewRef(obj)) < 0) {
+        ASSERT_REFCNT(Py_REFCNT(obj) == refcnt);
+        Py_DECREF(obj);
+        return -1;
+    }
+    ASSERT_REFCNT(Py_REFCNT(obj) == refcnt + 1);
+
+    if (check_module_attr(module, name, obj) < 0) {
+        Py_DECREF(obj);
+        return -1;
+    }
+    ASSERT_REFCNT(Py_REFCNT(obj) == refcnt);
+
+    // PyModule_Add() with value=NULL must not crash
+    assert(!PyErr_Occurred());
+    int res = PyModule_Add(module, name, _Py_NULL);
+    assert(res < 0);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    PyErr_Clear();
+
+    Py_DECREF(obj);
     return 0;
 }
 
@@ -458,16 +508,18 @@ static PyObject *
 test_module(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
     PyObject *module = PyImport_ImportModule("sys");
-    if (module == _Py_NULL) {
-        return _Py_NULL;
+    if (module == NULL) {
+        return NULL;
     }
     assert(PyModule_Check(module));
 
     if (test_module_add_type(module) < 0) {
         goto error;
     }
-
     if (test_module_addobjectref(module) < 0) {
+        goto error;
+    }
+    if (test_module_add(module) < 0) {
         goto error;
     }
 
