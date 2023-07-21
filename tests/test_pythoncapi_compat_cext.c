@@ -1086,6 +1086,113 @@ test_getitem(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_dict_getitemref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    assert(!PyErr_Occurred());
+
+    PyObject *dict = NULL, *key = NULL, *missing_key = NULL, *value = NULL;
+    PyObject *invalid_key = NULL;
+    PyObject *invalid_dict = NULL;
+    PyObject *get_value = NULL;
+    int res;
+
+    // test PyDict_New()
+    dict = PyDict_New();
+    if (dict == NULL) {
+        goto error;
+    }
+
+    key = PyUnicode_FromString("key");
+    if (key == NULL) {
+        goto error;
+    }
+
+    missing_key = PyUnicode_FromString("missing_key");
+    if (missing_key == NULL) {
+        goto error;
+    }
+
+    value = PyUnicode_FromString("value");
+    if (value == NULL) {
+        goto error;
+    }
+
+    res = PyDict_SetItemString(dict, "key", value);
+    if (res < 0) {
+        goto error;
+    }
+    assert(res == 0);
+
+    // test PyDict_GetItemRef(), key is present
+    get_value = Py_Ellipsis;  // marker value
+    assert(PyDict_GetItemRef(dict, key, &get_value) == 1);
+    assert(get_value == value);
+    Py_DECREF(get_value);
+
+    // test PyDict_GetItemStringRef(), key is present
+    get_value = Py_Ellipsis;  // marker value
+    assert(PyDict_GetItemStringRef(dict, "key", &get_value) == 1);
+    assert(get_value == value);
+    Py_DECREF(get_value);
+
+    // test PyDict_GetItemRef(), missing key
+    get_value = Py_Ellipsis;  // marker value
+    assert(PyDict_GetItemRef(dict, missing_key, &get_value) == 0);
+    assert(!PyErr_Occurred());
+    assert(get_value == NULL);
+
+    // test PyDict_GetItemStringRef(), missing key
+    get_value = Py_Ellipsis;  // marker value
+    assert(PyDict_GetItemStringRef(dict, "missing_key", &get_value) == 0);
+    assert(!PyErr_Occurred());
+    assert(get_value == NULL);
+
+    // test PyDict_GetItemRef(), invalid dict
+    invalid_dict = key;  // borrowed reference
+    get_value = Py_Ellipsis;  // marker value
+    assert(PyDict_GetItemRef(invalid_dict, key, &get_value) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    PyErr_Clear();
+    assert(get_value == NULL);
+
+    // test PyDict_GetItemStringRef(), invalid dict
+    get_value = Py_Ellipsis;  // marker value
+    assert(PyDict_GetItemStringRef(invalid_dict, "key", &get_value) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    PyErr_Clear();
+    assert(get_value == NULL);
+
+    invalid_key = PyList_New(0);  // not hashable key
+    if (invalid_key == NULL) {
+        goto error;
+    }
+
+    // test PyDict_GetItemRef(), invalid key
+    get_value = Py_Ellipsis;  // marker value
+    assert(PyDict_GetItemRef(dict, invalid_key, &get_value) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_TypeError));
+    PyErr_Clear();
+    assert(get_value == NULL);
+
+    Py_DECREF(dict);
+    Py_DECREF(key);
+    Py_DECREF(missing_key);
+    Py_DECREF(value);
+    Py_DECREF(invalid_key);
+
+    Py_RETURN_NONE;
+
+error:
+    Py_XDECREF(dict);
+    Py_XDECREF(key);
+    Py_XDECREF(missing_key);
+    Py_XDECREF(value);
+    Py_XDECREF(invalid_key);
+    return NULL;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1110,6 +1217,7 @@ static struct PyMethodDef methods[] = {
     {"test_vectorcall", test_vectorcall, METH_NOARGS, _Py_NULL},
     {"test_getattr", test_getattr, METH_NOARGS, _Py_NULL},
     {"test_getitem", test_getitem, METH_NOARGS, _Py_NULL},
+    {"test_dict_getitemref", test_dict_getitemref, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

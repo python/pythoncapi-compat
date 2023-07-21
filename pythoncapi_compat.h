@@ -258,7 +258,7 @@ PyFrame_GetVar(PyFrameObject *frame, PyObject *name)
 #if PY_VERSION_HEX >= 0x03000000
     value = PyDict_GetItemWithError(locals, name);
 #else
-    value = PyDict_GetItem(locals, name);
+    value = _PyDict_GetItemWithError(locals, name);
 #endif
     Py_DECREF(locals);
 
@@ -787,6 +787,49 @@ PyMapping_GetOptionalItemString(PyObject *obj, const char *key, PyObject **resul
     rc = PyMapping_GetOptionalItem(obj, key_obj, result);
     Py_DECREF(key_obj);
     return rc;
+}
+#endif
+
+
+// gh-106004 added PyDict_GetItemRef() and PyDict_GetItemStringRef()
+// to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyDict_GetItemRef(PyObject *mp, PyObject *key, PyObject **result)
+{
+#if PY_VERSION_HEX >= 0x03000000
+    PyObject *item = PyDict_GetItemWithError(mp, key);
+#else
+    PyObject *item = _PyDict_GetItemWithError(mp, key);
+#endif
+    if (item != NULL) {
+        *result = Py_NewRef(item);
+        return 1;  // found
+    }
+    if (!PyErr_Occurred()) {
+        *result = NULL;
+        return 0;  // not found
+    }
+    *result = NULL;
+    return -1;
+}
+
+PYCAPI_COMPAT_STATIC_INLINE(int)
+PyDict_GetItemStringRef(PyObject *mp, const char *key, PyObject **result)
+{
+    int res;
+#if PY_VERSION_HEX >= 0x03000000
+    PyObject *key_obj = PyUnicode_FromString(key);
+#else
+    PyObject *key_obj = PyString_FromString(key);
+#endif
+    if (key_obj == NULL) {
+        *result = NULL;
+        return -1;
+    }
+    res = PyDict_GetItemRef(mp, key_obj, result);
+    Py_DECREF(key_obj);
+    return res;
 }
 #endif
 

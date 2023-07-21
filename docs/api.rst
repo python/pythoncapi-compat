@@ -27,13 +27,17 @@ Latest version of the header file:
 Python 3.13
 -----------
 
+.. c:function:: int PyDict_GetItemRef(PyObject *p, PyObject *key, PyObject **result)
+
+   See `PyDict_GetItemRef() documentation <https://docs.python.org/dev/c-api/dict.html#c.PyDict_GetItemRef>`__.
+
+.. c:function:: int PyDict_GetItemStringRef(PyObject *p, const char *key, PyObject **result)
+
+   See `PyDict_GetItemStringRef() documentation <https://docs.python.org/dev/c-api/dict.html#c.PyDict_GetItemStringRef>`__.
+
 .. c:function:: PyObject* PyImport_AddModuleRef(const char *name)
 
    See `PyImport_AddModuleRef() documentation <https://docs.python.org/dev/c-api/import.html#c.PyImport_AddModuleRef>`__.
-
-.. c:function:: int PyWeakref_GetRef(PyObject *ref, PyObject **pobj)
-
-   See `PyWeakref_GetRef() documentation <https://docs.python.org/dev/c-api/weakref.html#c.PyWeakref_GetRef>`__.
 
 .. c:function:: int PyObject_GetOptionalAttr(PyObject *obj, PyObject *attr_name, PyObject **result)
 
@@ -54,6 +58,10 @@ Python 3.13
 .. c:function:: int PyModule_Add(PyObject *module, const char *name, PyObject *value)
 
    See `PyModule_Add() documentation <https://docs.python.org/dev/c-api/module.html#c.PyModule_Add>`__.
+
+.. c:function:: int PyWeakref_GetRef(PyObject *ref, PyObject **pobj)
+
+   See `PyWeakref_GetRef() documentation <https://docs.python.org/dev/c-api/weakref.html#c.PyWeakref_GetRef>`__.
 
 
 Python 3.12
