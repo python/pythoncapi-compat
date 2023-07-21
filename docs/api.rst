@@ -7,8 +7,12 @@ functions for old Python versions.
 
 Supported Python versions:
 
-* Python 2.7, Python 3.4 - 3.11
-* PyPy 2.7, 3.6 and 3.7
+* Python 3.5 - 3.11
+* PyPy 2.7
+* PyPy 3.6 - 3.9
+
+Python 2.7 and Python 3.4 are no longer officially supported since GitHub
+Actions doesn't support them anymore: only best effort support is provided.
 
 C++03 and C++11 are supported on Python 3.6 and newer.
 

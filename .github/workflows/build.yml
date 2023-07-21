@@ -11,9 +11,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        # The list of all available versions can be found here:
+        # Available OS Images:
+        # https://github.com/actions/runner-images/#available-images
+        #
+        # Available Python versions: can be found here:
         # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
+        os: [ubuntu-latest]
         python:
           # CPython
           - "3.7"
@@ -26,6 +29,7 @@ jobs:
           - "3.12-dev"
           # PyPy
           - "pypy2.7"
+          - "pypy3.6"
           - "pypy3.7"
           - "pypy3.8"
           - "pypy3.9"
@@ -35,13 +39,12 @@ jobs:
             python: 3.6
           - os: windows-latest
             python: 3.11
+
           # macOS: test old and new Python
           - os: macos-latest
             python: 3.6
           - os: macos-latest
             python: 3.11
-          - os: ubuntu-18.04
-            python: 3.4
           - os: ubuntu-20.04
             python: 3.5
           - os: ubuntu-20.04
