@@ -40,6 +40,8 @@ Examples of projects using pythoncapi_compat.h
   ``src/writer.c`` uses ``PyObject_CallOneArg() and other Python 3.9 apis``
   (`pythoncapi_compat.h copy
   <https://github.com/pyansys/hollerith/blob/main/src/pythoncapi_compat.h>`__)
+* `PyTorch <https://github.com/pytorch/pytorch/>`_ (`pythoncapi_compat.h copy
+  <https://github.com/pytorch/pytorch/blob/main/torch/csrc/utils/pythoncapi_compat.h>`__)
 
 
 Projects not using pythoncapi_compat.h
