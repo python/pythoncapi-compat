@@ -20,6 +20,7 @@
 project = 'pythoncapi_compat'
 copyright = '2022, Victor Stinner'
 author = 'Victor Stinner'
+language = "en"
 
 
 # -- General configuration ---------------------------------------------------
