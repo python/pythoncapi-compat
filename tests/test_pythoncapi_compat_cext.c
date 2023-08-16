@@ -1222,22 +1222,32 @@ static struct PyMethodDef methods[] = {
 };
 
 
-#ifdef __cplusplus
 static int
 module_exec(PyObject *module)
 {
+#ifdef __cplusplus
     if (PyModule_AddIntMacro(module, __cplusplus)) {
         return -1;
     }
-    return 0;
-}
-#else
-static int
-module_exec(PyObject *Py_UNUSED(module))
-{
-    return 0;
-}
 #endif
+    if (PyModule_AddStringMacro(module, PY_VERSION)) {
+        return -1;
+    }
+    if (PyModule_AddIntMacro(module, PY_VERSION_HEX)) {
+        return -1;
+    }
+#ifdef PYPY_VERSION
+    if (PyModule_AddStringMacro(module, PYPY_VERSION)) {
+        return -1;
+    }
+#endif
+#ifdef PYPY_VERSION_NUM
+    if (PyModule_AddIntMacro(module, PYPY_VERSION_NUM)) {
+        return -1;
+    }
+#endif
+    return 0;
+}
 
 
 #if PY_VERSION_HEX >= 0x03050000

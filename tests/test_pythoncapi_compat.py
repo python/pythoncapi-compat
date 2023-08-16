@@ -143,8 +143,22 @@ def run_tests(module_name, lang):
             print()
         return
 
-    if VERBOSE and hasattr(testmod, "__cplusplus"):
-        print("__cplusplus: %s" % testmod.__cplusplus)
+    if VERBOSE:
+        empty_line = False
+        for attr in ('__cplusplus', 'PY_VERSION', 'PY_VERSION_HEX',
+                     'PYPY_VERSION', 'PYPY_VERSION_NUM'):
+            try:
+                value = getattr(testmod, attr)
+            except AttributeError:
+                pass
+            else:
+                if attr in ("PY_VERSION_HEX", "PYPY_VERSION_NUM"):
+                    value = "0x%x" % value
+                print("%s: %s" % (attr, value))
+                empty_line = True
+
+        if empty_line:
+            print()
 
     check_refleak = hasattr(sys, 'gettotalrefcount')
 
