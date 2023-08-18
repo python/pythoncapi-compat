@@ -328,6 +328,11 @@ test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyInterpreterState *interp2 = PyThreadState_GetInterpreter(tstate);
     assert(interp == interp2);
 
+#if 0x030300A1 <= PY_VERSION_HEX && (!defined(PYPY_VERSION_NUM) || PYPY_VERSION_NUM >= 0x7030000)
+    // test Py_IsFinalizing()
+    assert(Py_IsFinalizing() == 0);
+#endif
+
     Py_RETURN_NONE;
 }
 

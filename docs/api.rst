@@ -67,6 +67,15 @@ Python 3.13
 
    See `PyWeakref_GetRef() documentation <https://docs.python.org/dev/c-api/weakref.html#c.PyWeakref_GetRef>`__.
 
+.. c:function:: int Py_IsFinalizing()
+
+   Return non-zero if the Python interpreter is shutting down, return 0
+   otherwise.
+
+   Availability: Python 3.3 and newer, PyPy 7.3 and newer.
+
+   See `Py_IsFinalizing() documentation <https://docs.python.org/dev/c-api/init.html#c.Py_IsFinalizing>`__.
+
 
 Python 3.12
 -----------
