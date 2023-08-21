@@ -19,7 +19,11 @@ extern "C" {
 #endif
 
 #include <Python.h>
-#include "frameobject.h"          // PyFrameObject, PyFrame_GetBack()
+
+// Python 3.11.0b4 added PyFrame_Back() to Python.h
+#if PY_VERSION_HEX < 0x030b00B4 && !defined(PYPY_VERSION)
+#  include "frameobject.h"        // PyFrameObject, PyFrame_GetBack()
+#endif
 
 
 #ifndef _Py_CAST
