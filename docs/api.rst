@@ -18,8 +18,7 @@ C++03 and C++11 are supported on Python 3.6 and newer.
 
 A C99 subset is required, like ``static inline`` functions: see `PEP 7
 <https://www.python.org/dev/peps/pep-0007/>`_.  ISO C90 is partially supported
-for Python 2.7 and Visual Studio 2008 (avoid mixed declarations and code, ``gcc
--Werror=declaration-after-statement``).
+for Python 2.7.
 
 Some functions related to frame objects and ``PyThreadState`` are not available
 on PyPy.

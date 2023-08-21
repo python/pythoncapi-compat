@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2023-08-21: Remove support for Python 2.7, Python 3.4 and older.
 * 2023-08-16: Add ``Py_IsFinalizing()`` function.
 * 2023-07-21: Add ``PyDict_GetItemRef()`` function.
 * 2023-07-18: Add ``PyModule_Add()`` function.
