@@ -14,29 +14,41 @@ jobs:
         # Available OS Images:
         # https://github.com/actions/runner-images/#available-images
         #
-        # Available Python versions: can be found here:
-        # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
-        #
-        # Allow pre-releases:
+        # Allow Python pre-releases:
         # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#allow-pre-releases
         # See "allow-prereleases: true" below.
         os: [ubuntu-latest]
         python:
-          # CPython
+          # Python versions (CPython):
+          # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
-          # CPython 3.12 final is scheduled for October 2013:
+          # CPython 3.12 final is scheduled for October 2023:
           # https://peps.python.org/pep-0693/
           - "3.12"
-          # PyPy
+          # Python 2.7 was removed from GHA setup-python in June 2023:
+          # https://github.com/actions/setup-python/issues/672
+
+          # PyPy versions:
+          # - https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md
+          # - https://downloads.python.org/pypy/
+          # - Only versions listed in this JSON are supported:
+          #   https://downloads.python.org/pypy/versions.json
           - "pypy2.7"
           - "pypy3.6"
           - "pypy3.7"
           - "pypy3.8"
           - "pypy3.9"
+
+          # Old PyPy versions
+          # See https://foss.heptapod.net/pypy/pypy/-/issues/3991
+          - "pypy2.7-v7.3.2"
+          - "pypy3.6-v7.3.2"
+          - "pypy3.7-v7.3.2"
+
         include:
           # Windows: test old and new Python
           - os: windows-latest
@@ -53,8 +65,6 @@ jobs:
             python: 3.5
           - os: ubuntu-20.04
             python: 3.6
-          # Python 2.7 was removed from GHA setup-python in June 2023:
-          # https://github.com/actions/setup-python/issues/672
 
     steps:
         # https://github.com/actions/checkout
