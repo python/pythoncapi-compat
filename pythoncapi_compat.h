@@ -116,10 +116,10 @@ _Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
 #if PY_VERSION_HEX < 0x030A00B1 && !defined(Py_IsNone)
 #  define Py_IsNone(x) Py_Is(x, Py_None)
 #endif
-#if PY_VERSION_HEX < 0x030A00B1 && !defined(Py_IsTrue)
+#if (PY_VERSION_HEX < 0x030A00B1 || defined(PYPY_VERSION)) && !defined(Py_IsTrue)
 #  define Py_IsTrue(x) Py_Is(x, Py_True)
 #endif
-#if PY_VERSION_HEX < 0x030A00B1 && !defined(Py_IsFalse)
+#if (PY_VERSION_HEX < 0x030A00B1 || defined(PYPY_VERSION)) && !defined(Py_IsFalse)
 #  define Py_IsFalse(x) Py_Is(x, Py_False)
 #endif
 
