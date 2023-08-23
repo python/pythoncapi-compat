@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 import os.path
+import shlex
 import sys
+try:
+    from setuptools import setup, Extension
+except ImportError:
+    from distutils.core import setup, Extension
+try:
+    from distutils import sysconfig
+except ImportError:
+    import sysconfig
 
 
 # C++ is only supported on Python 3.6 and newer
@@ -43,10 +52,23 @@ if 0:
 
 
 def main():
-    try:
-        from setuptools import setup, Extension
-    except ImportError:
-        from distutils.core import setup, Extension
+    # gh-105776: When "gcc -std=11" is used as the C++ compiler, -std=c11
+    # option emits a C++ compiler warning. Remove "-std11" option from the
+    # CC command.
+    cmd = (sysconfig.get_config_var('CC') or '')
+    if cmd:
+        cmd = shlex.split(cmd)
+        cmd = [arg for arg in cmd if not arg.startswith('-std=')]
+        if (sys.version_info >= (3, 8)):
+            cmd = shlex.join(cmd)
+        elif (sys.version_info >= (3, 3)):
+            cmd = ' '.join(shlex.quote(arg) for arg in cmd)
+        else:
+            # Python 2.7
+            import pipes
+            cmd = ' '.join(pipes.quote(arg) for arg in cmd)
+        # CC env var overrides sysconfig CC variable in setuptools
+        os.environ['CC'] = cmd
 
     cflags = ['-I' + SRC_DIR]
     cppflags = list(cflags)
