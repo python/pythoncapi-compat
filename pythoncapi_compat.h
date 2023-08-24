@@ -819,6 +819,21 @@ static inline int Py_IsFinalizing(void)
 #endif
 
 
+// gh-108323 added PyDict_ContainsString() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+static inline int PyDict_ContainsString(PyObject *op, const char *key)
+{
+    PyObject *key_obj = PyUnicode_FromString(key);
+    if (key_obj == NULL) {
+        return -1;
+    }
+    int res = PyDict_Contains(op, key_obj);
+    Py_DECREF(key_obj);
+    return res;
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

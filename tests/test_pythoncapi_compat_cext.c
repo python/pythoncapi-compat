@@ -1092,7 +1092,7 @@ test_getitem(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
 
 static PyObject *
-test_dict_getitemref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+test_dict_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
     assert(!PyErr_Occurred());
 
@@ -1112,9 +1112,15 @@ test_dict_getitemref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     if (key == NULL) {
         goto error;
     }
+    invalid_dict = key;  // borrowed reference
 
     missing_key = PyUnicode_FromString("missing_key");
     if (missing_key == NULL) {
+        goto error;
+    }
+
+    invalid_key = PyList_New(0);  // not hashable key
+    if (invalid_key == NULL) {
         goto error;
     }
 
@@ -1128,6 +1134,17 @@ test_dict_getitemref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
         goto error;
     }
     assert(res == 0);
+
+    // test PyDict_Contains()
+    assert(PyDict_Contains(dict, key) == 1);
+    assert(PyDict_Contains(dict, missing_key) == 0);
+
+    // test PyDict_ContainsString()
+    assert(PyDict_ContainsString(dict, "key") == 1);
+    assert(PyDict_ContainsString(dict, "missing_key") == 0);
+    assert(PyDict_ContainsString(dict, "\xff") == -1);
+    assert(PyErr_ExceptionMatches(PyExc_UnicodeDecodeError));
+    PyErr_Clear();
 
     // test PyDict_GetItemRef(), key is present
     get_value = Py_Ellipsis;  // marker value
@@ -1154,7 +1171,6 @@ test_dict_getitemref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(get_value == NULL);
 
     // test PyDict_GetItemRef(), invalid dict
-    invalid_dict = key;  // borrowed reference
     get_value = Py_Ellipsis;  // marker value
     assert(PyDict_GetItemRef(invalid_dict, key, &get_value) == -1);
     assert(PyErr_ExceptionMatches(PyExc_SystemError));
@@ -1167,11 +1183,6 @@ test_dict_getitemref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyErr_ExceptionMatches(PyExc_SystemError));
     PyErr_Clear();
     assert(get_value == NULL);
-
-    invalid_key = PyList_New(0);  // not hashable key
-    if (invalid_key == NULL) {
-        goto error;
-    }
 
     // test PyDict_GetItemRef(), invalid key
     get_value = Py_Ellipsis;  // marker value
@@ -1222,7 +1233,7 @@ static struct PyMethodDef methods[] = {
     {"test_vectorcall", test_vectorcall, METH_NOARGS, _Py_NULL},
     {"test_getattr", test_getattr, METH_NOARGS, _Py_NULL},
     {"test_getitem", test_getitem, METH_NOARGS, _Py_NULL},
-    {"test_dict_getitemref", test_dict_getitemref, METH_NOARGS, _Py_NULL},
+    {"test_dict_api", test_dict_api, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
