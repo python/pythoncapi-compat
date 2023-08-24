@@ -834,6 +834,28 @@ static inline int PyDict_ContainsString(PyObject *op, const char *key)
 #endif
 
 
+// gh-108445 added PyLong_AsInt() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+static inline int PyLong_AsInt(PyObject *obj)
+{
+#ifdef PYPY_VERSION
+    long value = PyLong_AsLong(obj);
+    if (value == -1 && PyErr_Occurred()) {
+        return -1;
+    }
+    if (value < (long)INT_MIN || (long)INT_MAX < value) {
+        PyErr_SetString(PyExc_OverflowError,
+                        "Python int too large to convert to C int");
+        return -1;
+    }
+    return (int)value;
+#else
+    return _PyLong_AsInt(obj);
+#endif
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

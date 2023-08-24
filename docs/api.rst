@@ -75,6 +75,14 @@ Python 3.13
 
    See `Py_IsFinalizing() documentation <https://docs.python.org/dev/c-api/init.html#c.Py_IsFinalizing>`__.
 
+.. c:function:: int PyDict_ContainsString(PyObject *p, const char *key)
+
+   See `PyDict_ContainsString() documentation <https://docs.python.org/dev/c-api/dict.html#c.PyDict_ContainsString>`__.
+
+.. c:function:: int PyLong_AsInt(PyObject *obj)
+
+   See `PyLong_AsInt() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_AsInt>`__.
+
 
 Python 3.12
 -----------

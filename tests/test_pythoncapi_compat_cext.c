@@ -1209,6 +1209,35 @@ error:
 }
 
 
+static PyObject *
+test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    // test PyLong_AsInt()
+    assert(!PyErr_Occurred());
+    PyObject *obj = PyLong_FromLong(123);
+    if (obj == NULL) {
+        return NULL;
+    }
+    int value = PyLong_AsInt(obj);
+    assert(value == 123);
+    assert(!PyErr_Occurred());
+    Py_DECREF(obj);
+
+    // test PyLong_AsInt() with overflow
+    PyObject *obj2 = PyLong_FromLongLong((long long)INT_MAX + 1);
+    if (obj2 == NULL) {
+        return NULL;
+    }
+    value = PyLong_AsInt(obj2);
+    assert(value == -1);
+    assert(PyErr_ExceptionMatches(PyExc_OverflowError));
+    PyErr_Clear();
+    Py_DECREF(obj2);
+
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1234,6 +1263,7 @@ static struct PyMethodDef methods[] = {
     {"test_getattr", test_getattr, METH_NOARGS, _Py_NULL},
     {"test_getitem", test_getitem, METH_NOARGS, _Py_NULL},
     {"test_dict_api", test_dict_api, METH_NOARGS, _Py_NULL},
+    {"test_long_api", test_long_api, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
