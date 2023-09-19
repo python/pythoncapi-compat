@@ -51,7 +51,8 @@
 #endif
 
 // Marker to check that pointer value was set
-#define UNINITIALIZED_OBJ ((PyObject *)"uninitialized")
+static const char uninitialized[] = "uninitialized";
+#define UNINITIALIZED_OBJ ((PyObject *)uninitialized)
 
 
 static PyObject*
