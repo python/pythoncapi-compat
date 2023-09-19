@@ -711,7 +711,8 @@ PyObject_GetOptionalAttrString(PyObject *obj, const char *name, PyObject **resul
 #endif
 
 
-// gh-106307 added PyObject_GetOptionalAttr() to Python 3.13.0a1
+// gh-106307 added PyObject_GetOptionalAttr() and
+// PyMapping_GetOptionalItemString() to Python 3.13.0a1
 #if PY_VERSION_HEX < 0x030D00A1
 static inline int
 PyMapping_GetOptionalItem(PyObject *obj, PyObject *key, PyObject **result)
@@ -738,10 +739,33 @@ PyMapping_GetOptionalItemString(PyObject *obj, const char *key, PyObject **resul
     key_obj = PyString_FromString(key);
 #endif
     if (key_obj == NULL) {
+        *result = NULL;
         return -1;
     }
     rc = PyMapping_GetOptionalItem(obj, key_obj, result);
     Py_DECREF(key_obj);
+    return rc;
+}
+#endif
+
+// gh-108511 added PyMapping_HasKeyWithError() and
+// PyMapping_HasKeyStringWithError() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+static inline int
+PyMapping_HasKeyWithError(PyObject *obj, PyObject *key)
+{
+    PyObject *res;
+    int rc = PyMapping_GetOptionalItem(obj, key, &res);
+    Py_XDECREF(res);
+    return rc;
+}
+
+static inline int
+PyMapping_HasKeyStringWithError(PyObject *obj, const char *key)
+{
+    PyObject *res;
+    int rc = PyMapping_GetOptionalItemString(obj, key, &res);
+    Py_XDECREF(res);
     return rc;
 }
 #endif

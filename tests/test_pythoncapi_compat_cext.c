@@ -50,6 +50,10 @@
 #  define ASSERT_REFCNT(expr)
 #endif
 
+// Marker to check that pointer value was set
+static const char uninitialized[] = "uninitialized";
+#define UNINITIALIZED_OBJ ((PyObject *)uninitialized)
+
 
 static PyObject*
 create_string(const char *str)
@@ -806,7 +810,7 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     }
 
     // test PyWeakref_GetRef(), reference is alive
-    PyObject *ref = Py_True;  // marker to check that value was set
+    PyObject *ref = UNINITIALIZED_OBJ;
     assert(PyWeakref_GetRef(weakref, &ref) == 1);
     assert(ref == obj);
     assert(Py_REFCNT(obj) == (refcnt + 1));
@@ -1016,28 +1020,28 @@ test_getattr(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
     // test PyObject_GetOptionalAttr(): attribute exists
     attr_name = create_string("version");
-    value = Py_True;  // marker value
+    value = UNINITIALIZED_OBJ;
     assert(PyObject_GetOptionalAttr(obj, attr_name, &value) == 1);
     assert(value != _Py_NULL);
     Py_DECREF(value);
     Py_DECREF(attr_name);
 
     // test PyObject_GetOptionalAttrString(): attribute exists
-    value = Py_True;  // marker value
+    value = UNINITIALIZED_OBJ;
     assert(PyObject_GetOptionalAttrString(obj, "version", &value) == 1);
     assert(value != _Py_NULL);
     Py_DECREF(value);
 
     // test PyObject_GetOptionalAttr(): attribute doesn't exist
     attr_name = create_string("nonexistant_attr_name");
-    value = Py_True;  // marker value
+    value = UNINITIALIZED_OBJ;
     assert(PyObject_GetOptionalAttr(obj, attr_name, &value) == 0);
     assert(value == _Py_NULL);
     Py_DECREF(attr_name);
     assert(!PyErr_Occurred());
 
     // test PyObject_GetOptionalAttrString(): attribute doesn't exist
-    value = Py_True;  // marker value
+    value = UNINITIALIZED_OBJ;
     assert(PyObject_GetOptionalAttrString(obj, "nonexistant_attr_name", &value) == 0);
     assert(value == _Py_NULL);
     assert(!PyErr_Occurred());
@@ -1056,37 +1060,56 @@ test_getitem(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(value != _Py_NULL);
     PyObject *obj = Py_BuildValue("{sO}", "key", value);
     assert(obj != _Py_NULL);
-    PyObject *key;
+    PyObject *present_key, *missing_key;
     PyObject *item;
 
+    present_key = create_string("key");
+    missing_key = create_string("dontexist");
+
     // test PyMapping_GetOptionalItem(): key is present
-    key = create_string("key");
-    item = Py_True;  // marker value
-    assert(PyMapping_GetOptionalItem(obj, key, &item) == 1);
+    item = UNINITIALIZED_OBJ;
+    assert(PyMapping_GetOptionalItem(obj, present_key, &item) == 1);
     assert(item == value);
     Py_DECREF(item);
-    Py_DECREF(key);
+    assert(!PyErr_Occurred());
+
+    // test PyMapping_HasKeyWithError(): key is present
+    assert(PyMapping_HasKeyWithError(obj, present_key) == 1);
+    assert(!PyErr_Occurred());
 
     // test PyMapping_GetOptionalItemString(): key is present
-    item = Py_True;  // marker value
+    item = UNINITIALIZED_OBJ;
     assert(PyMapping_GetOptionalItemString(obj, "key", &item) == 1);
     assert(item == value);
     Py_DECREF(item);
 
+    // test PyMapping_HasKeyStringWithError(): key is present
+    assert(PyMapping_HasKeyStringWithError(obj, "key") == 1);
+    assert(!PyErr_Occurred());
+
     // test PyMapping_GetOptionalItem(): missing key
-    key = create_string("dontexist");
-    item = Py_True;  // marker value
-    assert(PyMapping_GetOptionalItem(obj, key, &item) == 0);
+    item = UNINITIALIZED_OBJ;
+    assert(PyMapping_GetOptionalItem(obj, missing_key, &item) == 0);
     assert(item == _Py_NULL);
-    Py_DECREF(key);
+    assert(!PyErr_Occurred());
+
+    // test PyMapping_HasKeyWithError(): missing key
+    assert(PyMapping_HasKeyWithError(obj, missing_key) == 0);
+    assert(!PyErr_Occurred());
 
     // test PyMapping_GetOptionalItemString(): missing key
-    item = Py_True;  // marker value
+    item = UNINITIALIZED_OBJ;
     assert(PyMapping_GetOptionalItemString(obj, "dontexist", &item) == 0);
     assert(item == _Py_NULL);
 
+    // test PyMapping_HasKeyStringWithError(): missing key
+    assert(PyMapping_HasKeyStringWithError(obj, "dontexist") == 0);
+    assert(!PyErr_Occurred());
+
     Py_DECREF(obj);
     Py_DECREF(value);
+    Py_DECREF(present_key);
+    Py_DECREF(missing_key);
     Py_RETURN_NONE;
 }
 
@@ -1147,45 +1170,45 @@ test_dict_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     PyErr_Clear();
 
     // test PyDict_GetItemRef(), key is present
-    get_value = Py_Ellipsis;  // marker value
+    get_value = UNINITIALIZED_OBJ;
     assert(PyDict_GetItemRef(dict, key, &get_value) == 1);
     assert(get_value == value);
     Py_DECREF(get_value);
 
     // test PyDict_GetItemStringRef(), key is present
-    get_value = Py_Ellipsis;  // marker value
+    get_value = UNINITIALIZED_OBJ;
     assert(PyDict_GetItemStringRef(dict, "key", &get_value) == 1);
     assert(get_value == value);
     Py_DECREF(get_value);
 
     // test PyDict_GetItemRef(), missing key
-    get_value = Py_Ellipsis;  // marker value
+    get_value = UNINITIALIZED_OBJ;
     assert(PyDict_GetItemRef(dict, missing_key, &get_value) == 0);
     assert(!PyErr_Occurred());
     assert(get_value == NULL);
 
     // test PyDict_GetItemStringRef(), missing key
-    get_value = Py_Ellipsis;  // marker value
+    get_value = UNINITIALIZED_OBJ;
     assert(PyDict_GetItemStringRef(dict, "missing_key", &get_value) == 0);
     assert(!PyErr_Occurred());
     assert(get_value == NULL);
 
     // test PyDict_GetItemRef(), invalid dict
-    get_value = Py_Ellipsis;  // marker value
+    get_value = UNINITIALIZED_OBJ;
     assert(PyDict_GetItemRef(invalid_dict, key, &get_value) == -1);
     assert(PyErr_ExceptionMatches(PyExc_SystemError));
     PyErr_Clear();
     assert(get_value == NULL);
 
     // test PyDict_GetItemStringRef(), invalid dict
-    get_value = Py_Ellipsis;  // marker value
+    get_value = UNINITIALIZED_OBJ;
     assert(PyDict_GetItemStringRef(invalid_dict, "key", &get_value) == -1);
     assert(PyErr_ExceptionMatches(PyExc_SystemError));
     PyErr_Clear();
     assert(get_value == NULL);
 
     // test PyDict_GetItemRef(), invalid key
-    get_value = Py_Ellipsis;  // marker value
+    get_value = UNINITIALIZED_OBJ;
     assert(PyDict_GetItemRef(dict, invalid_key, &get_value) == -1);
     assert(PyErr_ExceptionMatches(PyExc_TypeError));
     PyErr_Clear();
