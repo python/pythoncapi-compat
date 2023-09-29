@@ -20,6 +20,7 @@ jobs:
         os: [ubuntu-latest]
         python:
           # Python versions (CPython):
+          # https://github.com/actions/python-versions/
           # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
           - "3.7"
           - "3.8"
@@ -29,6 +30,8 @@ jobs:
           # CPython 3.12 final is scheduled for October 2023:
           # https://peps.python.org/pep-0693/
           - "3.12"
+          # Python main branch
+          - "nightly"
           # Python 2.7 was removed from GHA setup-python in June 2023:
           # https://github.com/actions/setup-python/issues/672
 
@@ -43,6 +46,8 @@ jobs:
           - "pypy3.8"
           - "pypy3.9"
           - "pypy3.10"
+          # Development version of PyPy
+          - "pypy3.10-nightly"
 
           # Old PyPy versions
           # See https://foss.heptapod.net/pypy/pypy/-/issues/3991
