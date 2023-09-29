@@ -46,9 +46,17 @@ Python 3.13
 
    See `PyObject_GetOptionalAttr() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_GetOptionalAttr>`__.
 
-.. c:function:: int PyObject_GetOptionalAttrString(PyObject *obj, const char *name, PyObject **result)
+.. c:function:: int PyObject_GetOptionalAttrString(PyObject *obj, const char *attr_name, PyObject **result)
 
    See `PyObject_GetOptionalAttrString() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_GetOptionalAttrString>`__.
+
+.. c:function:: int PyObject_HasAttrWithError(PyObject *obj, PyObject *attr_name)
+
+   See `PyObject_HasAttrWithError() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_HasAttrWithError>`__.
+
+.. c:function:: int PyObject_HasAttrStringWithError(PyObject *obj, const char *attr_name)
+
+   See `PyObject_HasAttrStringWithError() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_HasAttrStringWithError>`__.
 
 .. c:function:: int PyMapping_GetOptionalItem(PyObject *obj, PyObject *key, PyObject **result)
 

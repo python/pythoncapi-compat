@@ -667,16 +667,17 @@ error:
 #endif
 
 
-// gh-106521 added PyObject_GetOptionalAttr() to Python 3.13.0a1
+// gh-106521 added PyObject_GetOptionalAttr() and
+// PyObject_GetOptionalAttrString() to Python 3.13.0a1
 #if PY_VERSION_HEX < 0x030D00A1
 static inline int
-PyObject_GetOptionalAttr(PyObject *obj, PyObject *name, PyObject **result)
+PyObject_GetOptionalAttr(PyObject *obj, PyObject *attr_name, PyObject **result)
 {
     // bpo-32571 added _PyObject_LookupAttr() to Python 3.7.0b1
 #if PY_VERSION_HEX >= 0x030700B1 && !defined(PYPY_VERSION)
-    return _PyObject_LookupAttr(obj, name, result);
+    return _PyObject_LookupAttr(obj, attr_name, result);
 #else
-    *result = PyObject_GetAttr(obj, name);
+    *result = PyObject_GetAttr(obj, attr_name);
     if (*result != NULL) {
         return 1;
     }
@@ -692,16 +693,17 @@ PyObject_GetOptionalAttr(PyObject *obj, PyObject *name, PyObject **result)
 }
 
 static inline int
-PyObject_GetOptionalAttrString(PyObject *obj, const char *name, PyObject **result)
+PyObject_GetOptionalAttrString(PyObject *obj, const char *attr_name, PyObject **result)
 {
     PyObject *name_obj;
     int rc;
 #if PY_VERSION_HEX >= 0x03000000
-    name_obj = PyUnicode_FromString(name);
+    name_obj = PyUnicode_FromString(attr_name);
 #else
-    name_obj = PyString_FromString(name);
+    name_obj = PyString_FromString(attr_name);
 #endif
     if (name_obj == NULL) {
+        *result = NULL;
         return -1;
     }
     rc = PyObject_GetOptionalAttr(obj, name_obj, result);
@@ -765,6 +767,29 @@ PyMapping_HasKeyStringWithError(PyObject *obj, const char *key)
 {
     PyObject *res;
     int rc = PyMapping_GetOptionalItemString(obj, key, &res);
+    Py_XDECREF(res);
+    return rc;
+}
+#endif
+
+
+// gh-108511 added PyObject_HasAttrWithError() and
+// PyObject_HasAttrStringWithError() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+static inline int
+PyObject_HasAttrWithError(PyObject *obj, PyObject *attr)
+{
+    PyObject *res;
+    int rc = PyObject_GetOptionalAttr(obj, attr, &res);
+    Py_XDECREF(res);
+    return rc;
+}
+
+static inline int
+PyObject_HasAttrStringWithError(PyObject *obj, const char *attr)
+{
+    PyObject *res;
+    int rc = PyObject_GetOptionalAttrString(obj, attr, &res);
     Py_XDECREF(res);
     return rc;
 }
