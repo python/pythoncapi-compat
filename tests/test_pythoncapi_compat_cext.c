@@ -1015,37 +1015,53 @@ test_getattr(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     if (obj == _Py_NULL) {
         return _Py_NULL;
     }
-    PyObject *attr_name;
-    PyObject *value;
+
+    PyObject *attr_name = create_string("version");
+    PyObject *missing_attr = create_string("nonexistant_attr_name");
 
     // test PyObject_GetOptionalAttr(): attribute exists
-    attr_name = create_string("version");
+    PyObject *value;
     value = UNINITIALIZED_OBJ;
     assert(PyObject_GetOptionalAttr(obj, attr_name, &value) == 1);
     assert(value != _Py_NULL);
     Py_DECREF(value);
-    Py_DECREF(attr_name);
+
+    // test PyObject_HasAttrWithError(): attribute exists
+    assert(PyObject_HasAttrWithError(obj, attr_name) == 1);
 
     // test PyObject_GetOptionalAttrString(): attribute exists
     value = UNINITIALIZED_OBJ;
     assert(PyObject_GetOptionalAttrString(obj, "version", &value) == 1);
+    assert(!PyErr_Occurred());
     assert(value != _Py_NULL);
     Py_DECREF(value);
 
+    // test PyObject_HasAttrStringWithError(): attribute exists
+    assert(PyObject_HasAttrStringWithError(obj, "version") == 1);
+    assert(!PyErr_Occurred());
+
     // test PyObject_GetOptionalAttr(): attribute doesn't exist
-    attr_name = create_string("nonexistant_attr_name");
     value = UNINITIALIZED_OBJ;
-    assert(PyObject_GetOptionalAttr(obj, attr_name, &value) == 0);
+    assert(PyObject_GetOptionalAttr(obj, missing_attr, &value) == 0);
+    assert(!PyErr_Occurred());
     assert(value == _Py_NULL);
-    Py_DECREF(attr_name);
+
+    // test PyObject_HasAttrWithError(): attribute doesn't exist
+    assert(PyObject_HasAttrWithError(obj, missing_attr) == 0);
     assert(!PyErr_Occurred());
 
     // test PyObject_GetOptionalAttrString(): attribute doesn't exist
     value = UNINITIALIZED_OBJ;
     assert(PyObject_GetOptionalAttrString(obj, "nonexistant_attr_name", &value) == 0);
+    assert(!PyErr_Occurred());
     assert(value == _Py_NULL);
+
+    // test PyObject_HasAttrStringWithError(): attribute doesn't exist
+    assert(PyObject_HasAttrStringWithError(obj, "nonexistant_attr_name") == 0);
     assert(!PyErr_Occurred());
 
+    Py_DECREF(attr_name);
+    Py_DECREF(missing_attr);
     Py_DECREF(obj);
     Py_RETURN_NONE;
 }
