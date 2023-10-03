@@ -929,6 +929,16 @@ PyObject_ClearManagedDict(PyObject *obj)
 }
 #endif
 
+// gh-108867 added PyThreadState_GetUnchecked() to Python 3.13.0a1
+// Python 3.5.2 added _PyThreadState_UncheckedGet().
+#if PY_VERSION_HEX >= 0x03050200 && PY_VERSION_HEX < 0x030D00A1
+static inline PyThreadState*
+PyThreadState_GetUnchecked(void)
+{
+    return _PyThreadState_UncheckedGet();
+}
+#endif
+
 
 #ifdef __cplusplus
 }

@@ -107,6 +107,12 @@ Python 3.13
 
    See `PyObject_ClearManagedDict() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_ClearManagedDict>`__.
 
+.. c:function:: PyThreadState* PyThreadState_GetUnchecked(void)
+
+   See `PyThreadState_GetUnchecked() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_GetUnchecked>`__.
+
+   Available on Python 3.5.2 and newer.
+
 
 Python 3.12
 -----------
