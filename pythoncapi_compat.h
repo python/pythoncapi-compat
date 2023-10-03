@@ -905,6 +905,31 @@ static inline int PyLong_AsInt(PyObject *obj)
 #endif
 
 
+// gh-107073 added PyObject_VisitManagedDict() to Python 3.13.0a1
+#if PY_VERSION_HEX < 0x030D00A1
+static inline int
+PyObject_VisitManagedDict(PyObject *obj, visitproc visit, void *arg)
+{
+    PyObject **dict = _PyObject_GetDictPtr(obj);
+    if (*dict == NULL) {
+        return -1;
+    }
+    Py_VISIT(*dict);
+    return 0;
+}
+
+static inline void
+PyObject_ClearManagedDict(PyObject *obj)
+{
+    PyObject **dict = _PyObject_GetDictPtr(obj);
+    if (*dict == NULL) {
+        return;
+    }
+    Py_CLEAR(*dict);
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

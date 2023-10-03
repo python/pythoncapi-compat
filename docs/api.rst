@@ -99,6 +99,14 @@ Python 3.13
 
    See `PyLong_AsInt() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_AsInt>`__.
 
+.. c:function:: int PyObject_VisitManagedDict(PyObject *obj, visitproc visit, void *arg)
+
+   See `PyObject_VisitManagedDict() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_VisitManagedDict>`__.
+
+.. c:function:: void PyObject_ClearManagedDict(PyObject *obj)
+
+   See `PyObject_ClearManagedDict() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_ClearManagedDict>`__.
+
 
 Python 3.12
 -----------
