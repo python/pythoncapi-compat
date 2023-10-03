@@ -1,8 +1,12 @@
 Changelog
 =========
 
-* 2023-10-03: Add ``PyObject_VisitManagedDict()`` and
-  ``PyObject_ClearManagedDict()`` functions.
+* 2023-10-03: Add functions:
+
+  * ``PyObject_VisitManagedDict()``
+  * ``PyObject_ClearManagedDict()``
+  * ``PyThreadState_GetUnchecked()``
+
 * 2023-09-29: Add functions:
 
   * ``PyMapping_HasKeyWithError()``

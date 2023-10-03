@@ -318,6 +318,11 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyThreadState_LeaveTracing(tstate);
 #endif
 
+#if PY_VERSION_HEX >= 0x03050200
+    // PyThreadState_GetUnchecked()
+    assert(PyThreadState_GetUnchecked() == tstate);
+#endif
+
     Py_RETURN_NONE;
 }
 
