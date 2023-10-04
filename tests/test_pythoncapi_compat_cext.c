@@ -1361,6 +1361,40 @@ test_managed_dict(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif  // PY_VERSION_HEX >= 0x030B00A3
 
 
+static PyObject *
+test_unicode(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *abc = PyUnicode_FromString("abc");
+    if (abc == NULL) {
+        return NULL;
+    }
+
+    PyObject *abc0def = PyUnicode_FromStringAndSize("abc\0def", 7);
+    if (abc == NULL) {
+        return NULL;
+    }
+
+    // PyUnicode_EqualToUTF8() and PyUnicode_EqualToUTF8AndSize() can be called
+    // with an exception raised and they must not clear the current exception.
+    PyErr_NoMemory();
+
+    assert(PyUnicode_EqualToUTF8AndSize(abc, "abc", 3) == 1);
+    assert(PyUnicode_EqualToUTF8AndSize(abc, "Python", 6) == 0);
+    assert(PyUnicode_EqualToUTF8AndSize(abc0def, "abc\0def", 7) == 1);
+
+    assert(PyUnicode_EqualToUTF8(abc, "abc") == 1);
+    assert(PyUnicode_EqualToUTF8(abc, "Python") == 0);
+    assert(PyUnicode_EqualToUTF8(abc0def, "abc\0def") == 0);
+
+    assert(PyErr_ExceptionMatches(PyExc_MemoryError));
+    PyErr_Clear();
+
+    Py_DECREF(abc);
+    Py_DECREF(abc0def);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1390,6 +1424,7 @@ static struct PyMethodDef methods[] = {
 #ifdef TEST_MANAGED_DICT
     {"test_managed_dict", test_managed_dict, METH_NOARGS, _Py_NULL},
 #endif
+    {"test_unicode", test_unicode, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
