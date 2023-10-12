@@ -1,6 +1,11 @@
 Changelog
 =========
 
+* 2023-10-04: Add functions:
+
+  * ``PyUnicode_EqualToUTF8()``
+  * ``PyUnicode_EqualToUTF8AndSize()``
+
 * 2023-10-03: Add functions:
 
   * ``PyObject_VisitManagedDict()``

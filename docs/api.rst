@@ -113,6 +113,14 @@ Python 3.13
 
    Available on Python 3.5.2 and newer.
 
+.. c:function:: int PyUnicode_EqualToUTF8(PyObject *unicode, const char *str)
+
+   See `PyUnicode_EqualToUTF8() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicode_EqualToUTF8>`__.
+
+.. c:function:: int PyUnicode_EqualToUTF8AndSize(PyObject *unicode, const char *str, Py_ssize_t size)
+
+   See `PyUnicode_EqualToUTF8AndSize() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicode_EqualToUTF8AndSize>`__.
+
 
 Python 3.12
 -----------
