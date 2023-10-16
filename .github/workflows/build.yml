@@ -26,9 +26,10 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
-          # CPython 3.12 final is scheduled for October 2023:
-          # https://peps.python.org/pep-0693/
           - "3.12"
+          # CPython 3.13 final is scheduled for October 2024:
+          # https://peps.python.org/pep-0719/
+          - "3.13"
           # Python 2.7 was removed from GHA setup-python in June 2023:
           # https://github.com/actions/setup-python/issues/672
 
