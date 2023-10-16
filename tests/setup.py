@@ -14,10 +14,6 @@ except ImportError:
 
 # C++ is only supported on Python 3.6 and newer
 TEST_CPP = (sys.version_info >= (3, 6))
-if 0x30b0000 <= sys.hexversion <= 0x30b00b3:
-    # Don't test C++ on Python 3.11b1 - 3.11b3: these versions have C++
-    # compatibility issues.
-    TEST_CPP = False
 
 SRC_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 
