@@ -56,13 +56,15 @@ jobs:
           - os: windows-latest
             python: 3.6
           - os: windows-latest
-            python: 3.11
+            python: 3.12
 
           # macOS: test old and new Python
           - os: macos-latest
             python: 3.6
           - os: macos-latest
-            python: 3.11
+            python: 3.12
+
+          # Ubuntu: test deadsnakes Python not supported by GHA python-versions
           - os: ubuntu-20.04
             python: 3.5
           - os: ubuntu-20.04
