@@ -41,6 +41,7 @@ PYTHONS = (
     "python3.10",
     "python3.11",
     "python3.12",
+    "python3.13",
     "pypy",
     "pypy2",
     "pypy2.7",

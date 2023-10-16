@@ -7,7 +7,7 @@ functions for old Python versions.
 
 Supported Python versions:
 
-* Python 3.5 - 3.11
+* Python 3.5 - 3.12
 * PyPy 2.7
 * PyPy 3.6 - 3.9
 
