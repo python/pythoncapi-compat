@@ -1395,6 +1395,33 @@ test_unicode(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_list(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *list = PyList_New(0);
+    if (list == NULL) {
+        return NULL;
+    }
+
+    PyObject *abc = PyUnicode_FromString("abc");
+    if (abc == NULL) {
+        return NULL;
+    }
+
+    // test PyList_Extend()
+    assert(PyList_Extend(list, abc) == 0);
+    Py_DECREF(abc);
+    assert(PyList_GET_SIZE(list) == 3);
+
+    // test PyList_Clear()
+    assert(PyList_Clear(list) == 0);
+    assert(PyList_GET_SIZE(list) == 0);
+
+    Py_DECREF(list);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1425,6 +1452,7 @@ static struct PyMethodDef methods[] = {
     {"test_managed_dict", test_managed_dict, METH_NOARGS, _Py_NULL},
 #endif
     {"test_unicode", test_unicode, METH_NOARGS, _Py_NULL},
+    {"test_list", test_list, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

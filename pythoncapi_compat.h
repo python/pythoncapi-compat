@@ -1013,6 +1013,21 @@ PyUnicode_EqualToUTF8(PyObject *unicode, const char *str)
 #endif
 
 
+// gh-111138 added PyList_Extend() and PyList_Clear() to Python 3.13.0a2
+#if PY_VERSION_HEX < 0x030D00A2
+static inline int
+PyList_Extend(PyObject *list, PyObject *iterable)
+{
+    return PyList_SetSlice(list, PY_SSIZE_T_MAX, PY_SSIZE_T_MAX, iterable);
+}
+
+static inline int
+PyList_Clear(PyObject *list)
+{
+    return PyList_SetSlice(list, 0, PY_SSIZE_T_MAX, NULL);
+}
+#endif
+
 #ifdef __cplusplus
 }
 #endif

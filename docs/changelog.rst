@@ -1,6 +1,11 @@
 Changelog
 =========
 
+* 2023-11-13: Add functions:
+
+  * ``PyList_Extend()``
+  * ``PyList_Clear()``
+
 * 2023-10-04: Add functions:
 
   * ``PyUnicode_EqualToUTF8()``
