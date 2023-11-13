@@ -121,6 +121,14 @@ Python 3.13
 
    See `PyUnicode_EqualToUTF8AndSize() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicode_EqualToUTF8AndSize>`__.
 
+.. c:function:: int PyList_Extend(PyObject *list, PyObject *iterable)
+
+   See `PyList_Extend() documentation <https://docs.python.org/dev/c-api/list.html#c.PyList_Extend>`__.
+
+.. c:function:: int PyList_Clear(PyObject *list)
+
+   See `PyList_Clear() documentation <https://docs.python.org/dev/c-api/list.html#c.PyList_Clear>`__.
+
 
 Python 3.12
 -----------
