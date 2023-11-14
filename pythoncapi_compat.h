@@ -1028,6 +1028,67 @@ PyList_Clear(PyObject *list)
 }
 #endif
 
+// gh-111262 added PyDict_Pop() and PyDict_PopString() to Python 3.13.0a2
+#if PY_VERSION_HEX < 0x030D00A2
+static inline int
+PyDict_Pop(PyObject *dict, PyObject *key, PyObject **result)
+{
+    PyObject *value;
+
+    if (!PyDict_Check(dict)) {
+        PyErr_BadInternalCall();
+        if (result) {
+            *result = NULL;
+        }
+        return -1;
+    }
+
+    // bpo-16991 added _PyDict_Pop() to Python 3.5.0b2.
+    // Python 3.6.0b3 changed _PyDict_Pop() first argument type to PyObject*.
+    // Python 3.13.0a1 removed _PyDict_Pop().
+#if defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030500b2 || PY_VERSION_HEX >= 0x030D0000
+    value = PyObject_CallMethod(dict, "pop", "O", key);
+#elif PY_VERSION_HEX < 0x030600b3
+    value = _PyDict_Pop(_Py_CAST(PyDictObject*, dict), key, NULL);
+#else
+    value = _PyDict_Pop(dict, key, NULL);
+#endif
+    if (value == NULL) {
+        if (result) {
+            *result = NULL;
+        }
+        if (PyErr_Occurred() && !PyErr_ExceptionMatches(PyExc_KeyError)) {
+            return -1;
+        }
+        PyErr_Clear();
+        return 0;
+    }
+    if (result) {
+        *result = value;
+    }
+    else {
+        Py_DECREF(value);
+    }
+    return 1;
+}
+
+static inline int
+PyDict_PopString(PyObject *dict, const char *key, PyObject **result)
+{
+    PyObject *key_obj = PyUnicode_FromString(key);
+    if (key_obj == NULL) {
+        if (result != NULL) {
+            *result = NULL;
+        }
+        return -1;
+    }
+
+    int res = PyDict_Pop(dict, key_obj, result);
+    Py_DECREF(key_obj);
+    return res;
+}
+#endif
+
 #ifdef __cplusplus
 }
 #endif

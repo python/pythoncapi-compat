@@ -129,6 +129,14 @@ Python 3.13
 
    See `PyList_Clear() documentation <https://docs.python.org/dev/c-api/list.html#c.PyList_Clear>`__.
 
+.. c:function:: int PyDict_Pop(PyObject *dict, PyObject *key, PyObject **result)
+
+   See `PyDict_Pop() documentation <https://docs.python.org/dev/c-api/dict.html#c.PyDict_Pop>`__.
+
+.. c:function:: int PyDict_PopString(PyObject *dict, const char *key, PyObject **result)
+
+   See `PyDict_PopString() documentation <https://docs.python.org/dev/c-api/dict.html#c.PyDict_PopString>`__.
+
 
 Python 3.12
 -----------
