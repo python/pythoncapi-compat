@@ -1043,10 +1043,11 @@ PyDict_Pop(PyObject *dict, PyObject *key, PyObject **result)
         return -1;
     }
 
-    // bpo-16991 added _PyDict_Pop() to Python 3.5.0b2
-#if defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030500b2
+    // bpo-16991 added _PyDict_Pop() to Python 3.5.0b2.
+    // Python 3.6.0b3 changed _PyDict_Pop() first argument type to PyObject*.
+    // Python 3.13.0a1 removed _PyDict_Pop().
+#if defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030500b2 || PY_VERSION_HEX >= 0x030D0000
     value = PyObject_CallMethod(dict, "pop", "O", key);
-    // Python 3.6.0b3 changed _PyDict_Pop() first argument type to PyObject*
 #elif PY_VERSION_HEX < 0x030600b3
     value = _PyDict_Pop(_Py_CAST(PyDictObject*, dict), key, NULL);
 #else
