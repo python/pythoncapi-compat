@@ -1,6 +1,11 @@
 Changelog
 =========
 
+* 2023-11-14: Add functions:
+
+  * ``PyDict_Pop()``
+  * ``PyDict_PopString()``
+
 * 2023-11-13: Add functions:
 
   * ``PyList_Extend()``

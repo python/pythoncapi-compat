@@ -1254,6 +1254,82 @@ error:
 
 
 static PyObject *
+test_dict_pop(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *dict = PyDict_New();
+    if (dict == NULL) {
+        return NULL;
+    }
+
+    PyObject *key = PyUnicode_FromString("key");
+    assert(key != NULL);
+    PyObject *value = PyUnicode_FromString("abc");
+    assert(value != NULL);
+
+    // test PyDict_Pop(), get the removed value, key is present
+    assert(PyDict_SetItem(dict, key, value) == 0);
+    PyObject *removed = UNINITIALIZED_OBJ;
+    assert(PyDict_Pop(dict, key, &removed) == 1);
+    assert(removed == value);
+    Py_DECREF(removed);
+
+    // test PyDict_Pop(), ignore the removed value, key is present
+    assert(PyDict_SetItem(dict, key, value) == 0);
+    assert(PyDict_Pop(dict, key, NULL) == 1);
+
+    // test PyDict_Pop(), key is missing
+    removed = UNINITIALIZED_OBJ;
+    assert(PyDict_Pop(dict, key, &removed) == 0);
+    assert(removed == NULL);
+    assert(PyDict_Pop(dict, key, NULL) == 0);
+
+    // test PyDict_PopString(), get the removed value, key is present
+    assert(PyDict_SetItem(dict, key, value) == 0);
+    removed = UNINITIALIZED_OBJ;
+    assert(PyDict_PopString(dict, "key", &removed) == 1);
+    assert(removed == value);
+    Py_DECREF(removed);
+
+    // test PyDict_PopString(), ignore the removed value, key is present
+    assert(PyDict_SetItem(dict, key, value) == 0);
+    assert(PyDict_PopString(dict, "key", NULL) == 1);
+
+    // test PyDict_PopString(), key is missing
+    removed = UNINITIALIZED_OBJ;
+    assert(PyDict_PopString(dict, "key", &removed) == 0);
+    assert(removed == NULL);
+    assert(PyDict_PopString(dict, "key", NULL) == 0);
+
+    // dict error
+    removed = UNINITIALIZED_OBJ;
+    assert(PyDict_Pop(key, key, &removed) == -1);
+    assert(removed == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    PyErr_Clear();
+
+    assert(PyDict_Pop(key, key, NULL) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    PyErr_Clear();
+
+    removed = UNINITIALIZED_OBJ;
+    assert(PyDict_PopString(key, "key", &removed) == -1);
+    assert(removed == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    PyErr_Clear();
+
+    assert(PyDict_PopString(key, "key", NULL) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_SystemError));
+    PyErr_Clear();
+
+    // exit
+    Py_DECREF(dict);
+    Py_DECREF(key);
+    Py_DECREF(value);
+    Py_RETURN_NONE;
+}
+
+
+static PyObject *
 test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
     // test PyLong_AsInt()
@@ -1447,6 +1523,7 @@ static struct PyMethodDef methods[] = {
     {"test_getattr", test_getattr, METH_NOARGS, _Py_NULL},
     {"test_getitem", test_getitem, METH_NOARGS, _Py_NULL},
     {"test_dict_api", test_dict_api, METH_NOARGS, _Py_NULL},
+    {"test_dict_pop", test_dict_pop, METH_NOARGS, _Py_NULL},
     {"test_long_api", test_long_api, METH_NOARGS, _Py_NULL},
 #ifdef TEST_MANAGED_DICT
     {"test_managed_dict", test_managed_dict, METH_NOARGS, _Py_NULL},
