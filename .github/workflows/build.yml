@@ -93,8 +93,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install Python 2.7
         run: |
-          apt-get update
-          apt-get -yq install python2.7
+          sudo apt-get update
+          sudo apt-get -yq install python2.7
       - name: Install setuptools
         run: python2.7 -m pip install setuptools
       - name: Display the Python version
