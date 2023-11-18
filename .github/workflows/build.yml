@@ -94,7 +94,7 @@ jobs:
       - name: Install Python 2.7
         run: |
           sudo apt-get update
-          sudo apt-get -yq install python2.7
+          sudo apt-get -yq install python2.7 python2.7-dev
       - name: Display the Python version
         run: python2.7 -VV
       - name: Run tests
