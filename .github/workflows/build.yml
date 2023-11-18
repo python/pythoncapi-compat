@@ -85,3 +85,17 @@ jobs:
         run: python -VV
       - name: Run tests
         run: python runtests.py --current --verbose
+
+  test_python27:
+    name: 'Test Python 2.7'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Python 2.7
+        run: |
+          sudo apt-get update
+          sudo apt-get -yq install python2.7 python2.7-dev
+      - name: Display the Python version
+        run: python2.7 -VV
+      - name: Run tests
+        run: python2.7 runtests.py --current --verbose
