@@ -85,3 +85,15 @@ jobs:
         run: python -VV
       - name: Run tests
         run: python runtests.py --current --verbose
+
+  test_python2.7:
+    name: 'Test Python 2.7'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install setuptools
+        run: python2.7 -m pip install setuptools
+      - name: Display the Python version
+        run: python2.7 -VV
+      - name: Run tests
+        run: python2.7 runtests.py --current --verbose
