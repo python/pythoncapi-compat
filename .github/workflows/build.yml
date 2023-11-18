@@ -95,8 +95,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -yq install python2.7
-      - name: Install setuptools
-        run: python2.7 -m pip install setuptools
       - name: Display the Python version
         run: python2.7 -VV
       - name: Run tests
