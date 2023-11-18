@@ -86,7 +86,7 @@ jobs:
       - name: Run tests
         run: python runtests.py --current --verbose
 
-  test_python2.7:
+  test_python27:
     name: 'Test Python 2.7'
     runs-on: ubuntu-22.04
     steps:
