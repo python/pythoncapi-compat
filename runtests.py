@@ -4,8 +4,9 @@ Run the test suite on multiple Python versions.
 
 Usage::
 
-    python3 test_matrix.py
-    python3 test_matrix.py -v # verbose mode
+    python3 runtests.py
+    python3 runtests.py --verbose
+    python3 runtests.py --current --verbose
 """
 from __future__ import absolute_import
 from __future__ import print_function

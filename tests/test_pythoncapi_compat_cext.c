@@ -1575,7 +1575,7 @@ static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,
     MODULE_NAME_STR,     // m_name
     _Py_NULL,            // m_doc
-    0,                   // m_doc
+    0,                   // m_size
     methods,             // m_methods
 #if PY_VERSION_HEX >= 0x03050000
     module_slots,        // m_slots
