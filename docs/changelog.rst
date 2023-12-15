@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2023-12-15: Add function ``Py_HashPointer()``.
 * 2023-11-14: Add functions:
 
   * ``PyDict_Pop()``

@@ -1498,6 +1498,34 @@ test_list(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    void *ptr0 = NULL;
+    assert(Py_HashPointer(ptr0) == 0);
+
+#ifndef PYPY_VERSION
+#if SIZEOF_VOID_P == 8
+    void *ptr1 = (void*)(uintptr_t)0xABCDEF1234567890;
+    assert(Py_HashPointer(ptr1) == (uintptr_t)0x0ABCDEF123456789);
+#else
+    void *ptr1 = (void*)(uintptr_t)0xDEADCAFE;
+    assert(Py_HashPointer(ptr1) == (uintptr_t)0xEDEADCAF);
+#endif
+#else
+    // PyPy
+#if SIZEOF_VOID_P == 8
+    void *ptr1 = (void*)(uintptr_t)0xABCDEF1234567890;
+#else
+    void *ptr1 = (void*)(uintptr_t)0xDEADCAFE;
+#endif
+    assert(Py_HashPointer(ptr1) == (Py_hash_t)ptr1);
+#endif
+
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1530,6 +1558,7 @@ static struct PyMethodDef methods[] = {
 #endif
     {"test_unicode", test_unicode, METH_NOARGS, _Py_NULL},
     {"test_list", test_list, METH_NOARGS, _Py_NULL},
+    {"test_hash", test_hash, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

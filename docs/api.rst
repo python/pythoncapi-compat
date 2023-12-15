@@ -137,6 +137,10 @@ Python 3.13
 
    See `PyDict_PopString() documentation <https://docs.python.org/dev/c-api/dict.html#c.PyDict_PopString>`__.
 
+.. c:function:: Py_hash_t Py_HashPointer(const void *ptr)
+
+   See `Py_HashPointer() documentation <https://docs.python.org/dev/c-api/hash.html#c.Py_HashPointer>`__.
+
 
 Python 3.12
 -----------
