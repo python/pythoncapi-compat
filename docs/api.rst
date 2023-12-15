@@ -141,6 +141,11 @@ Python 3.13
 
    See `Py_HashPointer() documentation <https://docs.python.org/dev/c-api/hash.html#c.Py_HashPointer>`__.
 
+Not supported:
+
+* ``PySys_Audit()``.
+* ``PyErr_FormatUnraisable()``.
+
 
 Python 3.12
 -----------
@@ -157,6 +162,20 @@ Python 3.12
 
    Not available on PyPy.
 
+Not supported:
+
+* ``PyDict_AddWatcher()``, ``PyDict_Watch()``.
+* ``PyCode_AddWatcher()``, ``PyCode_ClearWatcher()``.
+* ``PyErr_GetRaisedException()``, ``PyErr_SetRaisedException()``.
+* ``_PyErr_ChainExceptions1()``.
+* ``PyErr_DisplayException()``.
+* ``_Py_IsImmortal()``.
+* ``Py_NewInterpreterFromConfig()``.
+* ``PyException_GetArgs()``, ``PyException_SetArgs()``.
+* ``PyEval_SetProfileAllThreads()``, ``PyEval_SetTraceAllThreads()``.
+* ``PyFunction_SetVectorcall()``.
+* ``PyType_FromMetaclass()``: implementation too big to be backported.
+* ``PyVectorcall_Call()``.
 
 Python 3.11
 -----------
@@ -257,6 +276,15 @@ Python 3.11
 
    Not available on PyPy
 
+Not supported:
+
+* ``PyType_GetModuleByDef()``.
+* ``PyType_GetName()``.
+* ``PyType_GetQualName()``.
+* ``Py_Version`` constant.
+* ``PyErr_GetHandledException()``, ``PyErr_SetHandledException()``.
+* ``PyFrame_GetGenerator()``.
+
 Python 3.10
 -----------
 
@@ -287,6 +315,17 @@ Python 3.10
 .. c:function:: int PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
 
    See `PyModule_AddObjectRef() documentation <https://docs.python.org/dev/c-api/module.html#c.PyModule_AddObjectRef>`__.
+
+Not supported:
+
+* ``PyCodec_Unregister()``.
+* ``PyDateTime_DATE_GET_TZINFO()``, ``PyDateTime_TIME_GET_TZINFO()``.
+* ``PyErr_SetInterruptEx()``.
+* ``PyGC_Enable()``, ``PyGC_Disable()`` and ``PyGC_IsEnabled()``.
+* ``PyIter_Send()``.
+* ``PySet_CheckExact()``.
+* ``Py_TPFLAGS_DISALLOW_INSTANTIATION`` constant.
+* ``Py_TPFLAGS_IMMUTABLETYPE`` constant.
 
 Python 3.9
 ----------
@@ -329,6 +368,12 @@ PyObject
 .. c:macro:: PY_VECTORCALL_ARGUMENTS_OFFSET
 
    See `PY_VECTORCALL_ARGUMENTS_OFFSET documentation <https://docs.python.org/dev/c-api/call.html#PY_VECTORCALL_ARGUMENTS_OFFSET>`__.
+
+Not supported:
+
+* ``PyVectorcall_CallMethod()``.
+* ``PyType_FromModuleAndSpec()``
+
 
 
 PyFrameObject
@@ -394,6 +439,35 @@ Module helper
 
    See `PyModule_AddType() documentation <https://docs.python.org/dev/c-api/module.html#c.PyModule_AddType>`__.
 
+Python 3.8
+----------
+
+Not supported:
+
+* ``PyCode_NewWithPosOnlyArgs()``.
+
+Python 3.7
+----------
+
+Not supported:
+
+* ``PyImport_GetModule()``.
+* ``PyInterpreterState_GetID()``.
+* ``PySlice_Unpack()``, ``PySlice_AdjustIndices()``.
+* ``PyTimeZone_FromOffset()``, ``PyTimeZone_FromOffsetAndName()``.
+* ``Py_RETURN_RICHCOMPARE()``.
+* ``Py_UNREACHABLE`` macro.
+
+Python 3.6
+----------
+
+Not supported:
+
+* ``PyErr_ResourceWarning()``.
+* ``PyErr_SetImportErrorSubclass()``.
+* ``PyOS_FSPath()``.
+* ``Py_FinalizeEx()``.
+
 Python 3.5.2
 ------------
 
@@ -401,12 +475,39 @@ Python 3.5.2
 
 .. c:macro:: Py_XSETREF(op, op2)
 
+Not supported:
+
+* ``PyCodec_NameReplaceErrors()``.
+* ``PyErr_FormatV()``.
+* ``PyExc_RecursionError``.
+* ``PyModule_FromDefAndSpec()``, ``PyModule_FromDefAndSpec2()``,
+  and ``PyModule_ExecDef()``.
+* ``PyNumber_MatrixMultiply()`` and ``PyNumber_InPlaceMatrixMultiply()``.
+
 Python 3.4
 ----------
 
 .. c:macro:: Py_UNUSED(name)
 
    See `Py_UNUSED() documentation <https://docs.python.org/dev/c-api/intro.html#c.Py_UNUSED>`__.
+
+Python 3.2
+----------
+
+Not supported:
+
+* ``Py_VA_COPY``.
+* ``PySys_SetArgvEx()``.
+* ``PyLong_AsLongLongAndOverflow()``.
+* ``PyErr_NewExceptionWithDoc()``.
+
+Python 3.1
+----------
+
+Not supported:
+
+* ``PyOS_string_to_double()``.
+* ``PyCapsule`` API.
 
 Borrow variant
 --------------
