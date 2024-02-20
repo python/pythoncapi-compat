@@ -188,6 +188,10 @@ def main():
     global VERBOSE
     VERBOSE = ("-v" in sys.argv[1:] or "--verbose" in sys.argv[1:])
 
+    if (3, 13) <= sys.version_info <= (3, 13, 0, 'alpha', 4):
+        print("SKIP Python 3.13 alpha 1..4: not supported!")
+        return
+
     if faulthandler is not None:
         faulthandler.enable()
 
