@@ -141,6 +141,36 @@ Python 3.13
 
    See `Py_HashPointer() documentation <https://docs.python.org/dev/c-api/hash.html#c.Py_HashPointer>`__.
 
+.. c:type:: PyTime_t
+
+   A timestamp or duration in nanoseconds, represented as a signed 64-bit
+   integer.
+
+.. c:var:: PyTime_t PyTime_MIN
+
+   Minimum value of :c:type:`PyTime_t`.
+
+.. c:var:: PyTime_t PyTime_MAX
+
+   Maximum value of :c:type:`PyTime_t`.
+
+.. c:function:: double PyTime_AsSecondsDouble(PyTime_t t)
+
+   See `PyTime_AsSecondsDouble() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_AsSecondsDouble>`__.
+
+.. c:function:: int PyTime_Monotonic(PyTime_t *result)
+
+   See `PyTime_Monotonic() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_Monotonic>`__.
+
+.. c:function:: int PyTime_Time(PyTime_t *result)
+
+   See `PyTime_Time() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_Time>`__.
+
+.. c:function:: int PyTime_PerfCounter(PyTime_t *result)
+
+   See `PyTime_PerfCounter() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_PerfCounter>`__.
+
+
 Not supported:
 
 * ``PySys_Audit()``.

@@ -1526,6 +1526,39 @@ test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+#if PY_VERSION_HEX  >= 0x03050000
+#define TEST_PYTIME
+
+static PyObject *
+test_time(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyTime_t t;
+#define UNINITIALIZED_TIME ((PyTime_t)-483884113929936179)
+
+    t = UNINITIALIZED_TIME;
+    assert(PyTime_Time(&t) == 0);
+    assert(t != UNINITIALIZED_TIME);
+
+    t = UNINITIALIZED_TIME;
+    assert(PyTime_Monotonic(&t) == 0);
+    assert(t != UNINITIALIZED_TIME);
+
+    // Test multiple times since an implementation uses a cache
+    for (int i=0; i < 5; i++) {
+        t = UNINITIALIZED_TIME;
+        assert(PyTime_PerfCounter(&t) == 0);
+        assert(t != UNINITIALIZED_TIME);
+    }
+
+    assert(PyTime_AsSecondsDouble(1) == 1e-9);
+    assert(PyTime_AsSecondsDouble(1500 * 1000 * 1000) == 1.5);
+    assert(PyTime_AsSecondsDouble(-500 * 1000 * 1000) == -0.5);
+
+    Py_RETURN_NONE;
+}
+#endif
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1559,6 +1592,9 @@ static struct PyMethodDef methods[] = {
     {"test_unicode", test_unicode, METH_NOARGS, _Py_NULL},
     {"test_list", test_list, METH_NOARGS, _Py_NULL},
     {"test_hash", test_hash, METH_NOARGS, _Py_NULL},
+#ifdef TEST_PYTIME
+    {"test_time", test_time, METH_NOARGS, _Py_NULL},
+#endif
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

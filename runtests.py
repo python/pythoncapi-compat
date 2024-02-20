@@ -30,6 +30,7 @@ TEST_COMPAT = os.path.join(TEST_DIR, "test_pythoncapi_compat.py")
 TEST_UPGRADE = os.path.join(TEST_DIR, "test_upgrade_pythoncapi.py")
 
 PYTHONS = (
+    # CPython
     "python3-debug",
     "python3",
     "python2.7",
@@ -43,6 +44,8 @@ PYTHONS = (
     "python3.11",
     "python3.12",
     "python3.13",
+
+    # PyPy
     "pypy",
     "pypy2",
     "pypy2.7",
