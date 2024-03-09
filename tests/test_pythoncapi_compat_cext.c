@@ -1522,6 +1522,20 @@ test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(Py_HashPointer(ptr1) == (Py_hash_t)ptr1);
 #endif
 
+#if ((!defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x030400B1) \
+     || (defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x03070000 \
+         && PYPY_VERSION_NUM >= 0x07090000))
+    // Just check that constants are available
+    size_t bits = PyHASH_BITS;
+    assert(bits >= 8);
+    size_t mod = PyHASH_MODULUS;
+    assert(mod >= 7);
+    size_t inf = PyHASH_INF;
+    assert(inf != 0);
+    size_t imag = PyHASH_IMAG;
+    assert(imag != 0);
+#endif
+
     Py_RETURN_NONE;
 }
 

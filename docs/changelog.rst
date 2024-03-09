@@ -1,6 +1,13 @@
 Changelog
 =========
 
+* 2024-03-09: Add hash constants:
+
+  * ``PyHASH_BITS``
+  * ``PyHASH_IMAG``
+  * ``PyHASH_INF``
+  * ``PyHASH_MODULUS``
+
 * 2024-02-20: Add PyTime API:
 
   * ``PyTime_t`` type
