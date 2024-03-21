@@ -1573,6 +1573,91 @@ test_time(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif
 
 
+static void
+check_get_constant(PyObject* (*get_constant)(unsigned int), int borrowed)
+{
+#define CLEAR(var) if (!borrowed) { Py_DECREF(var); }
+
+    PyObject *obj, *expected;
+
+    // Py_CONSTANT_NONE
+    obj = get_constant(Py_CONSTANT_NONE);
+    assert(obj == Py_None);
+    CLEAR(obj);
+
+    // Py_CONSTANT_FALSE
+    obj = get_constant(Py_CONSTANT_FALSE);
+    assert(obj = Py_False);
+    CLEAR(obj);
+
+    // Py_CONSTANT_TRUE
+    obj = get_constant(Py_CONSTANT_TRUE);
+    assert(obj == Py_True);
+    CLEAR(obj);
+
+    // Py_CONSTANT_ELLIPSIS
+    obj = get_constant(Py_CONSTANT_ELLIPSIS);
+    assert(obj == Py_Ellipsis);
+    CLEAR(obj);
+
+    // Py_CONSTANT_NOT_IMPLEMENTED
+    obj = get_constant(Py_CONSTANT_NOT_IMPLEMENTED);
+    assert(obj == Py_NotImplemented);
+    CLEAR(obj);
+
+    // Py_CONSTANT_ZERO
+    obj = get_constant(Py_CONSTANT_ZERO);
+    expected = PyLong_FromLong(0);
+    assert(expected != NULL);
+    assert(Py_TYPE(obj) == &PyLong_Type);
+    assert(PyObject_RichCompareBool(obj, expected, Py_EQ) == 1);
+    CLEAR(obj);
+    Py_DECREF(expected);
+
+    // Py_CONSTANT_ONE
+    obj = get_constant(Py_CONSTANT_ONE);
+    expected = PyLong_FromLong(1);
+    assert(expected != NULL);
+    assert(Py_TYPE(obj) == &PyLong_Type);
+    assert(PyObject_RichCompareBool(obj, expected, Py_EQ) == 1);
+    CLEAR(obj);
+    Py_DECREF(expected);
+
+    // Py_CONSTANT_EMPTY_STR
+    obj = get_constant(Py_CONSTANT_EMPTY_STR);
+    assert(Py_TYPE(obj) == &PyUnicode_Type);
+#if PY_VERSION_HEX >= 0x03030000
+    assert(PyUnicode_GetLength(obj) == 0);
+#else
+    assert(PyUnicode_GetSize(obj) == 0);
+#endif
+    CLEAR(obj);
+
+    // Py_CONSTANT_EMPTY_BYTES
+    obj = get_constant(Py_CONSTANT_EMPTY_BYTES);
+    assert(Py_TYPE(obj) == &PyBytes_Type);
+    assert(PyBytes_Size(obj) == 0);
+    CLEAR(obj);
+
+    // Py_CONSTANT_EMPTY_TUPLE
+    obj = get_constant(Py_CONSTANT_EMPTY_TUPLE);
+    assert(Py_TYPE(obj) == &PyTuple_Type);
+    assert(PyTuple_Size(obj) == 0);
+    CLEAR(obj);
+
+#undef CLEAR
+}
+
+
+static PyObject *
+test_get_constant(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    check_get_constant(Py_GetConstant, 0);
+    check_get_constant(Py_GetConstantBorrowed, 1);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1609,6 +1694,7 @@ static struct PyMethodDef methods[] = {
 #ifdef TEST_PYTIME
     {"test_time", test_time, METH_NOARGS, _Py_NULL},
 #endif
+    {"test_get_constant", test_get_constant, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

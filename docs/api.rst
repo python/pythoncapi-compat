@@ -192,6 +192,15 @@ Python 3.12
 
    Not available on PyPy.
 
+.. c:function:: PyObject* Py_GetConstant(unsigned int constant_id)
+
+   See `Py_GetConstant() documentation <https://docs.python.org/dev/c-api/object.html#c.Py_GetConstant>`__.
+
+.. c:function:: PyObject* Py_GetConstantBorrowed(unsigned int constant_id)
+
+   See `Py_GetConstantBorrowed() documentation <https://docs.python.org/dev/c-api/object.html#c.Py_GetConstantBorrowed>`__.
+
+
 Not supported:
 
 * ``PyDict_AddWatcher()``, ``PyDict_Watch()``.

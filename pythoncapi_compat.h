@@ -1209,6 +1209,83 @@ static inline int PyTime_PerfCounter(PyTime_t *result)
 #endif
 
 
+// gh-111545 added Py_GetConstant() and Py_GetConstantBorrowed()
+// to Python 3.13.0a6
+#if PY_VERSION_HEX < 0x030D00A6
+
+#define Py_CONSTANT_NONE 0
+#define Py_CONSTANT_FALSE 1
+#define Py_CONSTANT_TRUE 2
+#define Py_CONSTANT_ELLIPSIS 3
+#define Py_CONSTANT_NOT_IMPLEMENTED 4
+#define Py_CONSTANT_ZERO 5
+#define Py_CONSTANT_ONE 6
+#define Py_CONSTANT_EMPTY_STR 7
+#define Py_CONSTANT_EMPTY_BYTES 8
+#define Py_CONSTANT_EMPTY_TUPLE 9
+
+static inline PyObject* Py_GetConstant(unsigned int constant_id)
+{
+    static PyObject* constants[Py_CONSTANT_EMPTY_TUPLE + 1] = {NULL};
+
+    if (constants[Py_CONSTANT_NONE] == NULL) {
+        constants[Py_CONSTANT_NONE] = Py_None;
+        constants[Py_CONSTANT_FALSE] = Py_False;
+        constants[Py_CONSTANT_TRUE] = Py_True;
+        constants[Py_CONSTANT_ELLIPSIS] = Py_Ellipsis;
+        constants[Py_CONSTANT_NOT_IMPLEMENTED] = Py_NotImplemented;
+
+        constants[Py_CONSTANT_ZERO] = PyLong_FromLong(0);
+        if (constants[Py_CONSTANT_ZERO] == NULL) {
+            goto fatal_error;
+        }
+
+        constants[Py_CONSTANT_ONE] = PyLong_FromLong(1);
+        if (constants[Py_CONSTANT_ONE] == NULL) {
+            goto fatal_error;
+        }
+
+        constants[Py_CONSTANT_EMPTY_STR] = PyUnicode_FromStringAndSize("", 0);
+        if (constants[Py_CONSTANT_EMPTY_STR] == NULL) {
+            goto fatal_error;
+        }
+
+        constants[Py_CONSTANT_EMPTY_BYTES] = PyBytes_FromStringAndSize("", 0);
+        if (constants[Py_CONSTANT_EMPTY_BYTES] == NULL) {
+            goto fatal_error;
+        }
+
+        constants[Py_CONSTANT_EMPTY_TUPLE] = PyTuple_New(0);
+        if (constants[Py_CONSTANT_EMPTY_TUPLE] == NULL) {
+            goto fatal_error;
+        }
+        // goto dance to avoid compiler warnings about Py_FatalError()
+        goto init_done;
+
+fatal_error:
+        // This case should never happen
+        Py_FatalError("Py_GetConstant() failed to get constants");
+    }
+
+init_done:
+    if (constant_id <= Py_CONSTANT_EMPTY_TUPLE) {
+        return Py_NewRef(constants[constant_id]);
+    }
+    else {
+        PyErr_BadInternalCall();
+        return NULL;
+    }
+}
+
+static inline PyObject* Py_GetConstantBorrowed(unsigned int constant_id)
+{
+    PyObject *obj = Py_GetConstant(constant_id);
+    Py_XDECREF(obj);
+    return obj;
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif
