@@ -1,6 +1,11 @@
 Changelog
 =========
 
+* 2024-03-21: Add functions:
+
+  * ``Py_GetConstant()``
+  * ``Py_GetConstantBorrowed()``
+
 * 2024-03-09: Add hash constants:
 
   * ``PyHASH_BITS``
