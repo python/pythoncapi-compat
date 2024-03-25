@@ -1446,7 +1446,8 @@ test_unicode(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     }
 
     PyObject *abc0def = PyUnicode_FromStringAndSize("abc\0def", 7);
-    if (abc == NULL) {
+    if (abc0def == NULL) {
+        Py_DECREF(abc);
         return NULL;
     }
 
