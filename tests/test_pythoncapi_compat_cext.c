@@ -1480,15 +1480,24 @@ test_list(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
         return NULL;
     }
 
-    PyObject *abc = PyUnicode_FromString("abc");
-    if (abc == NULL) {
-        return NULL;
+    // test PyList_Extend()
+    {
+        PyObject *abc = PyUnicode_FromString("abc");
+        if (abc == NULL) {
+            Py_DECREF(list);
+            return NULL;
+        }
+
+        assert(PyList_Extend(list, abc) == 0);
+        Py_DECREF(abc);
+        assert(PyList_GET_SIZE(list) == 3);
     }
 
-    // test PyList_Extend()
-    assert(PyList_Extend(list, abc) == 0);
-    Py_DECREF(abc);
-    assert(PyList_GET_SIZE(list) == 3);
+    // test PyList_GetItemRef()
+    PyObject *item = PyList_GetItemRef(list, 1);
+    assert(item != NULL);
+    assert(item == PyList_GetItem(list, 1));
+    Py_DECREF(item);
 
     // test PyList_Clear()
     assert(PyList_Clear(list) == 0);

@@ -1286,6 +1286,18 @@ static inline PyObject* Py_GetConstantBorrowed(unsigned int constant_id)
 #endif
 
 
+// gh-114329 added PyList_GetItemRef() to Python 3.13.0a4
+#if PY_VERSION_HEX < 0x030D00A4
+static inline PyObject *
+PyList_GetItemRef(PyObject *op, Py_ssize_t index)
+{
+    PyObject *item = PyList_GetItem(op, index);
+    Py_XINCREF(item);
+    return item;
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -170,6 +170,10 @@ Python 3.13
 
    See `PyTime_PerfCounter() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_PerfCounter>`__.
 
+.. c:function:: PyObject* PyList_GetItemRef(PyObject *op, Py_ssize_t index)
+
+   See `PyList_GetItemRef() documentation <https://docs.python.org/dev/c-api/list.html#c.PyList_GetItemRef>`__.
+
 
 Not supported:
 
