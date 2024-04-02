@@ -1330,6 +1330,62 @@ test_dict_pop(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
 
 static PyObject *
+test_dict_setdefault(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *dict = PyDict_New();
+    if (dict == NULL) {
+        return NULL;
+    }
+    PyObject *key = PyUnicode_FromString("key");
+    assert(key != NULL);
+    PyObject *value = PyUnicode_FromString("abc");
+    assert(value != NULL);
+    PyObject *invalid_key = PyList_New(0);  // not hashable key
+    assert(invalid_key != NULL);
+
+    // insert item
+    PyObject *result = UNINITIALIZED_OBJ;
+    assert(PyDict_SetDefaultRef(dict, key, value, &result) == 0);
+    assert(result == value);
+    Py_DECREF(result);
+
+    // item already present
+    result = UNINITIALIZED_OBJ;
+    assert(PyDict_SetDefaultRef(dict, key, value, &result) == 1);
+    assert(result == value);
+    Py_DECREF(result);
+
+    // error: invalid key
+    assert(!PyErr_Occurred());
+    result = UNINITIALIZED_OBJ;
+    assert(PyDict_SetDefaultRef(dict, invalid_key, value, &result) == -1);
+    assert(result == NULL);
+    assert(PyErr_Occurred());
+    PyErr_Clear();
+
+    // insert item with NULL result
+    assert(PyDict_Pop(dict, key, NULL) == 1);
+    assert(PyDict_SetDefaultRef(dict, key, value, NULL) == 0);
+
+    // item already present with NULL result
+    assert(PyDict_SetDefaultRef(dict, key, value, NULL) == 1);
+
+    // error: invalid key with NULL result
+    assert(!PyErr_Occurred());
+    assert(PyDict_SetDefaultRef(dict, invalid_key, value, NULL) == -1);
+    assert(PyErr_Occurred());
+    PyErr_Clear();
+
+    // exit
+    Py_DECREF(dict);
+    Py_DECREF(key);
+    Py_DECREF(value);
+    Py_DECREF(invalid_key);
+    Py_RETURN_NONE;
+}
+
+
+static PyObject *
 test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
     // test PyLong_AsInt()
@@ -1694,6 +1750,7 @@ static struct PyMethodDef methods[] = {
     {"test_getitem", test_getitem, METH_NOARGS, _Py_NULL},
     {"test_dict_api", test_dict_api, METH_NOARGS, _Py_NULL},
     {"test_dict_pop", test_dict_pop, METH_NOARGS, _Py_NULL},
+    {"test_dict_setdefault", test_dict_setdefault, METH_NOARGS, _Py_NULL},
     {"test_long_api", test_long_api, METH_NOARGS, _Py_NULL},
 #ifdef TEST_MANAGED_DICT
     {"test_managed_dict", test_managed_dict, METH_NOARGS, _Py_NULL},
