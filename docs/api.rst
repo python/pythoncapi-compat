@@ -174,6 +174,10 @@ Python 3.13
 
    See `PyList_GetItemRef() documentation <https://docs.python.org/dev/c-api/list.html#c.PyList_GetItemRef>`__.
 
+.. c:function:: int PyDict_SetDefaultRef(PyObject *d, PyObject *key, PyObject *default_value, PyObject **result)
+
+   See `PyDict_SetDefaultRef() documentation <https://docs.python.org/dev/c-api/dict.html#c.PyDict_SetDefaultRef>`__.
+
 
 Not supported:
 
