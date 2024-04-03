@@ -2,6 +2,7 @@ Changelog
 =========
 
 * 2024-04-02: Add ``PyDict_SetDefaultRef()`` function.
+* 2024-03-29: Add ``PyList_GetItemRef()`` function.
 * 2024-03-21: Add functions:
 
   * ``Py_GetConstant()``
