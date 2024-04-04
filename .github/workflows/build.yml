@@ -92,6 +92,38 @@ jobs:
       - name: Run tests
         run: python runtests.py --current --verbose
 
+  # Test old unsupported Python versions
+  # Don't install setuptools: use built-in distutils.
+  build_unsupported:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-20.04
+            python: 3.5
+          - os: ubuntu-20.04
+            python: 3.6
+          - os: ubuntu-18.04
+            python: 3.4
+          - os: ubuntu-18.04
+            python: 3.3
+          - os: windows-latest
+            python: 3.2
+          - os: windows-latest
+            python: 3.1
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+      - name: Display the Python version
+        run: python -VV
+      - name: Run tests
+        run: python runtests.py --current --verbose
+
   test_python27:
     name: 'Test Python 2.7'
     runs-on: ubuntu-22.04
