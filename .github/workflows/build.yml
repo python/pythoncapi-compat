@@ -62,20 +62,6 @@ jobs:
           - os: macos-latest
             python: 3.12
 
-          # Test old unsupported Python versions
-          - os: ubuntu-20.04
-            python: 3.5
-          - os: ubuntu-20.04
-            python: 3.6
-          - os: ubuntu-18.04
-            python: 3.4
-          - os: ubuntu-18.04
-            python: 3.3
-          - os: windows-latest
-            python: 3.2
-          - os: windows-latest
-            python: 3.1
-
     steps:
         # https://github.com/actions/checkout
       - uses: actions/checkout@v4
@@ -94,7 +80,7 @@ jobs:
 
   # Test old unsupported Python versions
   # Don't install setuptools: use built-in distutils.
-  build_unsupported:
+  test_old:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
