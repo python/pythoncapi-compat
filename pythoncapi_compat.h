@@ -1211,7 +1211,7 @@ static inline int PyTime_PerfCounter(PyTime_t *result)
 
 // gh-111545 added Py_GetConstant() and Py_GetConstantBorrowed()
 // to Python 3.13.0a6
-#if PY_VERSION_HEX < 0x030D00A6
+#if PY_VERSION_HEX < 0x030D00A6 && !defined(Py_CONSTANT_NONE)
 
 #define Py_CONSTANT_NONE 0
 #define Py_CONSTANT_FALSE 1
