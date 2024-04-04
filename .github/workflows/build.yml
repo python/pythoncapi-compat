@@ -30,8 +30,6 @@ jobs:
           # CPython 3.13 final is scheduled for October 2024:
           # https://peps.python.org/pep-0719/
           - "3.13"
-          # Python 2.7 was removed from GHA setup-python in June 2023:
-          # https://github.com/actions/setup-python/issues/672
 
           # PyPy versions:
           # - https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md
@@ -69,6 +67,8 @@ jobs:
             python: 3.5
           - os: ubuntu-20.04
             python: 3.6
+          - os: ubuntu-22.04
+            python: 2.7
 
     steps:
         # https://github.com/actions/checkout
@@ -85,17 +85,3 @@ jobs:
         run: python -VV
       - name: Run tests
         run: python runtests.py --current --verbose
-
-  test_python27:
-    name: 'Test Python 2.7'
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Python 2.7
-        run: |
-          sudo apt-get update
-          sudo apt-get -yq install python2.7 python2.7-dev
-      - name: Display the Python version
-        run: python2.7 -VV
-      - name: Run tests
-        run: python2.7 runtests.py --current --verbose
