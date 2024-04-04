@@ -30,8 +30,6 @@ jobs:
           # CPython 3.13 final is scheduled for October 2024:
           # https://peps.python.org/pep-0719/
           - "3.13"
-          # Python 2.7 was removed from GHA setup-python in June 2023:
-          # https://github.com/actions/setup-python/issues/672
 
           # PyPy versions:
           # - https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md
@@ -64,11 +62,19 @@ jobs:
           - os: macos-latest
             python: 3.12
 
-          # Ubuntu: test deadsnakes Python not supported by GHA python-versions
+          # Test old unsupported Python versions
           - os: ubuntu-20.04
             python: 3.5
           - os: ubuntu-20.04
             python: 3.6
+          - os: ubuntu-18.04
+            python: 3.4
+          - os: ubuntu-18.04
+            python: 3.3
+          - os: windows-latest
+            python: 3.2
+          - os: windows-latest
+            python: 3.1
 
     steps:
         # https://github.com/actions/checkout
