@@ -7,18 +7,17 @@ functions for old Python versions.
 
 Supported Python versions:
 
-* Python 3.5 - 3.12
-* PyPy 2.7
-* PyPy 3.6 - 3.9
+* Python 3.5 - 3.13
+* PyPy 2.7 and PyPy 3.6 - 3.10
 
 Python 2.7 and Python 3.4 are no longer officially supported since GitHub
 Actions doesn't support them anymore: only best effort support is provided.
 
 C++03 and C++11 are supported on Python 3.6 and newer.
 
-A C99 subset is required, like ``static inline`` functions: see `PEP 7
-<https://www.python.org/dev/peps/pep-0007/>`_.  ISO C90 is partially supported
-for Python 2.7.
+A C11 subset (without optional features) is required, like ``static inline``
+functions: see `PEP 7 <https://www.python.org/dev/peps/pep-0007/>`_. ISO C90
+is partially supported for Python 2.7.
 
 Some functions related to frame objects and ``PyThreadState`` are not available
 on PyPy.
