@@ -93,10 +93,6 @@ jobs:
             python: 3.4
           - os: ubuntu-18.04
             python: 3.3
-          - os: windows-latest
-            python: 3.2
-          - os: windows-latest
-            python: 3.1
 
     steps:
       - uses: actions/checkout@v4
