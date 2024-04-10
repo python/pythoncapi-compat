@@ -180,9 +180,15 @@ Python 3.13
 
 Not supported:
 
-* ``PySys_Audit()``.
 * ``PyErr_FormatUnraisable()``.
-
+* ``PyLong_AsNativeBytes()``
+* ``PyLong_FromNativeBytes()``
+* ``PyLong_FromUnsignedNativeBytes()``
+* ``PyObject_GenericHash()``.
+* ``PySys_Audit()``.
+* ``PySys_AuditTuple()``.
+* ``PyType_GetFullyQualifiedName()``
+* ``PyType_GetModuleName()``
 
 Python 3.12
 -----------
