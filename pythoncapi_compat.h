@@ -1338,7 +1338,7 @@ PyDict_SetDefaultRef(PyObject *d, PyObject *key, PyObject *default_value,
 }
 #endif
 
-#if PY_VERSION_HEX < 0x030E0000
+#if PY_VERSION_HEX < 0x030E0000 && PY_VERSION_HEX >= 0x03060000 && !defined(PYPY_VERSION)
 typedef struct PyUnicodeWriter PyUnicodeWriter;
 
 static inline PyUnicodeWriter* PyUnicodeWriter_Create(void)

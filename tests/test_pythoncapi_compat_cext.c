@@ -1727,6 +1727,9 @@ test_get_constant(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+#if PY_VERSION_HEX < 0x030E0000 && PY_VERSION_HEX >= 0x03060000 && !defined(PYPY_VERSION)
+#define TEST_UNICODEWRITER 1
+
 static PyObject *
 test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
 {
@@ -1821,6 +1824,7 @@ error:
     PyUnicodeWriter_Free(writer);
     return NULL;
 }
+#endif
 
 
 static struct PyMethodDef methods[] = {
@@ -1861,8 +1865,10 @@ static struct PyMethodDef methods[] = {
     {"test_time", test_time, METH_NOARGS, _Py_NULL},
 #endif
     {"test_get_constant", test_get_constant, METH_NOARGS, _Py_NULL},
+#ifdef TEST_UNICODEWRITER
     {"test_unicodewriter", test_unicodewriter, METH_NOARGS, _Py_NULL},
     {"test_unicodewriter_format", test_unicodewriter_format, METH_NOARGS, _Py_NULL},
+#endif
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
