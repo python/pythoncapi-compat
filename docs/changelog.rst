@@ -1,6 +1,18 @@
 Changelog
 =========
 
+* 2024-05-23: Add functions:
+
+  * ``PyUnicodeWriter_Create()``
+  * ``PyUnicodeWriter_Free()``
+  * ``PyUnicodeWriter_Finish()``
+  * ``PyUnicodeWriter_SetOverallocate()``
+  * ``PyUnicodeWriter_WriteChar()``
+  * ``PyUnicodeWriter_WriteUTF8()``
+  * ``PyUnicodeWriter_WriteString()``
+  * ``PyUnicodeWriter_WriteSubstring()``
+  * ``PyUnicodeWriter_Format()``
+
 * 2024-04-23: Drop Python 3.5 support. It cannot be tested anymore (pip fails).
 * 2024-04-02: Add ``PyDict_SetDefaultRef()`` function.
 * 2024-03-29: Add ``PyList_GetItemRef()`` function.
