@@ -1727,6 +1727,102 @@ test_get_constant(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
+{
+    PyUnicodeWriter *writer = PyUnicodeWriter_Create();
+    if (writer == NULL) {
+        return NULL;
+    }
+    int ret;
+
+    // test PyUnicodeWriter_SetOverallocate()
+    PyUnicodeWriter_SetOverallocate(writer, 1);
+
+    // test PyUnicodeWriter_WriteString()
+    PyObject *str = PyUnicode_FromString("var");
+    if (str == NULL) {
+        goto error;
+    }
+    ret = PyUnicodeWriter_WriteString(writer, str);
+    Py_CLEAR(str);
+    if (ret < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteChar()
+    if (PyUnicodeWriter_WriteChar(writer, '=') < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteSubstring()
+    str = PyUnicode_FromString("[long]");
+    if (str == NULL) {
+        goto error;
+    }
+    ret = PyUnicodeWriter_WriteSubstring(writer, str, 1, 5);
+    Py_CLEAR(str);
+    if (ret < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteUTF8()
+    if (PyUnicodeWriter_WriteUTF8(writer, " valu\xC3\xA9", -1) < 0) {
+        goto error;
+    }
+
+    {
+        PyObject *result = PyUnicodeWriter_Finish(writer);
+        if (result == NULL) {
+            return NULL;
+        }
+        assert(PyUnicode_EqualToUTF8(result, "var=long valu\xC3\xA9"));
+        Py_DECREF(result);
+    }
+
+    Py_RETURN_NONE;
+
+error:
+    PyUnicodeWriter_Free(writer);
+    return NULL;
+}
+
+
+static PyObject *
+test_unicodewriter_format(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
+{
+    PyUnicodeWriter *writer = PyUnicodeWriter_Create();
+    if (writer == NULL) {
+        return NULL;
+    }
+
+    // test PyUnicodeWriter_Format()
+    if (PyUnicodeWriter_Format(writer, "%s %i", "Hello", 123) < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteChar()
+    if (PyUnicodeWriter_WriteChar(writer, '.') < 0) {
+        goto error;
+    }
+
+    {
+        PyObject *result = PyUnicodeWriter_Finish(writer);
+        if (result == NULL) {
+            return NULL;
+        }
+        assert(PyUnicode_EqualToUTF8(result, "Hello 123."));
+        Py_DECREF(result);
+    }
+
+    Py_RETURN_NONE;
+
+error:
+    PyUnicodeWriter_Free(writer);
+    return NULL;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1765,6 +1861,8 @@ static struct PyMethodDef methods[] = {
     {"test_time", test_time, METH_NOARGS, _Py_NULL},
 #endif
     {"test_get_constant", test_get_constant, METH_NOARGS, _Py_NULL},
+    {"test_unicodewriter", test_unicodewriter, METH_NOARGS, _Py_NULL},
+    {"test_unicodewriter_format", test_unicodewriter_format, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

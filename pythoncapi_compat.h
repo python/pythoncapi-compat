@@ -1338,6 +1338,112 @@ PyDict_SetDefaultRef(PyObject *d, PyObject *key, PyObject *default_value,
 }
 #endif
 
+#if PY_VERSION_HEX < 0x030E0000
+typedef struct PyUnicodeWriter PyUnicodeWriter;
+
+static inline PyUnicodeWriter* PyUnicodeWriter_Create(void)
+{
+    const size_t size = sizeof(_PyUnicodeWriter);
+    PyUnicodeWriter *writer = (PyUnicodeWriter *)PyMem_Malloc(size);
+    if (writer == _Py_NULL) {
+        PyErr_NoMemory();
+        return _Py_NULL;
+    }
+    _PyUnicodeWriter_Init((_PyUnicodeWriter*)writer);
+    ((_PyUnicodeWriter*)writer)->overallocate = 1;
+    return writer;
+}
+
+static inline void PyUnicodeWriter_Free(PyUnicodeWriter *writer)
+{
+    _PyUnicodeWriter_Dealloc((_PyUnicodeWriter*)writer);
+    PyMem_Free(writer);
+}
+
+static inline PyObject* PyUnicodeWriter_Finish(PyUnicodeWriter *writer)
+{
+    PyObject *str = _PyUnicodeWriter_Finish((_PyUnicodeWriter*)writer);
+    PyMem_Free(writer);
+    return str;
+}
+
+static inline void
+PyUnicodeWriter_SetOverallocate(PyUnicodeWriter *writer, int overallocate)
+{
+    ((_PyUnicodeWriter*)writer)->overallocate = (unsigned char)overallocate;
+}
+
+static inline int
+PyUnicodeWriter_WriteChar(PyUnicodeWriter *writer, Py_UCS4 ch)
+{
+    return _PyUnicodeWriter_WriteChar((_PyUnicodeWriter*)writer, ch);
+}
+
+static inline int
+PyUnicodeWriter_WriteString(PyUnicodeWriter *writer, PyObject *str)
+{
+    if (!PyUnicode_Check(str)) {
+        PyErr_Format(PyExc_TypeError,
+                     "expect str, not %s", Py_TYPE(str)->tp_name);
+        return -1;
+    }
+    return _PyUnicodeWriter_WriteStr((_PyUnicodeWriter*)writer, str);
+}
+
+static inline int
+PyUnicodeWriter_WriteUTF8(PyUnicodeWriter *writer,
+                          const char *str, Py_ssize_t size)
+{
+    if (size < 0) {
+        size = (Py_ssize_t)strlen(str);
+    }
+    PyObject *str_obj = PyUnicode_FromStringAndSize(str, size);
+    if (str_obj == _Py_NULL) {
+        return -1;
+    }
+
+    int res = PyUnicodeWriter_WriteString(writer, str_obj);
+    Py_DECREF(str_obj);
+    return res;
+}
+
+static inline int
+PyUnicodeWriter_WriteSubstring(PyUnicodeWriter *writer, PyObject *str,
+                               Py_ssize_t start, Py_ssize_t end)
+{
+    if (!PyUnicode_Check(str)) {
+        PyErr_Format(PyExc_TypeError, "expect str, not %T", str);
+        return -1;
+    }
+    if (start < 0 || start > end) {
+        PyErr_Format(PyExc_ValueError, "invalid start argument");
+        return -1;
+    }
+    if (end > PyUnicode_GET_LENGTH(str)) {
+        PyErr_Format(PyExc_ValueError, "invalid end argument");
+        return -1;
+    }
+
+    return _PyUnicodeWriter_WriteSubstring((_PyUnicodeWriter*)writer, str,
+                                           start, end);
+}
+
+static inline int
+PyUnicodeWriter_Format(PyUnicodeWriter *writer, const char *format, ...)
+{
+    va_list vargs;
+    va_start(vargs, format);
+    PyObject *str = PyUnicode_FromFormatV(format, vargs);
+    va_end(vargs);
+    if (str == _Py_NULL) {
+        return -1;
+    }
+
+    int res = PyUnicodeWriter_WriteString(writer, str);
+    Py_DECREF(str);
+    return res;
+}
+#endif  // PY_VERSION_HEX < 0x030E0000
 
 #ifdef __cplusplus
 }
