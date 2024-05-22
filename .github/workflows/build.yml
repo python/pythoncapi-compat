@@ -65,8 +65,8 @@ jobs:
             python: 3.12
 
           # Ubuntu: test deadsnakes Python not supported by GHA python-versions
-          - os: ubuntu-20.04
-            python: 3.5
+          # At 2024-05-23, Python 3.5 fails to install pip and so can no longer
+          # be tested.
           - os: ubuntu-20.04
             python: 3.6
 
