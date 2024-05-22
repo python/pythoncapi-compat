@@ -255,7 +255,10 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     // test PyFrame_GetLocals()
     PyObject *locals = PyFrame_GetLocals(frame);
     assert(locals != _Py_NULL);
+    // Python 3.13 creates a local proxy
+#if PY_VERSION_HEX < 0x030D0000
     assert(PyDict_Check(locals));
+#endif
 
     // test PyFrame_GetGlobals()
     PyObject *globals = PyFrame_GetGlobals(frame);
