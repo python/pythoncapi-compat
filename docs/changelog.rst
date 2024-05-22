@@ -1,6 +1,19 @@
 Changelog
 =========
 
+* 2024-07-18: Add functions:
+
+  * ``PyUnicodeWriter_Create()``
+  * ``PyUnicodeWriter_Discard()``
+  * ``PyUnicodeWriter_Finish()``
+  * ``PyUnicodeWriter_WriteChar()``
+  * ``PyUnicodeWriter_WriteUTF8()``
+  * ``PyUnicodeWriter_WriteStr()``
+  * ``PyUnicodeWriter_WriteRepr()``
+  * ``PyUnicodeWriter_WriteSubstring()``
+  * ``PyUnicodeWriter_WriteWideChar()``
+  * ``PyUnicodeWriter_Format()``
+
 * 2024-06-03: Add ``PyLong_GetSign()``.
 * 2024-04-23: Drop Python 3.5 support. It cannot be tested anymore (pip fails).
 * 2024-04-02: Add ``PyDict_SetDefaultRef()`` function.
