@@ -53,6 +53,7 @@
 // Marker to check that pointer value was set
 static const char uninitialized[] = "uninitialized";
 #define UNINITIALIZED_OBJ ((PyObject *)uninitialized)
+#define UNINITIALIZED_INT 0x83ff979
 
 
 static PyObject*
@@ -1412,6 +1413,11 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyErr_ExceptionMatches(PyExc_OverflowError));
     PyErr_Clear();
     Py_DECREF(obj2);
+
+    // test PyLong_GetSign()
+    int sign = UNINITIALIZED_INT;
+    assert(PyLong_GetSign(obj, &sign) == 0);
+    assert(sign == 1);
 
     Py_RETURN_NONE;
 }

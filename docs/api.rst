@@ -26,6 +26,13 @@ Latest version of the header file:
 `pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/master/pythoncapi_compat.h>`_.
 
 
+Python 3.14
+-----------
+
+.. c:function:: int PyLong_GetSign(PyObject *obj, int *sign)
+
+   See `PyLong_GetSign() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_GetSign>`__.
+
 Python 3.13
 -----------
 

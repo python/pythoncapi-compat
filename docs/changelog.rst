@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2024-06-03: Add ``PyLong_GetSign()``.
 * 2024-04-23: Drop Python 3.5 support. It cannot be tested anymore (pip fails).
 * 2024-04-02: Add ``PyDict_SetDefaultRef()`` function.
 * 2024-03-29: Add ``PyList_GetItemRef()`` function.
