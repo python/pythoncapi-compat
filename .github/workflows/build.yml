@@ -56,9 +56,7 @@ jobs:
           - os: windows-latest
             python: 3.12
 
-          # macOS: test old and new Python
-          - os: macos-latest
-            python: 3.6
+          # macOS: test only new Python
           - os: macos-latest
             python: 3.12
 
