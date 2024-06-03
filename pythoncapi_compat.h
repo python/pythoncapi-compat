@@ -1339,6 +1339,21 @@ PyDict_SetDefaultRef(PyObject *d, PyObject *key, PyObject *default_value,
 #endif
 
 
+// gh-116560 added PyLong_GetSign() to Python 3.14a4
+#if PY_VERSION_HEX < 0x030E00A1
+static inline int PyLong_GetSign(PyObject *obj, int *sign)
+{
+    if (!PyLong_Check(obj)) {
+        PyErr_Format(PyExc_TypeError, "expect int, got %s", Py_TYPE(obj)->tp_name);
+        return -1;
+    }
+
+    *sign = _PyLong_Sign(obj);
+    return 0;
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif
