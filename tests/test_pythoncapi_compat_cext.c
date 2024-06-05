@@ -1733,6 +1733,41 @@ test_get_constant(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+#if PY_VERSION_HEX >= 0x03080000 && !defined(PYPY_VERSION)
+static PyObject *
+test_config_get(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *obj;
+
+    // test PyConfig_Get(): get configuration option
+    obj = PyConfig_Get("verbose");
+    assert(obj != NULL);
+    assert(PyLong_Check(obj));
+    Py_DECREF(obj);
+
+    // test PyConfig_Get(): get preconfiguration option
+    obj = PyConfig_Get("utf8_mode");
+    assert(obj != NULL);
+    assert(PyLong_Check(obj));
+    Py_DECREF(obj);
+
+    // test PyConfig_Get(): get non-existant option
+    obj = PyConfig_Get("nonexistent_option_name");
+    assert(obj == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_ValueError));
+    PyErr_Clear();
+
+    // test PyConfig_GetInt(): get configuration option
+    int value = UNINITIALIZED_INT;
+    assert(PyConfig_GetInt("verbose", &value) == 0);
+    assert(value != UNINITIALIZED_INT);
+    assert(value >= 0);
+
+    Py_RETURN_NONE;
+}
+#endif
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1771,6 +1806,9 @@ static struct PyMethodDef methods[] = {
     {"test_time", test_time, METH_NOARGS, _Py_NULL},
 #endif
     {"test_get_constant", test_get_constant, METH_NOARGS, _Py_NULL},
+#if PY_VERSION_HEX >= 0x03080000 && !defined(PYPY_VERSION)
+    {"test_config_get", test_config_get, METH_NOARGS, _Py_NULL},
+#endif
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

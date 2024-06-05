@@ -1354,6 +1354,72 @@ static inline int PyLong_GetSign(PyObject *obj, int *sign)
 #endif
 
 
+#if PY_VERSION_HEX >= 0x03080000 && PY_VERSION_HEX < 0x030E00A1 && !defined(PYPY_VERSION)
+static inline PyObject* PyConfig_Get(const char *name)
+{
+    // Function is part of the internal C API
+    extern PyObject* _Py_GetConfigsAsDict(void);
+
+    PyObject *value = NULL;
+    PyObject *all_configs = NULL, *config = NULL, *preconfig = NULL;
+
+    all_configs = _Py_GetConfigsAsDict();
+    if (all_configs == NULL) {
+        goto config_error;
+    }
+
+    // Get a configuration value
+    if (PyDict_GetItemStringRef(all_configs, "config", &config) <= 0) {
+        goto config_error;
+    }
+    if (PyDict_GetItemStringRef(config, name, &value) < 0) {
+        goto done;
+    }
+    if (value != NULL) {
+        goto done;
+    }
+
+    // Get a preconfiguration value
+    if (PyDict_GetItemStringRef(all_configs, "pre_config", &preconfig) <= 0) {
+        goto config_error;
+    }
+    if (PyDict_GetItemStringRef(preconfig, name, &value) < 0) {
+        goto done;
+    }
+    if (value != NULL) {
+        goto done;
+    }
+
+    PyErr_Format(PyExc_ValueError, "cannot get configuration option %s", name);
+    goto done;
+
+config_error:
+    PyErr_SetString(PyExc_RuntimeError, "unable to get the configuration");
+
+done:
+    Py_XDECREF(all_configs);
+    Py_XDECREF(config);
+    Py_XDECREF(preconfig);
+    return value;
+}
+
+static inline int PyConfig_GetInt(const char *name, int *value)
+{
+    PyObject *obj = PyConfig_Get(name);
+    if (obj == NULL) {
+        return -1;
+    }
+
+    int asint = PyLong_AsInt(obj);
+    if (asint == -1 && PyErr_Occurred()) {
+        return -1;
+    }
+    *value = asint;
+    return 0;
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif
