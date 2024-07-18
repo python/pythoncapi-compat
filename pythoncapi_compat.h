@@ -1338,6 +1338,159 @@ PyDict_SetDefaultRef(PyObject *d, PyObject *key, PyObject *default_value,
 }
 #endif
 
+#if PY_VERSION_HEX < 0x030E0000 && PY_VERSION_HEX >= 0x03060000 && !defined(PYPY_VERSION)
+typedef struct PyUnicodeWriter PyUnicodeWriter;
+
+static inline void PyUnicodeWriter_Discard(PyUnicodeWriter *writer)
+{
+    _PyUnicodeWriter_Dealloc((_PyUnicodeWriter*)writer);
+    PyMem_Free(writer);
+}
+
+static inline PyUnicodeWriter* PyUnicodeWriter_Create(Py_ssize_t length)
+{
+    if (length < 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "length must be positive");
+        return NULL;
+    }
+
+    const size_t size = sizeof(_PyUnicodeWriter);
+    PyUnicodeWriter *pub_writer = (PyUnicodeWriter *)PyMem_Malloc(size);
+    if (pub_writer == _Py_NULL) {
+        PyErr_NoMemory();
+        return _Py_NULL;
+    }
+    _PyUnicodeWriter *writer = (_PyUnicodeWriter *)pub_writer;
+
+    _PyUnicodeWriter_Init(writer);
+    if (_PyUnicodeWriter_Prepare(writer, length, 127) < 0) {
+        PyUnicodeWriter_Discard(pub_writer);
+        return NULL;
+    }
+    writer->overallocate = 1;
+    return pub_writer;
+}
+
+static inline PyObject* PyUnicodeWriter_Finish(PyUnicodeWriter *writer)
+{
+    PyObject *str = _PyUnicodeWriter_Finish((_PyUnicodeWriter*)writer);
+    assert(((_PyUnicodeWriter*)writer)->buffer == NULL);
+    PyMem_Free(writer);
+    return str;
+}
+
+static inline int
+PyUnicodeWriter_WriteChar(PyUnicodeWriter *writer, Py_UCS4 ch)
+{
+    if (ch > 0x10ffff) {
+        PyErr_SetString(PyExc_ValueError,
+                        "character must be in range(0x110000)");
+        return -1;
+    }
+
+    return _PyUnicodeWriter_WriteChar((_PyUnicodeWriter*)writer, ch);
+}
+
+int
+PyUnicodeWriter_WriteStr(PyUnicodeWriter *writer, PyObject *obj)
+{
+    PyObject *str = PyObject_Str(obj);
+    if (str == NULL) {
+        return -1;
+    }
+
+    int res = _PyUnicodeWriter_WriteStr((_PyUnicodeWriter*)writer, str);
+    Py_DECREF(str);
+    return res;
+}
+
+int
+PyUnicodeWriter_WriteRepr(PyUnicodeWriter *writer, PyObject *obj)
+{
+    PyObject *str = PyObject_Repr(obj);
+    if (str == NULL) {
+        return -1;
+    }
+
+    int res = _PyUnicodeWriter_WriteStr((_PyUnicodeWriter*)writer, str);
+    Py_DECREF(str);
+    return res;
+}
+
+static inline int
+PyUnicodeWriter_WriteUTF8(PyUnicodeWriter *writer,
+                          const char *str, Py_ssize_t size)
+{
+    if (size < 0) {
+        size = (Py_ssize_t)strlen(str);
+    }
+
+    PyObject *str_obj = PyUnicode_FromStringAndSize(str, size);
+    if (str_obj == _Py_NULL) {
+        return -1;
+    }
+
+    int res = _PyUnicodeWriter_WriteStr((_PyUnicodeWriter*)writer, str_obj);
+    Py_DECREF(str_obj);
+    return res;
+}
+
+static inline int
+PyUnicodeWriter_WriteWideChar(PyUnicodeWriter *writer,
+                              const wchar_t *str, Py_ssize_t size)
+{
+    if (size < 0) {
+        size = (Py_ssize_t)wcslen(str);
+    }
+
+    PyObject *str_obj = PyUnicode_FromWideChar(str, size);
+    if (str_obj == _Py_NULL) {
+        return -1;
+    }
+
+    int res = _PyUnicodeWriter_WriteStr((_PyUnicodeWriter*)writer, str_obj);
+    Py_DECREF(str_obj);
+    return res;
+}
+
+static inline int
+PyUnicodeWriter_WriteSubstring(PyUnicodeWriter *writer, PyObject *str,
+                               Py_ssize_t start, Py_ssize_t end)
+{
+    if (!PyUnicode_Check(str)) {
+        PyErr_Format(PyExc_TypeError, "expect str, not %T", str);
+        return -1;
+    }
+    if (start < 0 || start > end) {
+        PyErr_Format(PyExc_ValueError, "invalid start argument");
+        return -1;
+    }
+    if (end > PyUnicode_GET_LENGTH(str)) {
+        PyErr_Format(PyExc_ValueError, "invalid end argument");
+        return -1;
+    }
+
+    return _PyUnicodeWriter_WriteSubstring((_PyUnicodeWriter*)writer, str,
+                                           start, end);
+}
+
+static inline int
+PyUnicodeWriter_Format(PyUnicodeWriter *writer, const char *format, ...)
+{
+    va_list vargs;
+    va_start(vargs, format);
+    PyObject *str = PyUnicode_FromFormatV(format, vargs);
+    va_end(vargs);
+    if (str == _Py_NULL) {
+        return -1;
+    }
+
+    int res = _PyUnicodeWriter_WriteStr((_PyUnicodeWriter*)writer, str);
+    Py_DECREF(str);
+    return res;
+}
+#endif  // PY_VERSION_HEX < 0x030E0000
 
 // gh-116560 added PyLong_GetSign() to Python 3.14.0a0
 #if PY_VERSION_HEX < 0x030E00A0

@@ -1733,6 +1733,147 @@ test_get_constant(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+#if PY_VERSION_HEX < 0x030E0000 && PY_VERSION_HEX >= 0x03060000 && !defined(PYPY_VERSION)
+#define TEST_UNICODEWRITER 1
+
+static PyObject *
+test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
+{
+    PyUnicodeWriter *writer = PyUnicodeWriter_Create(0);
+    if (writer == NULL) {
+        return NULL;
+    }
+    int ret;
+
+    // test PyUnicodeWriter_WriteStr()
+    PyObject *str = PyUnicode_FromString("var");
+    if (str == NULL) {
+        goto error;
+    }
+    ret = PyUnicodeWriter_WriteStr(writer, str);
+    Py_CLEAR(str);
+    if (ret < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteChar()
+    if (PyUnicodeWriter_WriteChar(writer, '=') < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteSubstring()
+    str = PyUnicode_FromString("[long]");
+    if (str == NULL) {
+        goto error;
+    }
+    ret = PyUnicodeWriter_WriteSubstring(writer, str, 1, 5);
+    Py_CLEAR(str);
+    if (ret < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteUTF8()
+    if (PyUnicodeWriter_WriteUTF8(writer, " valu\xC3\xA9", -1) < 0) {
+        goto error;
+    }
+    if (PyUnicodeWriter_WriteChar(writer, ' ') < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteRepr()
+    str = PyUnicode_FromString("repr");
+    if (str == NULL) {
+        goto error;
+    }
+    if (PyUnicodeWriter_WriteRepr(writer, str) < 0) {
+        goto error;
+    }
+    Py_CLEAR(str);
+
+    {
+        PyObject *result = PyUnicodeWriter_Finish(writer);
+        if (result == NULL) {
+            return NULL;
+        }
+        assert(PyUnicode_EqualToUTF8(result, "var=long valu\xC3\xA9 'repr'"));
+        Py_DECREF(result);
+    }
+
+    Py_RETURN_NONE;
+
+error:
+    PyUnicodeWriter_Discard(writer);
+    return NULL;
+}
+
+
+static PyObject *
+test_unicodewriter_widechar(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
+{
+    PyUnicodeWriter *writer = PyUnicodeWriter_Create(0);
+    if (writer == NULL) {
+        return NULL;
+    }
+
+    // test PyUnicodeWriter_WriteWideChar()
+    int ret = PyUnicodeWriter_WriteWideChar(writer, L"euro=\u20AC", -1);
+    if (ret < 0) {
+        goto error;
+    }
+
+    {
+        PyObject *result = PyUnicodeWriter_Finish(writer);
+        if (result == NULL) {
+            return NULL;
+        }
+        assert(PyUnicode_EqualToUTF8(result, "euro=\xe2\x82\xac"));
+        Py_DECREF(result);
+    }
+
+    Py_RETURN_NONE;
+
+error:
+    PyUnicodeWriter_Discard(writer);
+    return NULL;
+}
+
+
+static PyObject *
+test_unicodewriter_format(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
+{
+    PyUnicodeWriter *writer = PyUnicodeWriter_Create(0);
+    if (writer == NULL) {
+        return NULL;
+    }
+
+    // test PyUnicodeWriter_Format()
+    if (PyUnicodeWriter_Format(writer, "%s %i", "Hello", 123) < 0) {
+        goto error;
+    }
+
+    // test PyUnicodeWriter_WriteChar()
+    if (PyUnicodeWriter_WriteChar(writer, '.') < 0) {
+        goto error;
+    }
+
+    {
+        PyObject *result = PyUnicodeWriter_Finish(writer);
+        if (result == NULL) {
+            return NULL;
+        }
+        assert(PyUnicode_EqualToUTF8(result, "Hello 123."));
+        Py_DECREF(result);
+    }
+
+    Py_RETURN_NONE;
+
+error:
+    PyUnicodeWriter_Discard(writer);
+    return NULL;
+}
+#endif
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1771,6 +1912,11 @@ static struct PyMethodDef methods[] = {
     {"test_time", test_time, METH_NOARGS, _Py_NULL},
 #endif
     {"test_get_constant", test_get_constant, METH_NOARGS, _Py_NULL},
+#ifdef TEST_UNICODEWRITER
+    {"test_unicodewriter", test_unicodewriter, METH_NOARGS, _Py_NULL},
+    {"test_unicodewriter_widechar", test_unicodewriter_widechar, METH_NOARGS, _Py_NULL},
+    {"test_unicodewriter_format", test_unicodewriter_format, METH_NOARGS, _Py_NULL},
+#endif
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
