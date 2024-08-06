@@ -1392,7 +1392,7 @@ PyUnicodeWriter_WriteChar(PyUnicodeWriter *writer, Py_UCS4 ch)
     return _PyUnicodeWriter_WriteChar((_PyUnicodeWriter*)writer, ch);
 }
 
-int
+static inline int
 PyUnicodeWriter_WriteStr(PyUnicodeWriter *writer, PyObject *obj)
 {
     PyObject *str = PyObject_Str(obj);
@@ -1405,7 +1405,7 @@ PyUnicodeWriter_WriteStr(PyUnicodeWriter *writer, PyObject *obj)
     return res;
 }
 
-int
+static inline int
 PyUnicodeWriter_WriteRepr(PyUnicodeWriter *writer, PyObject *obj)
 {
     PyObject *str = PyObject_Repr(obj);
