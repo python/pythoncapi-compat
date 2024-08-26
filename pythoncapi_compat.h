@@ -1339,10 +1339,10 @@ PyDict_SetDefaultRef(PyObject *d, PyObject *key, PyObject *default_value,
 #endif
 
 #if PY_VERSION_HEX < 0x030D00B3
-#define Py_BEGIN_CRITICAL_SECTION(op) {
-#define Py_END_CRITICAL_SECTION() }
-#define Py_BEGIN_CRITICAL_SECTION2(a, b) {
-#define Py_END_CRITICAL_SECTION2() }
+#  define Py_BEGIN_CRITICAL_SECTION(op) {
+#  define Py_END_CRITICAL_SECTION() }
+#  define Py_BEGIN_CRITICAL_SECTION2(a, b) {
+#  define Py_END_CRITICAL_SECTION2() }
 #endif
 
 #if PY_VERSION_HEX < 0x030E0000 && PY_VERSION_HEX >= 0x03060000 && !defined(PYPY_VERSION)
