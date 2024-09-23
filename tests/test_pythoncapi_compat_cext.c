@@ -1662,7 +1662,7 @@ check_get_constant(PyObject* (*get_constant)(unsigned int), int borrowed)
 
     // Py_CONSTANT_FALSE
     obj = get_constant(Py_CONSTANT_FALSE);
-    assert(obj = Py_False);
+    assert(obj == Py_False);
     CLEAR(obj);
 
     // Py_CONSTANT_TRUE
