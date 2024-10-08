@@ -33,6 +33,51 @@ Python 3.14
 
    See `PyLong_GetSign() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_GetSign>`__.
 
+.. c:function:: PyUnicodeWriter* PyUnicodeWriter_Create(Py_ssize_t length)
+
+   See `PyUnicodeWriter_Create() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Create>`__.
+
+.. c:function:: PyObject* PyUnicodeWriter_Finish(PyUnicodeWriter *writer)
+
+   See `PyUnicodeWriter_Finish() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Finish>`__.
+
+.. c:function:: void PyUnicodeWriter_Discard(PyUnicodeWriter *writer)
+
+   See `PyUnicodeWriter_Discard() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Discard>`__.
+
+.. c:function:: int PyUnicodeWriter_WriteChar(PyUnicodeWriter *writer, Py_UCS4 ch)
+
+   See `PyUnicodeWriter_WriteChar() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteChar>`__.
+
+.. c:function:: int PyUnicodeWriter_WriteUTF8(PyUnicodeWriter *writer, const char *str, Py_ssize_t size)
+
+   See `PyUnicodeWriter_WriteUTF8() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteUTF8>`__.
+
+.. c:function:: int PyUnicodeWriter_WriteWideChar(PyUnicodeWriter *writer, const wchar_t *str, Py_ssize_t size)
+
+   See `PyUnicodeWriter_WriteWideChar() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteWideChar>`__.
+
+.. c:function:: int PyUnicodeWriter_WriteStr(PyUnicodeWriter *writer, PyObject *obj)
+
+   See `PyUnicodeWriter_WriteStr() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteStr>`__.
+
+.. c:function:: int PyUnicodeWriter_WriteRepr(PyUnicodeWriter *writer, PyObject *obj)
+
+   See `PyUnicodeWriter_WriteRepr() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteRepr>`__.
+
+.. c:function:: int PyUnicodeWriter_WriteSubstring(PyUnicodeWriter *writer, PyObject *str, Py_ssize_t start, Py_ssize_t end)
+
+   See `PyUnicodeWriter_WriteSubstring() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteSubstring>`__.
+
+.. c:function:: int PyUnicodeWriter_Format(PyUnicodeWriter *writer, const char *format, ...)
+
+   See `PyUnicodeWriter_Format() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Format>`__.
+
+Not supported:
+
+* ``PyUnicodeWriter_DecodeUTF8Stateful()``
+
+
 Python 3.13
 -----------
 
