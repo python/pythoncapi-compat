@@ -1437,12 +1437,14 @@ static int
 heapmanaged_traverse(PyObject *self, visitproc visit, void *arg)
 {
     Py_VISIT(Py_TYPE(self));
+    // Test PyObject_VisitManagedDict()
     return PyObject_VisitManagedDict(self, visit, arg);
 }
 
 static int
 heapmanaged_clear(PyObject *self)
 {
+    // Test PyObject_ClearManagedDict()
     PyObject_ClearManagedDict(self);
     return 0;
 }
@@ -1475,6 +1477,7 @@ static PyType_Spec HeapCTypeWithManagedDict_spec = {
 static PyObject *
 test_managed_dict(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
+    // Test PyObject_VisitManagedDict() and PyObject_ClearManagedDict()
     PyObject *type = PyType_FromSpec(&HeapCTypeWithManagedDict_spec);
     if (type == NULL) {
         return NULL;
@@ -1926,6 +1929,48 @@ test_bytes(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_iter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    // Test PyIter_NextItem()
+    PyObject *tuple = Py_BuildValue("(i)", 123);
+    if (tuple == NULL) {
+        return NULL;
+    }
+    PyObject *iter = PyObject_GetIter(tuple);
+    Py_DECREF(tuple);
+    if (iter == NULL) {
+        return NULL;
+    }
+
+    // first item
+    PyObject *item = UNINITIALIZED_OBJ;
+    assert(PyIter_NextItem(iter, &item) == 1);
+    {
+        PyObject *expected = PyLong_FromLong(123);
+        assert(PyObject_RichCompareBool(item, expected, Py_EQ) == 1);
+        assert(expected != NULL);
+        Py_DECREF(expected);
+    }
+
+    // StopIteration
+    item = UNINITIALIZED_OBJ;
+    assert(PyIter_NextItem(iter, &item) == 0);
+    assert(item == NULL);
+    assert(!PyErr_Occurred());
+
+    // non-iterable object
+    item = UNINITIALIZED_OBJ;
+    assert(PyIter_NextItem(Py_None, &item) == -1);
+    assert(item == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_TypeError));
+    PyErr_Clear();
+
+    Py_DECREF(iter);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1970,6 +2015,7 @@ static struct PyMethodDef methods[] = {
     {"test_unicodewriter_format", test_unicodewriter_format, METH_NOARGS, _Py_NULL},
 #endif
     {"test_bytes", test_bytes, METH_NOARGS, _Py_NULL},
+    {"test_iter", test_iter, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

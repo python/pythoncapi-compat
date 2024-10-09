@@ -4,6 +4,7 @@ Changelog
 * 2024-10-09: Add functions:
 
   * ``PyBytes_Join()``
+  * ``PyIter_NextItem()``
   * ``PyUnicode_Equal()``
   * ``Py_HashBuffer()``
 
