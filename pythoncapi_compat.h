@@ -1514,6 +1514,38 @@ static inline int PyLong_GetSign(PyObject *obj, int *sign)
 #endif
 
 
+// gh-124502 added PyUnicode_Equal() to Python 3.14.0a0
+#if PY_VERSION_HEX < 0x030E00A0
+static inline int PyUnicode_Equal(PyObject *str1, PyObject *str2)
+{
+    if (!PyUnicode_Check(str1)) {
+        PyErr_Format(PyExc_TypeError,
+                     "first argument must be str, not %s",
+                     Py_TYPE(str1)->tp_name);
+        return -1;
+    }
+    if (!PyUnicode_Check(str2)) {
+        PyErr_Format(PyExc_TypeError,
+                     "second argument must be str, not %s",
+                     Py_TYPE(str2)->tp_name);
+        return -1;
+    }
+
+#if PY_VERSION_HEX >= 0x030d0000 && !defined(PYPY_VERSION)
+    extern int _PyUnicode_Equal(PyObject *str1, PyObject *str2);
+
+    return _PyUnicode_Equal(str1, str2);
+#elif PY_VERSION_HEX >= 0x03060000 && !defined(PYPY_VERSION)
+    return _PyUnicode_EQ(str1, str2);
+#elif PY_VERSION_HEX >= 0x03090000 && defined(PYPY_VERSION)
+    return _PyUnicode_EQ(str1, str2);
+#else
+    return (PyUnicode_Compare(str1, str2) == 0);
+#endif
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2024-10-09: Add ``PyUnicode_Equal()`` function.
 * 2024-07-18: Add functions:
 
   * ``PyUnicodeWriter_Create()``
