@@ -5,6 +5,14 @@ Changelog
 
   * ``PyBytes_Join()``
   * ``PyIter_NextItem()``
+  * ``PyLong_AsInt32()``
+  * ``PyLong_AsInt64()``
+  * ``PyLong_AsUInt32()``
+  * ``PyLong_AsUInt64()``
+  * ``PyLong_FromInt32()``
+  * ``PyLong_FromInt64()``
+  * ``PyLong_FromUInt32()``
+  * ``PyLong_FromUInt64()``
   * ``PyUnicode_Equal()``
   * ``Py_HashBuffer()``
 
