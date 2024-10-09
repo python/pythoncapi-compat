@@ -1519,14 +1519,12 @@ static inline int PyLong_GetSign(PyObject *obj, int *sign)
 static inline int PyUnicode_Equal(PyObject *str1, PyObject *str2)
 {
     if (!PyUnicode_Check(str1)) {
-        PyErr_Format(PyExc_TypeError,
-                     "first argument must be str, not %s",
+        PyErr_Format(PyExc_TypeError, "first argument must be str, not %s",
                      Py_TYPE(str1)->tp_name);
         return -1;
     }
     if (!PyUnicode_Check(str2)) {
-        PyErr_Format(PyExc_TypeError,
-                     "second argument must be str, not %s",
+        PyErr_Format(PyExc_TypeError, "second argument must be str, not %s",
                      Py_TYPE(str2)->tp_name);
         return -1;
     }
@@ -1572,6 +1570,37 @@ static inline Py_hash_t Py_HashBuffer(const void *ptr, Py_ssize_t len)
     Py_DECREF(bytes);
     return hash;
 #endif
+}
+#endif
+
+
+#if PY_VERSION_HEX < 0x030E00A0
+static inline int PyIter_NextItem(PyObject *iter, PyObject **item)
+{
+    iternextfunc tp_iternext;
+
+    assert(iter != NULL);
+    assert(item != NULL);
+
+    tp_iternext = Py_TYPE(iter)->tp_iternext;
+    if (tp_iternext == NULL) {
+        *item = NULL;
+        PyErr_Format(PyExc_TypeError, "expected an iterator, got '%s'",
+                     Py_TYPE(iter)->tp_name);
+        return -1;
+    }
+
+    if ((*item = tp_iternext(iter))) {
+        return 1;
+    }
+    if (!PyErr_Occurred()) {
+        return 0;
+    }
+    if (PyErr_ExceptionMatches(PyExc_StopIteration)) {
+        PyErr_Clear();
+        return 0;
+    }
+    return -1;
 }
 #endif
 

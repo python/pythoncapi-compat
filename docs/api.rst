@@ -33,6 +33,10 @@ Python 3.14
 
    See `PyLong_GetSign() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_GetSign>`__.
 
+.. c:function:: PyObject* PyIter_NextItem(PyObject *sep, PyObject *iterable)
+
+   See `PyIter_NextItem() documentation <https://docs.python.org/dev/c-api/iter.html#c.PyIter_NextItem>`__.
+
 .. c:function:: PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
 
    See `PyBytes_Join() documentation <https://docs.python.org/dev/c-api/bytes.html#c.PyBytes_Join>`__.
