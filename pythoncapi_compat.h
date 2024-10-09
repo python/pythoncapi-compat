@@ -1546,6 +1546,15 @@ static inline int PyUnicode_Equal(PyObject *str1, PyObject *str2)
 #endif
 
 
+// gh-121645 added PyBytes_Join() to Python 3.14.0a0
+#if PY_VERSION_HEX < 0x030E00A0
+static inline PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
+{
+    return _PyBytes_Join(sep, iterable);
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

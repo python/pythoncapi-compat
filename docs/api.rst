@@ -33,6 +33,10 @@ Python 3.14
 
    See `PyLong_GetSign() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_GetSign>`__.
 
+.. c:function:: PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
+
+   See `PyBytes_Join() documentation <https://docs.python.org/dev/c-api/bytes.html#c.PyBytes_Join>`__.
+
 .. c:function:: int PyUnicode_Equal(PyObject *str1, PyObject *str2)
 
    See `PyUnicode_Equal() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicode_Equal>`__.
