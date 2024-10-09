@@ -45,6 +45,13 @@ extern "C" {
 #  define _PyObject_CAST(op) _Py_CAST(PyObject*, op)
 #endif
 
+#ifndef Py_BUILD_ASSERT
+#  define Py_BUILD_ASSERT(cond) \
+        do { \
+            (void)sizeof(char [1 - 2 * !(cond)]); \
+        } while(0)
+#endif
+
 
 // bpo-42262 added Py_NewRef() to Python 3.10.0a3
 #if PY_VERSION_HEX < 0x030A00A3 && !defined(Py_NewRef)
@@ -1601,6 +1608,84 @@ static inline int PyIter_NextItem(PyObject *iter, PyObject **item)
         return 0;
     }
     return -1;
+}
+#endif
+
+
+#if PY_VERSION_HEX < 0x030E00A0
+static inline PyObject* PyLong_FromInt32(int32_t value)
+{
+    Py_BUILD_ASSERT(sizeof(long) >= 4);
+    return PyLong_FromLong(value);
+}
+
+static inline PyObject* PyLong_FromInt64(int64_t value)
+{
+    Py_BUILD_ASSERT(sizeof(long long) >= 8);
+    return PyLong_FromLongLong(value);
+}
+
+static inline PyObject* PyLong_FromUInt32(uint32_t value)
+{
+    Py_BUILD_ASSERT(sizeof(unsigned long) >= 4);
+    return PyLong_FromUnsignedLong(value);
+}
+
+static inline PyObject* PyLong_FromUInt64(uint64_t value)
+{
+    Py_BUILD_ASSERT(sizeof(unsigned long long) >= 8);
+    return PyLong_FromUnsignedLongLong(value);
+}
+
+static inline int PyLong_AsInt32(PyObject *obj, int32_t *pvalue)
+{
+    Py_BUILD_ASSERT(sizeof(int) == 4);
+    int value = PyLong_AsInt(obj);
+    if (value == -1 && PyErr_Occurred()) {
+        return -1;
+    }
+    *pvalue = (int32_t)value;
+    return 0;
+}
+
+static inline int PyLong_AsInt64(PyObject *obj, int64_t *pvalue)
+{
+    Py_BUILD_ASSERT(sizeof(long long) == 8);
+    long long value = PyLong_AsLongLong(obj);
+    if (value == -1 && PyErr_Occurred()) {
+        return -1;
+    }
+    *pvalue = (int64_t)value;
+    return 0;
+}
+
+static inline int PyLong_AsUInt32(PyObject *obj, uint32_t *pvalue)
+{
+    Py_BUILD_ASSERT(sizeof(long) >= 4);
+    unsigned long value = PyLong_AsUnsignedLong(obj);
+    if (value == (unsigned long)-1 && PyErr_Occurred()) {
+        return -1;
+    }
+#if SIZEOF_LONG > 4
+    if ((unsigned long)UINT32_MAX < value) {
+        PyErr_SetString(PyExc_OverflowError,
+                        "Python int too large to convert to C uint32_t");
+        return -1;
+    }
+#endif
+    *pvalue = (uint32_t)value;
+    return 0;
+}
+
+static inline int PyLong_AsUInt64(PyObject *obj, uint64_t *pvalue)
+{
+    Py_BUILD_ASSERT(sizeof(long long) == 8);
+    unsigned long long value = PyLong_AsUnsignedLongLong(obj);
+    if (value == (unsigned long long)-1 && PyErr_Occurred()) {
+        return -1;
+    }
+    *pvalue = (uint64_t)value;
+    return 0;
 }
 #endif
 

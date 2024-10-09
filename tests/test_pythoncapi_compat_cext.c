@@ -1971,6 +1971,47 @@ test_iter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_long_stdint(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *obj;
+
+    // Test PyLong_FromInt32() and PyLong_AsInt32()
+    obj = PyLong_FromInt32(INT32_C(-0x12345678));
+    assert(obj != NULL);
+    int32_t i32;
+    assert(PyLong_AsInt32(obj, &i32) == 0);
+    assert(i32 == INT32_C(-0x12345678));
+    Py_DECREF(obj);
+
+    // Test PyLong_FromUInt32() and PyLong_AsUInt32()
+    obj = PyLong_FromUInt32(UINT32_C(0xDEADBEEF));
+    assert(obj != NULL);
+    uint32_t u32;
+    assert(PyLong_AsUInt32(obj, &u32) == 0);
+    assert(u32 == UINT32_C(0xDEADBEEF));
+    Py_DECREF(obj);
+
+    // Test PyLong_FromInt64() and PyLong_AsInt64()
+    obj = PyLong_FromInt64(INT64_C(-0x12345678DEADBEEF));
+    assert(obj != NULL);
+    int64_t i64;
+    assert(PyLong_AsInt64(obj, &i64) == 0);
+    assert(i64 == INT64_C(-0x12345678DEADBEEF));
+    Py_DECREF(obj);
+
+    // Test PyLong_FromUInt64() and PyLong_AsUInt64()
+    obj = PyLong_FromUInt64(UINT64_C(0xDEADBEEF12345678));
+    assert(obj != NULL);
+    uint64_t u64;
+    assert(PyLong_AsUInt64(obj, &u64) == 0);
+    assert(u64 == UINT64_C(0xDEADBEEF12345678));
+    Py_DECREF(obj);
+
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2016,6 +2057,7 @@ static struct PyMethodDef methods[] = {
 #endif
     {"test_bytes", test_bytes, METH_NOARGS, _Py_NULL},
     {"test_iter", test_iter, METH_NOARGS, _Py_NULL},
+    {"test_long_stdint", test_long_stdint, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

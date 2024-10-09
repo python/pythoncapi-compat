@@ -89,6 +89,39 @@ Python 3.14
 
    See `PyUnicodeWriter_Format() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Format>`__.
 
+.. c:function:: int PyLong_AsInt32(PyObject *obj, int32_t *pvalue)
+
+   See `PyLong_AsInt32() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_AsInt32>`__.
+
+.. c:function:: int PyLong_AsInt64(PyObject *obj, int64_t *pvalue)
+
+   See `PyLong_AsInt64() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_AsInt64>`__.
+
+.. c:function:: int PyLong_AsUInt32(PyObject *obj, uint32_t *pvalue)
+
+   See `PyLong_AsUInt32() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_AsUInt32>`__.
+
+.. c:function:: int PyLong_AsUInt64(PyObject *obj, uint64_t *pvalue)
+
+   See `PyLong_AsUInt64() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_AsUInt64>`__.
+
+.. c:function:: PyObject* PyLong_FromInt32(int32_t value)
+
+   See `PyLong_FromInt32() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_FromInt32>`__.
+
+.. c:function:: PyObject* PyLong_FromInt64(int64_t value)
+
+   See `PyLong_FromInt64() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_FromInt64>`__.
+
+.. c:function:: PyObject* PyLong_FromUInt32(uint32_t value)
+
+   See `PyLong_FromUInt32() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_FromUInt32>`__.
+
+.. c:function:: PyObject* PyLong_FromUInt64(uint64_t value)
+
+   See `PyLong_FromUInt64() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_FromUInt64>`__.
+
+
 Not supported:
 
 * ``PyConfig_Get()``
@@ -108,14 +141,6 @@ Not supported:
 * ``PyInitConfig_SetInt()``
 * ``PyInitConfig_SetStr()``
 * ``PyInitConfig_SetStrList()``
-* ``PyLong_AsInt32()``
-* ``PyLong_AsInt64()``
-* ``PyLong_AsUInt32()``
-* ``PyLong_AsUInt64()``
-* ``PyLong_FromInt32()``
-* ``PyLong_FromInt64()``
-* ``PyLong_FromUInt32()``
-* ``PyLong_FromUInt64()``
 * ``PyType_GetBaseByToken()``
 * ``PyUnicodeWriter_DecodeUTF8Stateful()``
 * ``Py_InitializeFromInitConfig()``
