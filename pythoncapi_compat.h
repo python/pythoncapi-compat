@@ -1555,6 +1555,27 @@ static inline PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
 #endif
 
 
+#if PY_VERSION_HEX < 0x030E00A0
+static inline Py_hash_t Py_HashBuffer(const void *ptr, Py_ssize_t len)
+{
+#if PY_VERSION_HEX >= 0x03000000 && !defined(PYPY_VERSION)
+    extern Py_hash_t _Py_HashBytes(const void *src, Py_ssize_t len);
+
+    return _Py_HashBytes(ptr, len);
+#else
+    Py_hash_t hash;
+    PyObject *bytes = PyBytes_FromStringAndSize((const char*)ptr, len);
+    if (bytes == NULL) {
+        return -1;
+    }
+    hash = PyObject_Hash(bytes);
+    Py_DECREF(bytes);
+    return hash;
+#endif
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -10,7 +10,7 @@ Supported Python versions:
 * Python 3.6 - 3.14
 * PyPy 2.7 and PyPy 3.6 - 3.10
 
-Python 2.7 and Python 3.4 are no longer officially supported since GitHub
+Python 2.7 and Python 3.5 are no longer officially supported since GitHub
 Actions doesn't support them anymore: only best effort support is provided.
 
 C++03 and C++11 are supported on Python 3.6 and newer.
@@ -36,6 +36,10 @@ Python 3.14
 .. c:function:: PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
 
    See `PyBytes_Join() documentation <https://docs.python.org/dev/c-api/bytes.html#c.PyBytes_Join>`__.
+
+.. c:function:: Py_hash_t Py_HashBuffer(const void *ptr, Py_ssize_t len)
+
+   See `Py_HashBuffer() documentation <https://docs.python.org/dev/c-api/hash.html#c.Py_HashBuffer>`__.
 
 .. c:function:: int PyUnicode_Equal(PyObject *str1, PyObject *str2)
 

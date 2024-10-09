@@ -1618,6 +1618,20 @@ test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(imag != 0);
 #endif
 
+    // Test Py_HashBuffer()
+    {
+        PyObject *abc = PyBytes_FromString("abc");
+        if (abc == NULL) {
+            return NULL;
+        }
+        Py_hash_t hash = Py_HashBuffer(PyBytes_AS_STRING(abc),
+                                       PyBytes_GET_SIZE(abc));
+        Py_hash_t hash2 = PyObject_Hash(abc);
+        assert(hash == hash2);
+
+        Py_DECREF(abc);
+    }
+
     Py_RETURN_NONE;
 }
 
@@ -1884,6 +1898,7 @@ error:
 static PyObject *
 test_bytes(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
+    // Test PyBytes_Join()
     PyObject *abc = PyBytes_FromString("a b c");
     if (abc == NULL) {
         return NULL;
