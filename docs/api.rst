@@ -33,6 +33,10 @@ Python 3.14
 
    See `PyLong_GetSign() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_GetSign>`__.
 
+.. c:function:: int PyUnicode_Equal(PyObject *str1, PyObject *str2)
+
+   See `PyUnicode_Equal() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicode_Equal>`__.
+
 .. c:function:: PyUnicodeWriter* PyUnicodeWriter_Create(Py_ssize_t length)
 
    See `PyUnicodeWriter_Create() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Create>`__.

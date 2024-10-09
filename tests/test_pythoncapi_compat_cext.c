@@ -1531,6 +1531,13 @@ test_unicode(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyErr_ExceptionMatches(PyExc_MemoryError));
     PyErr_Clear();
 
+    // Test PyUnicode_Equal()
+    assert(PyUnicode_Equal(abc, abc) == 1);
+    assert(PyUnicode_Equal(abc, abc0def) == 0);
+    assert(PyUnicode_Equal(abc, Py_True) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_TypeError));
+    PyErr_Clear();
+
     Py_DECREF(abc);
     Py_DECREF(abc0def);
     Py_RETURN_NONE;
