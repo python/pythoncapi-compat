@@ -5,6 +5,7 @@ Changelog
 
   * ``PyBytes_Join()``
   * ``PyUnicode_Equal()``
+  * ``Py_HashBuffer()``
 
 * 2024-07-18: Add functions:
 

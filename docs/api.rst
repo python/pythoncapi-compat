@@ -10,7 +10,7 @@ Supported Python versions:
 * Python 3.6 - 3.14
 * PyPy 2.7 and PyPy 3.6 - 3.10
 
-Python 2.7 and Python 3.4 are no longer officially supported since GitHub
+Python 2.7 and Python 3.5 are no longer officially supported since GitHub
 Actions doesn't support them anymore: only best effort support is provided.
 
 C++03 and C++11 are supported on Python 3.6 and newer.
@@ -36,6 +36,10 @@ Python 3.14
 .. c:function:: PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
 
    See `PyBytes_Join() documentation <https://docs.python.org/dev/c-api/bytes.html#c.PyBytes_Join>`__.
+
+.. c:function:: Py_hash_t Py_HashBuffer(const void *ptr, Py_ssize_t len)
+
+   See `Py_HashBuffer() documentation <https://docs.python.org/dev/c-api/hash.html#c.Py_HashBuffer>`__.
 
 .. c:function:: int PyUnicode_Equal(PyObject *str1, PyObject *str2)
 
@@ -83,7 +87,34 @@ Python 3.14
 
 Not supported:
 
+* ``PyConfig_Get()``
+* ``PyConfig_GetInt()``
+* ``PyConfig_Names()``
+* ``PyConfig_Set()``
+* ``PyInitConfig_AddModule()``
+* ``PyInitConfig_Create()``
+* ``PyInitConfig_Free()``
+* ``PyInitConfig_FreeStrList()``
+* ``PyInitConfig_GetError()``
+* ``PyInitConfig_GetExitCode()``
+* ``PyInitConfig_GetInt()``
+* ``PyInitConfig_GetStr()``
+* ``PyInitConfig_GetStrList()``
+* ``PyInitConfig_HasOption()``
+* ``PyInitConfig_SetInt()``
+* ``PyInitConfig_SetStr()``
+* ``PyInitConfig_SetStrList()``
+* ``PyLong_AsInt32()``
+* ``PyLong_AsInt64()``
+* ``PyLong_AsUInt32()``
+* ``PyLong_AsUInt64()``
+* ``PyLong_FromInt32()``
+* ``PyLong_FromInt64()``
+* ``PyLong_FromUInt32()``
+* ``PyLong_FromUInt64()``
+* ``PyType_GetBaseByToken()``
 * ``PyUnicodeWriter_DecodeUTF8Stateful()``
+* ``Py_InitializeFromInitConfig()``
 
 
 Python 3.13
