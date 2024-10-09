@@ -1881,6 +1881,36 @@ error:
 #endif
 
 
+static PyObject *
+test_bytes(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *abc = PyBytes_FromString("a b c");
+    if (abc == NULL) {
+        return NULL;
+    }
+    PyObject *list = PyObject_CallMethod(abc, "split", NULL);
+    Py_DECREF(abc);
+    if (list == NULL) {
+        return NULL;
+    }
+    PyObject *sep = PyBytes_FromString("-");
+    if (sep == NULL) {
+        Py_DECREF(list);
+        return NULL;
+    }
+
+    PyObject *join = PyBytes_Join(sep, list);
+    assert(join != NULL);
+    assert(PyBytes_Check(join));
+    assert(memcmp(PyBytes_AS_STRING(join), "a-b-c", 5) == 0);
+    Py_DECREF(join);
+
+    Py_DECREF(list);
+    Py_DECREF(sep);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -1924,6 +1954,7 @@ static struct PyMethodDef methods[] = {
     {"test_unicodewriter_widechar", test_unicodewriter_widechar, METH_NOARGS, _Py_NULL},
     {"test_unicodewriter_format", test_unicodewriter_format, METH_NOARGS, _Py_NULL},
 #endif
+    {"test_bytes", test_bytes, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
