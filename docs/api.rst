@@ -23,7 +23,7 @@ Some functions related to frame objects and ``PyThreadState`` are not available
 on PyPy.
 
 Latest version of the header file:
-`pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/master/pythoncapi_compat.h>`_.
+`pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/main/pythoncapi_compat.h>`_.
 
 
 Python 3.14

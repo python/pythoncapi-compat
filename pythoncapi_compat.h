@@ -7,7 +7,7 @@
 // https://github.com/python/pythoncapi_compat
 //
 // Latest version:
-// https://raw.githubusercontent.com/python/pythoncapi_compat/master/pythoncapi_compat.h
+// https://raw.githubusercontent.com/python/pythoncapi-compat/main/pythoncapi_compat.h
 //
 // SPDX-License-Identifier: 0BSD
 
