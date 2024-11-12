@@ -1520,8 +1520,8 @@ static inline int PyLong_GetSign(PyObject *obj, int *sign)
 }
 #endif
 
-// gh-126061 added PyLong_IsPositive/Negative/Zero() to Python in 3.14.0a1
-#if PY_VERSION_HEX < 0x030E00A1
+// gh-126061 added PyLong_IsPositive/Negative/Zero() to Python in 3.14.0a2
+#if PY_VERSION_HEX < 0x030E00A2
 static inline int PyLong_IsPositive(PyObject *obj)
 {
     if (!PyLong_Check(obj)) {
