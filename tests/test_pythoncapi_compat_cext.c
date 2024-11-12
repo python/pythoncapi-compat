@@ -1421,6 +1421,11 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyLong_GetSign(obj, &sign) == 0);
     assert(sign == 1);
 
+    // test PyLong_IsPositive(), PyLong_IsNegative() and PyLong_IsZero()
+    assert(PyLong_IsPositive(obj) == 1);
+    assert(PyLong_IsNegative(obj) == 0);
+    assert(PyLong_IsZero(obj) == 0);
+
     Py_RETURN_NONE;
 }
 

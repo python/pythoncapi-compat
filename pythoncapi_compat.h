@@ -1520,6 +1520,36 @@ static inline int PyLong_GetSign(PyObject *obj, int *sign)
 }
 #endif
 
+// gh-126061 added PyLong_IsPositive/Negative/Zero() to Python in 3.14.0a2
+#if PY_VERSION_HEX < 0x030E00A2
+static inline int PyLong_IsPositive(PyObject *obj)
+{
+    if (!PyLong_Check(obj)) {
+        PyErr_Format(PyExc_TypeError, "expected int, got %s", Py_TYPE(obj)->tp_name);
+        return -1;
+    }
+    return _PyLong_Sign(obj) == 1;
+}
+
+static inline int PyLong_IsNegative(PyObject *obj)
+{
+    if (!PyLong_Check(obj)) {
+        PyErr_Format(PyExc_TypeError, "expected int, got %s", Py_TYPE(obj)->tp_name);
+        return -1;
+    }
+    return _PyLong_Sign(obj) == -1;
+}
+
+static inline int PyLong_IsZero(PyObject *obj)
+{
+    if (!PyLong_Check(obj)) {
+        PyErr_Format(PyExc_TypeError, "expected int, got %s", Py_TYPE(obj)->tp_name);
+        return -1;
+    }
+    return _PyLong_Sign(obj) == 0;
+}
+#endif
+
 
 // gh-124502 added PyUnicode_Equal() to Python 3.14.0a0
 #if PY_VERSION_HEX < 0x030E00A0

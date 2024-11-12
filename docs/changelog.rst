@@ -1,6 +1,12 @@
 Changelog
 =========
 
+* 2024-11-12: Add functions:
+
+  * ``PyLong_IsPositive()``
+  * ``PyLong_IsNegative()``
+  * ``PyLong_IsZero()``
+
 * 2024-10-09: Add functions:
 
   * ``PyBytes_Join()``

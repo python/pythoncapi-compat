@@ -29,6 +29,18 @@ Latest version of the header file:
 Python 3.14
 -----------
 
+.. c:function:: int PyLong_IsPositive(PyObject *obj)
+
+   See `PyLong_IsPositive() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_IsPositive>`__.
+
+.. c:function:: int PyLong_IsNegative(PyObject *obj)
+
+   See `PyLong_IsNegative() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_IsNegative>`__.
+
+.. c:function:: int PyLong_IsZero(PyObject *obj)
+
+   See `PyLong_IsZero() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_IsZero>`__.
+
 .. c:function:: int PyLong_GetSign(PyObject *obj, int *sign)
 
    See `PyLong_GetSign() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_GetSign>`__.
