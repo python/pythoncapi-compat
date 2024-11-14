@@ -1426,6 +1426,50 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyLong_IsNegative(obj) == 0);
     assert(PyLong_IsZero(obj) == 0);
 
+#if defined(PYTHON3) && !defined(PYPY_VERSION)
+    // test import/export API
+    digit *digits;
+    PyLongWriter *writer;
+    static PyLongExport long_export;
+
+    writer = PyLongWriter_Create(1, 1, (void**)&digits);
+    PyLongWriter_Discard(writer);
+
+    writer = PyLongWriter_Create(1, 1, (void**)&digits);
+    digits[0] = 123;
+    obj = PyLongWriter_Finish(writer);
+
+    PyLong_Export(obj, &long_export);
+    assert(long_export.value == -123);
+    assert(long_export.digits == NULL);
+    PyLong_FreeExport(&long_export);
+    Py_DECREF(obj);
+
+    writer = PyLongWriter_Create(0, 5, (void**)&digits);
+    digits[0] = 1;
+    digits[1] = 0;
+    digits[2] = 0;
+    digits[3] = 0;
+    digits[4] = 1;
+    obj = PyLongWriter_Finish(writer);
+
+    PyLong_Export(obj, &long_export);
+    assert(long_export.value == 0);
+    digits = (digit*)long_export.digits;
+    assert(digits[0] == 1);
+    assert(digits[1] == 0);
+    assert(digits[2] == 0);
+    assert(digits[3] == 0);
+    assert(digits[4] == 1);
+    PyLong_FreeExport(&long_export);
+    Py_DECREF(obj);
+
+    const PyLongLayout *layout = PyLong_GetNativeLayout();
+
+    assert(layout->digits_order == -1);
+    assert(layout->digit_size == sizeof(digit));
+#endif // defined(PYTHON3) && !defined(PYPY_VERSION)
+
     Py_RETURN_NONE;
 }
 
