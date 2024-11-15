@@ -1616,7 +1616,7 @@ test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
 #if ((!defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x030400B1) \
      || (defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x03070000 \
-         && PYPY_VERSION_NUM >= 0x07090000))
+         && PYPY_VERSION_NUM >= 0x07030800))
     // Just check that constants are available
     size_t bits = PyHASH_BITS;
     assert(bits >= 8);
