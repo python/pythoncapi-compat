@@ -1432,8 +1432,8 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
 // --- HeapCTypeWithManagedDict --------------------------------------------
 
-// Py_TPFLAGS_MANAGED_DICT was added to Python 3.11.0a3 but is very much an implementation detail
-#if PY_VERSION_HEX >= 0x030B00A3 || ! defined(PYPY_VERSION)
+// Py_TPFLAGS_MANAGED_DICT was added to Python 3.11.0a3 but is not implemented on PyPy
+#if PY_VERSION_HEX >= 0x030B00A3 && ! defined(PYPY_VERSION)
 #  define TEST_MANAGED_DICT
 
 typedef struct {
