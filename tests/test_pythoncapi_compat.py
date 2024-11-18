@@ -62,7 +62,7 @@ def build_ext():
     display_title("Build test extensions")
     if os.path.exists("build"):
         shutil.rmtree("build")
-    cmd = [sys.executable, "setup.py", "build"]
+    cmd = [sys.executable, "setup.py", "build", "--debug"]
     if VERBOSE:
         run_command(cmd)
         print()

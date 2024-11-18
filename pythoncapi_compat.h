@@ -287,7 +287,7 @@ PyFrame_GetVarString(PyFrameObject *frame, const char *name)
 
 
 // bpo-39947 added PyThreadState_GetInterpreter() to Python 3.9.0a5
-#if PY_VERSION_HEX < 0x030900A5 || defined(PYPY_VERSION)
+#if PY_VERSION_HEX < 0x030900A5 || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030B0000)
 static inline PyInterpreterState *
 PyThreadState_GetInterpreter(PyThreadState *tstate)
 {
@@ -918,7 +918,7 @@ static inline int
 PyObject_VisitManagedDict(PyObject *obj, visitproc visit, void *arg)
 {
     PyObject **dict = _PyObject_GetDictPtr(obj);
-    if (*dict == NULL) {
+    if (dict == NULL || *dict == NULL) {
         return -1;
     }
     Py_VISIT(*dict);
@@ -929,7 +929,7 @@ static inline void
 PyObject_ClearManagedDict(PyObject *obj)
 {
     PyObject **dict = _PyObject_GetDictPtr(obj);
-    if (*dict == NULL) {
+    if (dict == NULL || *dict == NULL) {
         return;
     }
     Py_CLEAR(*dict);
