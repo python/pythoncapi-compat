@@ -29,6 +29,42 @@ Latest version of the header file:
 Python 3.14
 -----------
 
+.. c:struct:: PyLongLayout
+
+   See `PyLongLayout documentation <https://docs.python.org/dev/c-api/long.html#c.PyLongLayout>`__.
+
+.. c:function:: const PyLongLayout* PyLong_GetNativeLayout(void)
+
+   See `PyLong_GetNativeLayout() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_GetNativeLayout>`__.
+
+.. c:struct:: PyLongExport
+
+   See `PyLongExport documentation <https://docs.python.org/dev/c-api/long.html#c.PyLongExport>`__.
+
+.. c:function:: int PyLong_Export(PyObject *obj, PyLongExport *export_long)
+
+   See `PyLong_Export() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_Export>`__.
+
+.. c:function:: void PyLong_FreeExport(PyLongExport *export_long)
+
+   See `PyLong_FreeExport() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_FreeExport>`__.
+
+.. c:struct:: PyLongWriter
+
+   See `PyLongWriter documentation <https://docs.python.org/dev/c-api/long.html#c.PyLongWriter>`__.
+
+.. c:function:: PyLongWriter* PyLongWriter_Create(int negative, Py_ssize_t ndigits, void **digits)
+
+   See `PyLongWriter_Create() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLongWriter_Create>`__.
+
+.. c:function:: PyObject* PyLongWriter_Finish(PyLongWriter *writer)
+
+   See `PyLongWriter_Finish() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLongWriter_Finish>`__.
+
+.. c:function:: void PyLongWriter_Discard(PyLongWriter *writer)
+
+   See `PyLongWriter_Discard() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLongWriter_Discard>`__.
+
 .. c:function:: int PyLong_IsPositive(PyObject *obj)
 
    See `PyLong_IsPositive() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_IsPositive>`__.
