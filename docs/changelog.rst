@@ -1,6 +1,18 @@
 Changelog
 =========
 
+* 2024-12-13: Add functions and structs:
+
+  * ``PyLongLayout``
+  * ``PyLong_GetNativeLayout()``
+  * ``PyLongExport``
+  * ``PyLong_Export()``
+  * ``PyLong_FreeExport()``
+  * ``PyLongWriter``
+  * ``PyLongWriter_Create()``
+  * ``PyLongWriter_Finish()``
+  * ``PyLongWriter_Discard()``
+
 * 2024-11-12: Add functions:
 
   * ``PyLong_IsPositive()``
