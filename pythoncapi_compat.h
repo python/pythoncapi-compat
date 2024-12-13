@@ -1729,9 +1729,9 @@ _PyLong_SetSignAndDigitCount(PyLongObject *op, int sign, Py_ssize_t size)
 #if PY_VERSION_HEX >= 0x030C0000
     op->long_value.lv_tag = (uintptr_t)(1 - sign) | ((uintptr_t)(size) << 3);
 #elif PY_VERSION_HEX >= 0x030900A4
-    Py_SET_SIZE(op, sign*size);
+    Py_SET_SIZE(op, sign * size);
 #else
-    Py_SIZE(op) = sign*size;
+    Py_SIZE(op) = sign * size;
 #endif
 }
 
@@ -1891,7 +1891,7 @@ PyLongWriter_Finish(PyLongWriter *writer)
         _PyLong_SetSignAndDigitCount(self, sign, i);
     }
     if (i <= 1) {
-        long val = sign*(long)(_PyLong_GetDigits(self)[0]);
+        long val = sign * (long)(_PyLong_GetDigits(self)[0]);
         Py_DECREF(obj);
         return PyLong_FromLong(val);
     }
