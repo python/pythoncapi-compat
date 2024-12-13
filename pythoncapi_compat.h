@@ -1789,6 +1789,7 @@ static inline int
 PyLong_Export(PyObject *obj, PyLongExport *export_long)
 {
     if (!PyLong_Check(obj)) {
+        memset(export_long, 0, sizeof(*export_long));
         PyErr_Format(PyExc_TypeError, "expected int, got %s",
                      Py_TYPE(obj)->tp_name);
         return -1;
@@ -1841,7 +1842,7 @@ PyLong_FreeExport(PyLongExport *export_long)
 static inline PyLongWriter*
 PyLongWriter_Create(int negative, Py_ssize_t ndigits, void **digits)
 {
-    if (ndigits < 0) {
+    if (ndigits <= 0) {
         PyErr_SetString(PyExc_ValueError, "ndigits must be positive");
         return NULL;
     }
@@ -1850,9 +1851,6 @@ PyLongWriter_Create(int negative, Py_ssize_t ndigits, void **digits)
     PyLongObject *obj = _PyLong_New(ndigits);
     if (obj == NULL) {
         return NULL;
-    }
-    if (ndigits == 0) {
-        assert(_PyLong_GetDigits(obj)[0] == 0);
     }
     _PyLong_SetSignAndDigitCount(obj, negative?-1:1, ndigits);
 
