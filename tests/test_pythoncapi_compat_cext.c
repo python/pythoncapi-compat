@@ -1465,7 +1465,6 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(obj);
 
     const PyLongLayout *layout = PyLong_GetNativeLayout();
-
     assert(layout->digits_order == -1);
     assert(layout->digit_size == sizeof(digit));
 #endif // defined(PYTHON3) && !defined(PYPY_VERSION)
