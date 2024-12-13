@@ -1439,6 +1439,7 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     digits[0] = 123;
     obj = PyLongWriter_Finish(writer);
 
+    check_int(obj, -123);
     PyLong_Export(obj, &long_export);
     assert(long_export.value == -123);
     assert(long_export.digits == NULL);

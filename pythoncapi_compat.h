@@ -1762,13 +1762,6 @@ typedef struct PyLongLayout {
     int8_t digit_endianness;
 } PyLongLayout;
 
-static const PyLongLayout PyLong_LAYOUT = {
-    PyLong_SHIFT,
-    sizeof(digit),
-    -1,  // least significant first
-    PY_LITTLE_ENDIAN ? -1 : 1,
-};
-
 typedef struct PyLongExport {
     int64_t value;
     uint8_t negative;
@@ -1782,6 +1775,13 @@ typedef struct PyLongWriter PyLongWriter;
 static inline const PyLongLayout*
 PyLong_GetNativeLayout(void)
 {
+    static const PyLongLayout PyLong_LAYOUT = {
+        PyLong_SHIFT,
+        sizeof(digit),
+        -1,  // least significant first
+        PY_LITTLE_ENDIAN ? -1 : 1,
+    };
+
     return &PyLong_LAYOUT;
 }
 
