@@ -287,7 +287,7 @@ PyFrame_GetVarString(PyFrameObject *frame, const char *name)
 
 
 // bpo-39947 added PyThreadState_GetInterpreter() to Python 3.9.0a5
-#if PY_VERSION_HEX < 0x030900A5 || defined(PYPY_VERSION)
+#if PY_VERSION_HEX < 0x030900A5 || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030B0000)
 static inline PyInterpreterState *
 PyThreadState_GetInterpreter(PyThreadState *tstate)
 {
@@ -918,7 +918,7 @@ static inline int
 PyObject_VisitManagedDict(PyObject *obj, visitproc visit, void *arg)
 {
     PyObject **dict = _PyObject_GetDictPtr(obj);
-    if (*dict == NULL) {
+    if (dict == NULL || *dict == NULL) {
         return -1;
     }
     Py_VISIT(*dict);
@@ -929,7 +929,7 @@ static inline void
 PyObject_ClearManagedDict(PyObject *obj)
 {
     PyObject **dict = _PyObject_GetDictPtr(obj);
-    if (*dict == NULL) {
+    if (dict == NULL || *dict == NULL) {
         return;
     }
     Py_CLEAR(*dict);
@@ -1204,11 +1204,11 @@ static inline int PyTime_PerfCounter(PyTime_t *result)
 #endif
 
 // gh-111389 added hash constants to Python 3.13.0a5. These constants were
-// added first as private macros to Python 3.4.0b1 and PyPy 7.3.9.
+// added first as private macros to Python 3.4.0b1 and PyPy 7.3.8.
 #if (!defined(PyHASH_BITS) \
      && ((!defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x030400B1) \
          || (defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x03070000 \
-             && PYPY_VERSION_NUM >= 0x07090000)))
+             && PYPY_VERSION_NUM >= 0x07030800)))
 #  define PyHASH_BITS _PyHASH_BITS
 #  define PyHASH_MODULUS _PyHASH_MODULUS
 #  define PyHASH_INF _PyHASH_INF

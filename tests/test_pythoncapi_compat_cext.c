@@ -758,7 +758,7 @@ test_import(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 static void
 gc_collect(void)
 {
-#if defined(PYPY_VERSION)
+#if defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030B0000
     PyObject *mod = PyImport_ImportModule("gc");
     assert(mod != _Py_NULL);
 
@@ -1475,8 +1475,8 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
 // --- HeapCTypeWithManagedDict --------------------------------------------
 
-// Py_TPFLAGS_MANAGED_DICT was added to Python 3.11.0a3
-#if PY_VERSION_HEX >= 0x030B00A3
+// Py_TPFLAGS_MANAGED_DICT was added to Python 3.11.0a3 but is not implemented on PyPy
+#if PY_VERSION_HEX >= 0x030B00A3 && ! defined(PYPY_VERSION)
 #  define TEST_MANAGED_DICT
 
 typedef struct {
@@ -1659,7 +1659,7 @@ test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
 #if ((!defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x030400B1) \
      || (defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x03070000 \
-         && PYPY_VERSION_NUM >= 0x07090000))
+         && PYPY_VERSION_NUM >= 0x07030800))
     // Just check that constants are available
     size_t bits = PyHASH_BITS;
     assert(bits >= 8);
