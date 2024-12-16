@@ -2063,6 +2063,40 @@ test_long_stdint(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_structmember(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    assert(Py_T_SHORT >= 0);
+    assert(Py_T_INT >= 0);
+    assert(Py_T_LONG >= 0);
+    assert(Py_T_FLOAT >= 0);
+    assert(Py_T_DOUBLE >= 0);
+    assert(Py_T_STRING >= 0);
+    assert(_Py_T_OBJECT >= 0);
+    assert(Py_T_CHAR >= 0);
+    assert(Py_T_BYTE >= 0);
+    assert(Py_T_UBYTE >= 0);
+    assert(Py_T_USHORT >= 0);
+    assert(Py_T_UINT >= 0);
+    assert(Py_T_ULONG >= 0);
+    assert(Py_T_STRING_INPLACE >= 0);
+    assert(Py_T_BOOL >= 0);
+    assert(Py_T_OBJECT_EX >= 0);
+    assert(Py_T_LONGLONG >= 0);
+    assert(Py_T_ULONGLONG >= 0);
+    assert(Py_T_PYSSIZET >= 0);
+#if PY_VERSION_HEX >= 0x03000000 && !defined(PYPY_VERSION)
+    assert(_Py_T_NONE >= 0);
+#endif
+
+    assert(Py_READONLY >= 0);
+    assert(Py_AUDIT_READ >= 0);
+    assert(_Py_WRITE_RESTRICTED >= 0);
+
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2109,6 +2143,7 @@ static struct PyMethodDef methods[] = {
     {"test_bytes", test_bytes, METH_NOARGS, _Py_NULL},
     {"test_iter", test_iter, METH_NOARGS, _Py_NULL},
     {"test_long_stdint", test_long_stdint, METH_NOARGS, _Py_NULL},
+    {"test_structmember", test_structmember, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
