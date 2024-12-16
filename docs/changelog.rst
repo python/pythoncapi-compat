@@ -1,6 +1,32 @@
 Changelog
 =========
 
+* 2024-12-16: Add ``structmember.h`` constants:
+
+  * ``Py_T_BOOL``
+  * ``Py_T_BYTE``
+  * ``Py_T_CHAR``
+  * ``Py_T_DOUBLE``
+  * ``Py_T_FLOAT``
+  * ``Py_T_INT``
+  * ``Py_T_LONGLONG``
+  * ``Py_T_LONG``
+  * ``Py_T_OBJECT_EX``
+  * ``Py_T_PYSSIZET``
+  * ``Py_T_SHORT``
+  * ``Py_T_STRING_INPLACE``
+  * ``Py_T_STRING``
+  * ``Py_T_UBYTE``
+  * ``Py_T_UINT``
+  * ``Py_T_ULONGLONG``
+  * ``Py_T_ULONG``
+  * ``Py_T_USHORT``
+  * ``_Py_T_NONE``
+  * ``_Py_T_OBJECT``
+  * ``Py_AUDIT_READ``
+  * ``Py_READONLY``
+  * ``_Py_WRITE_RESTRICTED``
+
 * 2024-12-13: Add functions and structs:
 
   * ``PyLongLayout``
