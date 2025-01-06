@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2025-01-06: Add ``Py_fopen()`` and ``Py_fclose()`` functions.
 * 2024-12-16: Add ``structmember.h`` constants:
 
   * ``Py_T_BOOL``
