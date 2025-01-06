@@ -2097,6 +2097,21 @@ test_structmember(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_file(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    const char *filename = __FILE__;
+    PyObject *path = create_string(filename);
+
+    FILE *fp = Py_fopen(path, "rb");
+    Py_DECREF(path);
+    assert(fp != NULL);
+    Py_fclose(fp);
+
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2144,6 +2159,7 @@ static struct PyMethodDef methods[] = {
     {"test_iter", test_iter, METH_NOARGS, _Py_NULL},
     {"test_long_stdint", test_long_stdint, METH_NOARGS, _Py_NULL},
     {"test_structmember", test_structmember, METH_NOARGS, _Py_NULL},
+    {"test_file", test_file, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

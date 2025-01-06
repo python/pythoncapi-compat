@@ -1933,6 +1933,47 @@ PyLongWriter_Finish(PyLongWriter *writer)
 #endif
 
 
+// gh-127350 added Py_fopen() and Py_fclose() to Python 3.14a4
+#if PY_VERSION_HEX < 0x030E00A4
+static inline FILE* Py_fopen(PyObject *path, const char *mode)
+{
+#if 0x030400A2 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+    extern FILE* _Py_fopen_obj(PyObject *path, const char *mode);
+    return _Py_fopen_obj(path, mode);
+#else
+    FILE *f;
+    PyObject *bytes;
+#if PY_VERSION_HEX >= 0x03000000
+    if (!PyUnicode_FSConverter(path, &bytes)) {
+        return NULL;
+    }
+#else
+    if (!PyString_Check(path)) {
+        PyErr_SetString(PyExc_TypeError, "except str");
+        return NULL;
+    }
+    bytes = Py_NewRef(path);
+#endif
+    const char *path_bytes = PyBytes_AS_STRING(bytes);
+
+    f = fopen(path_bytes, mode);
+    Py_DECREF(bytes);
+
+    if (f == NULL) {
+        PyErr_SetFromErrnoWithFilenameObject(PyExc_OSError, path);
+        return NULL;
+    }
+    return f;
+#endif
+}
+
+int Py_fclose(FILE *file)
+{
+    return fclose(file);
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

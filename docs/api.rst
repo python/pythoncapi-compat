@@ -169,6 +169,14 @@ Python 3.14
 
    See `PyLong_FromUInt64() documentation <https://docs.python.org/dev/c-api/long.html#c.PyLong_FromUInt64>`__.
 
+.. c:function:: FILE* Py_fopen(PyObject *path, const char *mode)
+
+   See `Py_fopen() documentation <https://docs.python.org/dev/c-api/sys.html#c.Py_fopen>`__.
+
+.. c:function:: int Py_fclose(FILE *file)
+
+   See `Py_fclose() documentation <https://docs.python.org/dev/c-api/sys.html#c.Py_fclose>`__.
+
 
 Not supported:
 
