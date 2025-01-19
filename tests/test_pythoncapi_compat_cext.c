@@ -2112,6 +2112,66 @@ test_file(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+#if 0x03090000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+static PyObject *
+test_config(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    // Test PyConfig_Get()
+    PyObject *sys = PyImport_ImportModule("sys");
+    if (sys == _Py_NULL) {
+        return _Py_NULL;
+    }
+
+    PyObject *obj = PyConfig_Get("argv");
+    PyObject *sys_attr = PyObject_GetAttrString(sys, "argv");
+    assert(obj == sys_attr);
+    Py_DECREF(obj);
+    Py_DECREF(sys_attr);
+
+    obj = PyConfig_Get("module_search_paths");
+    sys_attr = PyObject_GetAttrString(sys, "path");
+    assert(obj == sys_attr);
+    Py_DECREF(obj);
+    Py_DECREF(sys_attr);
+
+    obj = PyConfig_Get("xoptions");
+    sys_attr = PyObject_GetAttrString(sys, "_xoptions");
+    assert(obj == sys_attr);
+    Py_DECREF(obj);
+    Py_DECREF(sys_attr);
+
+    obj = PyConfig_Get("use_environment");
+    assert(PyBool_Check(obj));
+    Py_DECREF(obj);
+
+    obj = PyConfig_Get("verbose");
+    assert(PyLong_Check(obj));
+    Py_DECREF(obj);
+
+    assert(PyConfig_Get("nonexistent") == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_ValueError));
+    PyErr_Clear();
+
+    // Test PyConfig_GetInt()
+    int value = -3;
+
+    assert(PyConfig_GetInt("verbose", &value) == 0);
+    assert(value >= 0);
+
+    assert(PyConfig_GetInt("argv", &value) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_TypeError));
+    PyErr_Clear();
+
+    assert(PyConfig_GetInt("nonexistent", &value) == -1);
+    assert(PyErr_ExceptionMatches(PyExc_ValueError));
+    PyErr_Clear();
+
+    Py_DECREF(sys);
+    Py_RETURN_NONE;
+}
+#endif
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2160,6 +2220,9 @@ static struct PyMethodDef methods[] = {
     {"test_long_stdint", test_long_stdint, METH_NOARGS, _Py_NULL},
     {"test_structmember", test_structmember, METH_NOARGS, _Py_NULL},
     {"test_file", test_file, METH_NOARGS, _Py_NULL},
+#if 0x03090000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+    {"test_config", test_config, METH_NOARGS, _Py_NULL},
+#endif
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
