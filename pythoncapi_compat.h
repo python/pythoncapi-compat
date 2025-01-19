@@ -2028,9 +2028,6 @@ PyConfig_Get(const char *name)
         PYTHONCAPI_COMPAT_SPEC(warnoptions, WSTR_LIST, "warnoptions"),
         PYTHONCAPI_COMPAT_SPEC(write_bytecode, BOOL, _Py_NULL),
         PYTHONCAPI_COMPAT_SPEC(xoptions, WSTR_LIST, "_xoptions"),
-#ifdef Py_STATS
-        PYTHONCAPI_COMPAT_SPEC(_pystats, BOOL, _Py_NULL),
-#endif
         PYTHONCAPI_COMPAT_SPEC(buffered_stdio, BOOL, _Py_NULL),
         PYTHONCAPI_COMPAT_SPEC(check_hash_pycs_mode, WSTR, _Py_NULL),
 #if 0x030B0000 <= PY_VERSION_HEX
@@ -2072,9 +2069,6 @@ PyConfig_Get(const char *name)
         PYTHONCAPI_COMPAT_SPEC(run_command, WSTR_OPT, _Py_NULL),
         PYTHONCAPI_COMPAT_SPEC(run_filename, WSTR_OPT, _Py_NULL),
         PYTHONCAPI_COMPAT_SPEC(run_module, WSTR_OPT, _Py_NULL),
-#ifdef Py_DEBUG
-        PYTHONCAPI_COMPAT_SPEC(run_presite, WSTR_OPT, _Py_NULL),
-#endif
 #if 0x030B0000 <= PY_VERSION_HEX
         PYTHONCAPI_COMPAT_SPEC(safe_path, BOOL, _Py_NULL),
 #endif
