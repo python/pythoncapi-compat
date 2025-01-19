@@ -177,11 +177,17 @@ Python 3.14
 
    See `Py_fclose() documentation <https://docs.python.org/dev/c-api/sys.html#c.Py_fclose>`__.
 
+.. c:function:: PyObject* PyConfig_Get(const char *name)
+
+   See `PyConfig_Get() documentation <https://docs.python.org/dev/c-api/init_config.html#c.PyConfig_Get>`__.
+
+.. c:function:: int PyConfig_GetInt(const char *name, int *value)
+
+   See `PyConfig_GetInt() documentation <https://docs.python.org/dev/c-api/init_config.html#c.PyConfig_GetInt>`__.
+
 
 Not supported:
 
-* ``PyConfig_Get()``
-* ``PyConfig_GetInt()``
 * ``PyConfig_Names()``
 * ``PyConfig_Set()``
 * ``PyInitConfig_AddModule()``
