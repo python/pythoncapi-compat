@@ -2082,9 +2082,6 @@ PyConfig_Get(const char *name)
         PYTHONCAPI_COMPAT_SPEC(use_frozen_modules, BOOL, _Py_NULL),
 #endif
         PYTHONCAPI_COMPAT_SPEC(use_hash_seed, BOOL, _Py_NULL),
-#if 0x030D0000 <= PY_VERSION_HEX && defined(__APPLE__)
-        PYTHONCAPI_COMPAT_SPEC(use_system_logger, BOOL, _Py_NULL),
-#endif
         PYTHONCAPI_COMPAT_SPEC(user_site_directory, BOOL, _Py_NULL),
 #if 0x030A0000 <= PY_VERSION_HEX
         PYTHONCAPI_COMPAT_SPEC(warn_default_encoding, BOOL, _Py_NULL),
