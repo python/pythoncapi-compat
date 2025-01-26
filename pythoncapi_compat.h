@@ -1968,7 +1968,7 @@ static inline FILE* Py_fopen(PyObject *path, const char *mode)
 #endif
 }
 
-int Py_fclose(FILE *file)
+static inline int Py_fclose(FILE *file)
 {
     return fclose(file);
 }
