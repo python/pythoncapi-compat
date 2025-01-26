@@ -2092,7 +2092,7 @@ PyConfig_Get(const char *name)
 
     const PyConfigSpec *spec;
     int found = 0;
-    for (size_t i=0; i < Py_ARRAY_LENGTH(config_spec); i++) {
+    for (size_t i=0; i < sizeof(config_spec) / sizeof(config_spec[0]); i++) {
         spec = &config_spec[i];
         if (strcmp(spec->name, name) == 0) {
             found = 1;
