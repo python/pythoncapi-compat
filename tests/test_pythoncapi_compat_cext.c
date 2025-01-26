@@ -2148,6 +2148,15 @@ test_config(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyLong_Check(obj));
     Py_DECREF(obj);
 
+    // Get the last member
+#if 0x030A0000 <= PY_VERSION_HEX
+    obj = PyConfig_Get("warn_default_encoding");
+#else
+    obj = PyConfig_Get("user_site_directory");
+#endif
+    assert(PyLong_Check(obj));
+    Py_DECREF(obj);
+
     assert(PyConfig_Get("nonexistent") == NULL);
     assert(PyErr_ExceptionMatches(PyExc_ValueError));
     PyErr_Clear();
