@@ -2295,6 +2295,103 @@ test_sys(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static int
+test_byteswriter_highlevel(void)
+{
+    PyObject *obj;
+    PyBytesWriter *writer = PyBytesWriter_Create(0);
+    if (writer == NULL) {
+        goto error;
+    }
+    if (PyBytesWriter_WriteBytes(writer, "Hello", -1) < 0) {
+        goto error;
+    }
+    if (PyBytesWriter_Format(writer, " %s!", "World") < 0) {
+        goto error;
+    }
+
+    obj = PyBytesWriter_Finish(writer);
+    if (obj == NULL) {
+        return -1;
+    }
+    assert(PyBytes_Check(obj));
+    assert(strcmp(PyBytes_AS_STRING(obj), "Hello World!") == 0);
+    Py_DECREF(obj);
+    return 0;
+
+error:
+    PyBytesWriter_Discard(writer);
+    return -1;
+}
+
+static int
+test_byteswriter_abc(void)
+{
+    PyBytesWriter *writer = PyBytesWriter_Create(3);
+    if (writer == NULL) {
+        return -1;
+    }
+
+    char *str = (char*)PyBytesWriter_GetData(writer);
+    memcpy(str, "abc", 3);
+
+    PyObject *obj = PyBytesWriter_Finish(writer);
+    if (obj == NULL) {
+        return -1;
+    }
+    assert(PyBytes_Check(obj));
+    assert(strcmp(PyBytes_AS_STRING(obj), "abc") == 0);
+    Py_DECREF(obj);
+    return 0;
+}
+
+static int
+test_byteswriter_grow(void)
+{
+    PyBytesWriter *writer = PyBytesWriter_Create(10);
+    if (writer == NULL) {
+        return -1;
+    }
+
+    char *buf = (char*)PyBytesWriter_GetData(writer);
+    memcpy(buf, "Hello ", strlen("Hello "));
+    buf += strlen("Hello ");
+
+    buf = (char*)PyBytesWriter_GrowAndUpdatePointer(writer, 10, buf);
+    if (buf == NULL) {
+        PyBytesWriter_Discard(writer);
+        return -1;
+    }
+
+    memcpy(buf, "World", strlen("World"));
+    buf += strlen("World");
+
+    PyObject *obj = PyBytesWriter_FinishWithPointer(writer, buf);
+    if (obj == NULL) {
+        return -1;
+    }
+    assert(PyBytes_Check(obj));
+    assert(strcmp(PyBytes_AS_STRING(obj), "Hello World") == 0);
+    Py_DECREF(obj);
+    return 0;
+}
+
+static PyObject *
+test_byteswriter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    if (test_byteswriter_highlevel() < 0) {
+        return NULL;
+    }
+    if (test_byteswriter_abc() < 0) {
+        return NULL;
+    }
+    if (test_byteswriter_grow() < 0) {
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2348,6 +2445,7 @@ static struct PyMethodDef methods[] = {
 #endif
     {"test_sys", test_sys, METH_NOARGS, _Py_NULL},
     {"test_uniquely_referenced", test_uniquely_referenced, METH_NOARGS, _Py_NULL},
+    {"test_byteswriter", test_byteswriter, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
