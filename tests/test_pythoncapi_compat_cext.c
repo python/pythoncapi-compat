@@ -2181,6 +2181,77 @@ test_config(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif
 
 
+static PyObject *
+test_sys(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    const char *stdout_str = "stdout";
+    PyObject *stdout_obj = create_string(stdout_str);
+#if PYTHON3
+    PyObject *sys_stdout = PySys_GetObject(stdout_str);  // borrowed ref
+#else
+    PyObject *sys_stdout = PySys_GetObject((char*)stdout_str);  // borrowed ref
+#endif
+    const char *nonexistent_str = "nonexistent";
+    PyObject *nonexistent_obj = create_string(nonexistent_str);
+    PyObject *error_obj = PyLong_FromLong(1);
+    PyObject *value;
+
+    // get sys.stdout
+    value = PySys_GetAttr(stdout_obj);
+    assert(value == sys_stdout);
+    Py_DECREF(value);
+
+    value = PySys_GetAttrString(stdout_str);
+    assert(value == sys_stdout);
+    Py_DECREF(value);
+
+    value = UNINITIALIZED_OBJ;
+    assert(PySys_GetOptionalAttr(stdout_obj, &value) == 1);
+    assert(value == sys_stdout);
+    Py_DECREF(value);
+
+    value = UNINITIALIZED_OBJ;
+    assert(PySys_GetOptionalAttrString(stdout_str, &value) == 1);
+    assert(value == sys_stdout);
+    Py_DECREF(value);
+
+    // non existent attribute
+    value = PySys_GetAttr(nonexistent_obj);
+    assert(value == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_RuntimeError));
+    PyErr_Clear();
+
+    value = PySys_GetAttrString(nonexistent_str);
+    assert(value == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_RuntimeError));
+    PyErr_Clear();
+
+    value = UNINITIALIZED_OBJ;
+    assert(PySys_GetOptionalAttr(nonexistent_obj, &value) == 0);
+    assert(value == NULL);
+
+    value = UNINITIALIZED_OBJ;
+    assert(PySys_GetOptionalAttrString(nonexistent_str, &value) == 0);
+    assert(value == NULL);
+
+    // invalid attribute type
+    value = PySys_GetAttr(error_obj);
+    assert(value == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_TypeError));
+    PyErr_Clear();
+
+    value = UNINITIALIZED_OBJ;
+    assert(PySys_GetOptionalAttr(error_obj, &value) == -1);
+    assert(value == NULL);
+    assert(PyErr_ExceptionMatches(PyExc_TypeError));
+    PyErr_Clear();
+
+    Py_DECREF(stdout_obj);
+    Py_DECREF(nonexistent_obj);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2232,6 +2303,7 @@ static struct PyMethodDef methods[] = {
 #if 0x03090000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
     {"test_config", test_config, METH_NOARGS, _Py_NULL},
 #endif
+    {"test_sys", test_sys, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

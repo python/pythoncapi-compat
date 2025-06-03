@@ -26,6 +26,25 @@ Latest version of the header file:
 `pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/main/pythoncapi_compat.h>`_.
 
 
+Python 3.15
+-----------
+
+.. c:function:: PyObject* PySys_GetAttr(const char *name)
+
+   See `PySys_GetAttr() documentation  <https://docs.python.org/dev/c-api/sys.html#c.PySys_GetAttr>`__.
+
+.. c:function:: PyObject* PySys_GetAttrString(const char *name)
+
+   See `PySys_GetAttrString() documentation  <https://docs.python.org/dev/c-api/sys.html#c.PySys_GetAttrString>`__.
+
+.. c:function:: PyObject* PySys_GetOptionalAttr(const char *name)
+
+   See `PySys_GetOptionalAttr() documentation  <https://docs.python.org/dev/c-api/sys.html#c.PySys_GetOptionalAttr>`__.
+
+.. c:function:: PyObject* PySys_GetOptionalAttrString(const char *name)
+
+   See `PySys_GetOptionalAttrString() documentation  <https://docs.python.org/dev/c-api/sys.html#c.PySys_GetOptionalAttrString>`__.
+
 Python 3.14
 -----------
 
