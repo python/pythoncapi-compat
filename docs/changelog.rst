@@ -1,6 +1,13 @@
 Changelog
 =========
 
+* 2025-06-03: Add functions:
+
+  * ``PySys_GetAttr()``
+  * ``PySys_GetAttrString()``
+  * ``PySys_GetOptionalAttr()``
+  * ``PySys_GetOptionalAttrString()``
+
 * 2025-01-19: Add ``PyConfig_Get()`` functions.
 * 2025-01-06: Add ``Py_fopen()`` and ``Py_fclose()`` functions.
 * 2024-12-16: Add ``structmember.h`` constants:
