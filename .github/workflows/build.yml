@@ -85,8 +85,6 @@ jobs:
           # Ubuntu: test deadsnakes Python versions which are not supported by
           # GHA python-versions.
           - os: ubuntu-22.04
-            python: "3.6"
-          - os: ubuntu-22.04
             python: "3.7"
 
     steps:
