@@ -70,9 +70,7 @@ jobs:
             python: "3.13"
 
           # macOS
-          # Python 3.8 is the oldest version available on macOS/arm64.
-          - os: macos-latest
-            python: "3.8"
+          # Python 3.9 is the oldest version available on macOS/arm64.
           - os: macos-latest
             python: "3.9"
           - os: macos-latest
@@ -86,8 +84,6 @@ jobs:
 
           # Ubuntu: test deadsnakes Python versions which are not supported by
           # GHA python-versions.
-          - os: ubuntu-20.04
-            python: "3.6"
           - os: ubuntu-22.04
             python: "3.7"
 
