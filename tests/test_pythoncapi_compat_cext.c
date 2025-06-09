@@ -1847,6 +1847,11 @@ test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
         goto error;
     }
 
+    // test PyUnicodeWriter_WriteASCII()
+    if (PyUnicodeWriter_WriteASCII(writer, " non-ASCII", -1) < 0) {
+        goto error;
+    }
+
     // test PyUnicodeWriter_WriteUTF8()
     if (PyUnicodeWriter_WriteUTF8(writer, " valu\xC3\xA9", -1) < 0) {
         goto error;
@@ -1870,7 +1875,7 @@ test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
         if (result == NULL) {
             return NULL;
         }
-        assert(PyUnicode_EqualToUTF8(result, "var=long valu\xC3\xA9 'repr'"));
+        assert(PyUnicode_EqualToUTF8(result, "var=long non-ASCII valu\xC3\xA9 'repr'"));
         Py_DECREF(result);
     }
 
