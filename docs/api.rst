@@ -136,6 +136,10 @@ Python 3.14
 
    See `PyUnicodeWriter_WriteUTF8() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteUTF8>`__.
 
+.. c:function:: int PyUnicodeWriter_WriteASCII(PyUnicodeWriter *writer, const char *str, Py_ssize_t size)
+
+   See `PyUnicodeWriter_WriteASCII() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteASCII>`__.
+
 .. c:function:: int PyUnicodeWriter_WriteWideChar(PyUnicodeWriter *writer, const wchar_t *str, Py_ssize_t size)
 
    See `PyUnicodeWriter_WriteWideChar() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteWideChar>`__.

@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2025-06-09: Add ``PyUnicodeWriter_WriteASCII()`` function.
 * 2025-06-03: Add functions:
 
   * ``PySys_GetAttr()``
