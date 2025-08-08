@@ -507,7 +507,7 @@ class Patcher:
         self.operations = None
         self.applied_operations = set()
 
-        # Set temporariliy by patch()
+        # Set temporarily by patch()
         self._has_pythoncapi_compat = None
         self._applied_operations = None
 
