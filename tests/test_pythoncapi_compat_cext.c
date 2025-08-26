@@ -1972,6 +1972,7 @@ error:
 }
 #endif
 
+#ifndef PYPY_VERSION
 static PyObject *
 test_uniquely_referenced(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
 {
@@ -1992,7 +1993,7 @@ test_uniquely_referenced(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
 
     Py_RETURN_NONE;
 }
-
+#endif
 
 static PyObject *
 test_bytes(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
@@ -2349,7 +2350,9 @@ static struct PyMethodDef methods[] = {
     {"test_config", test_config, METH_NOARGS, _Py_NULL},
 #endif
     {"test_sys", test_sys, METH_NOARGS, _Py_NULL},
+#ifndef PYPY_VERSION
     {"test_uniquely_referenced", test_uniquely_referenced, METH_NOARGS, _Py_NULL},
+#endif
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
