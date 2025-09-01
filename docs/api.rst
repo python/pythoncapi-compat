@@ -208,6 +208,9 @@ Python 3.14
 
    See `PyConfig_GetInt() documentation <https://docs.python.org/dev/c-api/init_config.html#c.PyConfig_GetInt>`__.
 
+.. c:function:: int PyUnstable_Object_IsUniquelyReferenced(PyObject *op)
+
+   See `PyUnstable_Object_IsUniquelyReferenced() documentation <https://docs.python.org/dev/c-api/object.html#c.PyUnstable_Object_IsUniquelyReferenced>`__.
 
 Not supported:
 
