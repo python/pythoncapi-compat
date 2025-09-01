@@ -1972,6 +1972,25 @@ error:
 }
 #endif
 
+static PyObject *
+test_uniquely_referenced(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
+{
+    PyObject *obj = Py_BuildValue("(s, s)", "hello", "world");
+    if (obj == NULL) {
+        return NULL;
+    }
+
+    assert(PyUnstable_Object_IsUniquelyReferenced(obj));
+
+    Py_INCREF(obj);
+
+    assert(!PyUnstable_Object_IsUniquelyReferenced(obj));
+
+    Py_DECREF(obj);
+    Py_DECREF(obj);
+
+    Py_RETURN_NONE;
+}
 
 static PyObject *
 test_bytes(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
@@ -2328,6 +2347,7 @@ static struct PyMethodDef methods[] = {
     {"test_config", test_config, METH_NOARGS, _Py_NULL},
 #endif
     {"test_sys", test_sys, METH_NOARGS, _Py_NULL},
+    {"test_uniquely_referenced", test_uniquely_referenced, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

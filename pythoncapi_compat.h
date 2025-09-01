@@ -2211,6 +2211,24 @@ PyConfig_GetInt(const char *name, int *value)
 }
 #endif  // PY_VERSION_HEX > 0x03090000 && !defined(PYPY_VERSION)
 
+// gh-133144 added PyUnstable_Object_IsUniquelyReferenced() to Python 3.14.0b1.
+// Adapted from  _PyObject_IsUniquelyReferenced() implementation.
+#if PY_VERSION_HEX < 0x030E00B0
+static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
+{
+#if !defined(Py_GIL_DISABLED)
+    return Py_REFCNT(obj) == 1;
+#else
+    // NOTE: the entire ob_ref_shared field must be zero, including flags, to
+    // ensure that other threads cannot concurrently create new references to
+    // this object.
+    return (_Py_IsOwnedByCurrentThread(obj) &&
+            _Py_atomic_load_uint32_relaxed(&obj->ob_ref_local) == 1 &&
+            _Py_atomic_load_ssize_relaxed(&obj->ob_ref_shared) == 0);
+#endif
+}
+#endif
+
 
 #if PY_VERSION_HEX < 0x030F0000
 static inline PyObject*
