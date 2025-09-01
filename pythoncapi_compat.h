@@ -2211,8 +2211,8 @@ PyConfig_GetInt(const char *name, int *value)
 }
 #endif  // PY_VERSION_HEX > 0x03090000 && !defined(PYPY_VERSION)
 
-// gh-133144 added PyUnstable_Object_IsUniquelyReferenced() to Python 3.14.0b1
-// Adapted from  _PyObject_IsUniquelyReferenced implementation
+// gh-133144 added PyUnstable_Object_IsUniquelyReferenced() to Python 3.14.0b1.
+// Adapted from  _PyObject_IsUniquelyReferenced() implementation.
 #if PY_VERSION_HEX < 0x030E00B0
 static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
 {
