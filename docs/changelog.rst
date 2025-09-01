@@ -1,7 +1,7 @@
 Changelog
 =========
 
-* 2025-09-01: Add ``PyUnstable_Object_IsUniquelyReferenced`` function.
+* 2025-09-01: Add ``PyUnstable_Object_IsUniquelyReferenced()`` function.
 * 2025-06-09: Add ``PyUnicodeWriter_WriteASCII()`` function.
 * 2025-06-03: Add functions:
 
