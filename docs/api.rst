@@ -45,6 +45,22 @@ Python 3.15
 
    See `PySys_GetOptionalAttrString() documentation  <https://docs.python.org/dev/c-api/sys.html#c.PySys_GetOptionalAttrString>`__.
 
+.. c:function:: PyBytesWriter* PyBytesWriter_Create(Py_ssize_t size)
+.. c:function:: void* PyBytesWriter_GetData(PyBytesWriter *writer)
+.. c:function:: Py_ssize_t PyBytesWriter_GetSize(PyBytesWriter *writer)
+.. c:function:: PyObject* PyBytesWriter_FinishWithSize(PyBytesWriter *writer, Py_ssize_t size)
+.. c:function:: PyObject* PyBytesWriter_Finish(PyBytesWriter *writer)
+.. c:function:: PyObject* PyBytesWriter_FinishWithPointer(PyBytesWriter *writer, void *buf)
+.. c:function:: void PyBytesWriter_Discard(PyBytesWriter *writer)
+.. c:function:: int PyBytesWriter_Resize(PyBytesWriter *writer, Py_ssize_t size)
+.. c:function:: int PyBytesWriter_Grow(PyBytesWriter *writer, Py_ssize_t size)
+.. c:function:: void* PyBytesWriter_GrowAndUpdatePointer(PyBytesWriter *writer, Py_ssize_t size, void *buf)
+.. c:function:: int PyBytesWriter_WriteBytes(PyBytesWriter *writer, const void *bytes, Py_ssize_t size)
+.. c:function:: int PyBytesWriter_Format(PyBytesWriter *writer, const char *format, ...)
+
+   See `PyBytesWriter documentation  <https://docs.python.org/dev/c-api/bytes.html#pybyteswriter>`__.
+
+
 Python 3.14
 -----------
 
