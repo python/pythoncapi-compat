@@ -34,7 +34,11 @@ if not MSVC:
         '-Wconversion',
         # /usr/lib64/pypy3.7/include/pyport.h:68:20: error: redefinition of typedef
         # 'Py_hash_t' is a C11 feature
-        "-Wno-typedef-redefinition",
+        '-Wno-typedef-redefinition',
+        # Formatting checks
+        '-Wformat',
+        '-Wformat-nonliteral',
+        '-Wformat-security',
     ))
     CFLAGS = COMMON_FLAGS + [
         # Use C99 for pythoncapi_compat.c which initializes PyModuleDef with a
