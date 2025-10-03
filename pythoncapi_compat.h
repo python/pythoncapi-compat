@@ -2531,6 +2531,10 @@ PyBytesWriter_WriteBytes(PyBytesWriter *writer,
 
 static inline int
 PyBytesWriter_Format(PyBytesWriter *writer, const char *format, ...)
+                     Py_GCC_ATTRIBUTE((format(printf, 2, 0)));
+
+static inline int
+PyBytesWriter_Format(PyBytesWriter *writer, const char *format, ...)
 {
     va_list vargs;
     va_start(vargs, format);
