@@ -2420,7 +2420,7 @@ test_tuple_fromarray(void)
     if (tuple == NULL) {
         return NULL;
     }
-    assert(tuple == Py_GetConstantBorrowed(Py_CONSTANT_EMPTY_TUPLE));
+    assert(PyTuple_GET_SIZE(tuple) == 0);
     Py_DECREF(tuple);
 
     Py_RETURN_NONE;
