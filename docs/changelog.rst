@@ -1,7 +1,8 @@
 Changelog
 =========
 
-* 2025-11-18: Add PEP 782 functions:
+* 2025-10-14: Add ``PyTuple_FromArray()`` function.
+* 2025-09-18: Add PEP 782 functions:
 
   * ``PyBytesWriter_Create()``
   * ``PyBytesWriter_Discard()``

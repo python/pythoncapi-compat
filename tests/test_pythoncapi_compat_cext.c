@@ -2392,6 +2392,54 @@ test_byteswriter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject*
+test_tuple_fromarray(void)
+{
+    PyObject* array[] = {
+        PyLong_FromLong(1),
+        PyLong_FromLong(2),
+        PyLong_FromLong(3)
+    };
+    PyObject *tuple = PyTuple_FromArray(array, 3);
+    if (tuple == NULL) {
+        goto error;
+    }
+
+    assert(PyTuple_GET_SIZE(tuple) == 3);
+    assert(PyTuple_GET_ITEM(tuple, 0) == array[0]);
+    assert(PyTuple_GET_ITEM(tuple, 1) == array[1]);
+    assert(PyTuple_GET_ITEM(tuple, 2) == array[2]);
+
+    Py_DECREF(tuple);
+    Py_DECREF(array[0]);
+    Py_DECREF(array[1]);
+    Py_DECREF(array[2]);
+
+    // Test PyTuple_FromArray(NULL, 0)
+    tuple = PyTuple_FromArray(NULL, 0);
+    if (tuple == NULL) {
+        return NULL;
+    }
+    assert(PyTuple_GET_SIZE(tuple) == 0);
+    Py_DECREF(tuple);
+
+    Py_RETURN_NONE;
+
+error:
+    Py_DECREF(array[0]);
+    Py_DECREF(array[1]);
+    Py_DECREF(array[2]);
+    return NULL;
+}
+
+
+static PyObject*
+test_tuple(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    return test_tuple_fromarray();
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2446,6 +2494,7 @@ static struct PyMethodDef methods[] = {
     {"test_sys", test_sys, METH_NOARGS, _Py_NULL},
     {"test_uniquely_referenced", test_uniquely_referenced, METH_NOARGS, _Py_NULL},
     {"test_byteswriter", test_byteswriter, METH_NOARGS, _Py_NULL},
+    {"test_tuple", test_tuple, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
