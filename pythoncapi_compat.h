@@ -2553,6 +2553,23 @@ PyBytesWriter_Format(PyBytesWriter *writer, const char *format, ...)
 #endif  // PY_VERSION_HEX < 0x030F00A1
 
 
+#if PY_VERSION_HEX < 0x030F00A1
+static inline PyObject*
+PyTuple_FromArray(PyObject *const *array, Py_ssize_t size)
+{
+    PyObject *tuple = PyTuple_New(size);
+    if (tuple == NULL) {
+        return NULL;
+    }
+    for (Py_ssize_t i=0; i < size; i++) {
+        PyObject *item = array[i];
+        PyTuple_SET_ITEM(tuple, i, Py_NewRef(item));
+    }
+    return tuple;
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif
