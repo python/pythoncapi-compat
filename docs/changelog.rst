@@ -1,7 +1,11 @@
 Changelog
 =========
 
-* 2025-10-14: Add ``PyTuple_FromArray()`` function.
+* 2025-10-14: Add functions:
+
+  * ``PyTuple_FromArray()``
+  * ``PyUnstable_Unicode_GET_CACHED_HASH()``
+
 * 2025-09-18: Add PEP 782 functions:
 
   * ``PyBytesWriter_Create()``
