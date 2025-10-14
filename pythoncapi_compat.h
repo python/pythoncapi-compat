@@ -1991,7 +1991,7 @@ static inline int Py_fclose(FILE *file)
 #endif
 
 
-#if 0x03090000 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030E0000 && !defined(PYPY_VERSION)
+#if 0x03080000 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030E0000 && !defined(PYPY_VERSION)
 static inline PyObject*
 PyConfig_Get(const char *name)
 {
@@ -2032,7 +2032,9 @@ PyConfig_Get(const char *name)
         PYTHONCAPI_COMPAT_SPEC(module_search_paths, WSTR_LIST, "path"),
         PYTHONCAPI_COMPAT_SPEC(optimization_level, UINT, _Py_NULL),
         PYTHONCAPI_COMPAT_SPEC(parser_debug, BOOL, _Py_NULL),
+#if 0x03090000 <= PY_VERSION_HEX
         PYTHONCAPI_COMPAT_SPEC(platlibdir, WSTR, "platlibdir"),
+#endif
         PYTHONCAPI_COMPAT_SPEC(prefix, WSTR_OPT, "prefix"),
         PYTHONCAPI_COMPAT_SPEC(pycache_prefix, WSTR_OPT, "pycache_prefix"),
         PYTHONCAPI_COMPAT_SPEC(quiet, BOOL, _Py_NULL),
