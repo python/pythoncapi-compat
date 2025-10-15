@@ -1612,11 +1612,11 @@ test_unicode(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     PyErr_Clear();
 
     // Test PyUnstable_Unicode_GET_CACHED_HASH()
-    Py_hash_t hash = PyObject_Hash(abc);
-    assert(hash != -1);
 #ifdef PYPY_VERSION
     assert(PyUnstable_Unicode_GET_CACHED_HASH(abc) == -1);
 #else
+    Py_hash_t hash = PyObject_Hash(abc);
+    assert(hash != -1);
     assert(PyUnstable_Unicode_GET_CACHED_HASH(abc) == hash);
 #endif
 
