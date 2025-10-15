@@ -2572,11 +2572,14 @@ PyTuple_FromArray(PyObject *const *array, Py_ssize_t size)
 #endif
 
 
-#if PY_VERSION_HEX < 0x030F00A1 && !defined(PYPY_VERSION)
+#if PY_VERSION_HEX < 0x030F00A1
 static inline Py_hash_t
 PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 {
-#if PY_VERSION_HEX >= 0x03000000
+#ifdef PYPY_VERSION
+    (void)op;  // unused argument
+    return -1;
+#elif PY_VERSION_HEX >= 0x03000000
     return ((PyASCIIObject*)op)->hash;
 #else
     return ((PyUnicodeObject*)op)->hash;

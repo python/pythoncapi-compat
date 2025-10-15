@@ -68,7 +68,7 @@ Python 3.15
 
    See `PyUnstable_Unicode_GET_CACHED_HASH() documentation  <https://docs.python.org/dev/c-api/unicode.html#c.PyUnstable_Unicode_GET_CACHED_HASH>`__.
 
-   Not available on PyPy.
+   On PyPy, always returns ``-1``.
 
 
 Python 3.14
