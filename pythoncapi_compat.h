@@ -2231,6 +2231,76 @@ static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
 }
 #endif
 
+// gh-128926 added PyUnstable_TryIncRef() and PyUnstable_EnableTryIncRef() to
+// Python 3.14.0a5. Adapted from _Py_TryIncref and _PyObject_SetMaybeWeakref.
+#if PY_VERSION_HEX < 0x030E00A5
+static inline int PyUnstable_TryIncRef(PyObject *op)
+{
+#ifndef Py_GIL_DISABLED
+    if (Py_REFCNT(op) > 0) {
+        Py_INCREF(op);
+        return 1;
+    }
+    return 0;
+#else
+    uint32_t local = _Py_atomic_load_uint32_relaxed(&op->ob_ref_local);
+    local += 1;
+    if (local == 0) {
+        return 1;
+    }
+    if (_Py_IsOwnedByCurrentThread(op)) {
+        _Py_INCREF_STAT_INC();
+        _Py_atomic_store_uint32_relaxed(&op->ob_ref_local, local);
+#ifdef Py_REF_DEBUG
+        _Py_INCREF_IncRefTotal();
+#endif
+        return 1;
+    }
+    Py_ssize_t shared = _Py_atomic_load_ssize_relaxed(&op->ob_ref_shared);
+    for (;;) {
+        // If the shared refcount is zero and the object is either merged
+        // or may not have weak references, then we cannot incref it.
+        if (shared == 0 || shared == _Py_REF_MERGED) {
+            return 0;
+        }
+
+        if (_Py_atomic_compare_exchange_ssize(
+                &op->ob_ref_shared,
+                &shared,
+                shared + (1 << _Py_REF_SHARED_SHIFT))) {
+#ifdef Py_REF_DEBUG
+            _Py_INCREF_IncRefTotal();
+#endif
+            _Py_INCREF_STAT_INC();
+            return 1;
+        }
+    }
+#endif
+}
+
+static inline void PyUnstable_EnableTryIncRef(PyObject *op)
+{
+#ifdef Py_GIL_DISABLED
+    if (_Py_IsImmortal(op)) {
+        return;
+    }
+    for (;;) {
+        Py_ssize_t shared = _Py_atomic_load_ssize_relaxed(&op->ob_ref_shared);
+        if ((shared & _Py_REF_SHARED_FLAG_MASK) != 0) {
+            // Nothing to do if it's in WEAKREFS, QUEUED, or MERGED states.
+            return;
+        }
+        if (_Py_atomic_compare_exchange_ssize(
+                &op->ob_ref_shared, &shared, shared | _Py_REF_MAYBE_WEAKREF)) {
+            return;
+        }
+    }
+#else
+    (void)op;  // unused argument
+#endif
+}
+#endif
+
 
 #if PY_VERSION_HEX < 0x030F0000
 static inline PyObject*
