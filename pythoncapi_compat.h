@@ -2232,7 +2232,7 @@ static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
 #endif
 
 // gh-128926 added PyUnstable_TryIncRef() and PyUnstable_EnableTryIncRef() to
-// Python 3.14.0a5. Adapted from _Py_TryIncref and _PyObject_SetMaybeWeakref.
+// Python 3.14.0a5. Adapted from _Py_TryIncref() and _PyObject_SetMaybeWeakref().
 #if PY_VERSION_HEX < 0x030E00A5
 static inline int PyUnstable_TryIncRef(PyObject *op)
 {
@@ -2243,9 +2243,11 @@ static inline int PyUnstable_TryIncRef(PyObject *op)
     }
     return 0;
 #else
+    // _Py_TryIncrefFast()
     uint32_t local = _Py_atomic_load_uint32_relaxed(&op->ob_ref_local);
     local += 1;
     if (local == 0) {
+        // immortal
         return 1;
     }
     if (_Py_IsOwnedByCurrentThread(op)) {
@@ -2256,6 +2258,8 @@ static inline int PyUnstable_TryIncRef(PyObject *op)
 #endif
         return 1;
     }
+    
+    // _Py_TryIncRefShared()
     Py_ssize_t shared = _Py_atomic_load_ssize_relaxed(&op->ob_ref_shared);
     for (;;) {
         // If the shared refcount is zero and the object is either merged
@@ -2281,6 +2285,7 @@ static inline int PyUnstable_TryIncRef(PyObject *op)
 static inline void PyUnstable_EnableTryIncRef(PyObject *op)
 {
 #ifdef Py_GIL_DISABLED
+    // _PyObject_SetMaybeWeakref()
     if (_Py_IsImmortal(op)) {
         return;
     }
