@@ -2448,6 +2448,46 @@ test_tuple(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     return test_tuple_fromarray();
 }
 
+// Test adapted from CPython's _testcapi/object.c
+static int TryIncref_dealloc_called = 0;
+
+static void
+TryIncref_dealloc(PyObject *op)
+{
+    // PyUnstable_TryIncRef should return 0 if object is being deallocated
+    assert(Py_REFCNT(op) == 0);
+    assert(!PyUnstable_TryIncRef(op));
+    assert(Py_REFCNT(op) == 0);
+
+    TryIncref_dealloc_called++;
+    Py_TYPE(op)->tp_free(op);
+}
+
+static PyTypeObject TryIncrefType;
+
+static PyObject*
+test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    TryIncref_dealloc_called = 0;
+
+    PyObject *obj = PyObject_New(PyObject, &TryIncrefType);
+    if (obj == _Py_NULL) {
+        return _Py_NULL;
+    }
+
+    PyUnstable_EnableTryIncRef(obj);
+
+    Py_ssize_t refcount = Py_REFCNT(obj);
+    assert(PyUnstable_TryIncRef(obj));
+    assert(Py_REFCNT(obj) == refcount + 1);
+
+    Py_DECREF(obj);
+    Py_DECREF(obj);
+
+    assert(TryIncref_dealloc_called == 1);
+    Py_RETURN_NONE;
+}
+
 
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
@@ -2504,6 +2544,7 @@ static struct PyMethodDef methods[] = {
     {"test_uniquely_referenced", test_uniquely_referenced, METH_NOARGS, _Py_NULL},
     {"test_byteswriter", test_byteswriter, METH_NOARGS, _Py_NULL},
     {"test_tuple", test_tuple, METH_NOARGS, _Py_NULL},
+    {"test_try_incref", test_try_incref, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
@@ -2532,6 +2573,13 @@ module_exec(PyObject *module)
         return -1;
     }
 #endif
+    TryIncrefType.tp_name = "TryIncrefType";
+    TryIncrefType.tp_basicsize = sizeof(PyObject);
+    TryIncrefType.tp_dealloc = TryIncref_dealloc;
+    TryIncrefType.tp_free = PyObject_Del;
+    if (PyType_Ready(&TryIncrefType) < 0) {
+        return -1;
+    }
     return 0;
 }
 
