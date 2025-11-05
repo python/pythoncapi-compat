@@ -2449,17 +2449,17 @@ test_tuple(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 // Test adapted from CPython's _testcapi/object.c
-static int MyObject_dealloc_called = 0;
+static int TryIncref_dealloc_called = 0;
 
 static void
-MyObject_dealloc(PyObject *op)
+TryIncref_dealloc(PyObject *op)
 {
     // PyUnstable_TryIncRef should return 0 if object is being deallocated
     assert(Py_REFCNT(op) == 0);
     assert(!PyUnstable_TryIncRef(op));
     assert(Py_REFCNT(op) == 0);
 
-    MyObject_dealloc_called++;
+    TryIncref_dealloc_called++;
     Py_TYPE(op)->tp_free(op);
 }
 
@@ -2468,7 +2468,7 @@ static PyTypeObject TryIncrefType;
 static PyObject*
 test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
-    MyObject_dealloc_called = 0;
+    TryIncref_dealloc_called = 0;
 
     PyObject *obj = PyObject_New(PyObject, &TryIncrefType);
     if (obj == _Py_NULL) {
@@ -2484,7 +2484,7 @@ test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(obj);
     Py_DECREF(obj);
 
-    assert(MyObject_dealloc_called == 1);
+    assert(TryIncref_dealloc_called == 1);
     Py_RETURN_NONE;
 }
 
@@ -2575,7 +2575,7 @@ module_exec(PyObject *module)
 #endif
     TryIncrefType.tp_name = "TryIncrefType";
     TryIncrefType.tp_basicsize = sizeof(PyObject);
-    TryIncrefType.tp_dealloc = MyObject_dealloc;
+    TryIncrefType.tp_dealloc = TryIncref_dealloc;
     TryIncrefType.tp_free = PyObject_Del;
     if (PyType_Ready(&TryIncrefType) < 0) {
         return -1;
