@@ -2463,14 +2463,14 @@ MyObject_dealloc(PyObject *op)
     Py_TYPE(op)->tp_free(op);
 }
 
-static PyTypeObject MyType;
+static PyTypeObject TryIncrefType;
 
 static PyObject*
 test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
     MyObject_dealloc_called = 0;
 
-    PyObject *obj = PyObject_New(PyObject, &MyType);
+    PyObject *obj = PyObject_New(PyObject, &TryIncrefType);
     if (obj == _Py_NULL) {
         return _Py_NULL;
     }
@@ -2573,11 +2573,11 @@ module_exec(PyObject *module)
         return -1;
     }
 #endif
-    MyType.tp_name = "MyType";
-    MyType.tp_basicsize = sizeof(PyObject);
-    MyType.tp_dealloc = MyObject_dealloc;
-    MyType.tp_free = PyObject_Del;
-    if (PyType_Ready(&MyType) < 0) {
+    TryIncrefType.tp_name = "TryIncrefType";
+    TryIncrefType.tp_basicsize = sizeof(PyObject);
+    TryIncrefType.tp_dealloc = MyObject_dealloc;
+    TryIncrefType.tp_free = PyObject_Del;
+    if (PyType_Ready(&TryIncrefType) < 0) {
         return -1;
     }
     return 0;
