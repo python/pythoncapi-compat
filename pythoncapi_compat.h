@@ -1992,6 +1992,8 @@ static inline int Py_fclose(FILE *file)
 
 
 #if 0x03080000 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030E0000 && !defined(PYPY_VERSION)
+PyAPI_FUNC(const PyConfig*) _Py_GetConfig(void);
+
 static inline PyObject*
 PyConfig_Get(const char *name)
 {
@@ -2126,8 +2128,6 @@ PyConfig_Get(const char *name)
             }
             return Py_NewRef(value);
         }
-
-        PyAPI_FUNC(const PyConfig*) _Py_GetConfig(void);
 
         const PyConfig *config = _Py_GetConfig();
         void *member = (char *)config + spec->offset;
