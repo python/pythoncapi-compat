@@ -2140,7 +2140,7 @@ test_structmember(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(Py_T_ULONGLONG == T_ULONGLONG);
     assert(Py_T_PYSSIZET == T_PYSSIZET);
 #if PY_VERSION_HEX >= 0x03000000 && !defined(PYPY_VERSION)
-    assert(_Py_T_NONE == _Py_T_NONE);
+    assert(_Py_T_NONE == T_NONE);
 #endif
     assert(Py_READONLY == READONLY);
     assert(Py_AUDIT_READ == READ_RESTRICTED);
