@@ -2,6 +2,7 @@
 #undef NDEBUG
 
 #include "pythoncapi_compat.h"
+#include <structmember.h>   // T_SHORT, READONLY
 
 #ifdef NDEBUG
 #  error "assertions must be enabled"
@@ -2118,32 +2119,32 @@ test_long_stdint(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 static PyObject *
 test_structmember(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
-    assert(Py_T_SHORT >= 0);
-    assert(Py_T_INT >= 0);
-    assert(Py_T_LONG >= 0);
-    assert(Py_T_FLOAT >= 0);
-    assert(Py_T_DOUBLE >= 0);
-    assert(Py_T_STRING >= 0);
-    assert(_Py_T_OBJECT >= 0);
-    assert(Py_T_CHAR >= 0);
-    assert(Py_T_BYTE >= 0);
-    assert(Py_T_UBYTE >= 0);
-    assert(Py_T_USHORT >= 0);
-    assert(Py_T_UINT >= 0);
-    assert(Py_T_ULONG >= 0);
-    assert(Py_T_STRING_INPLACE >= 0);
-    assert(Py_T_BOOL >= 0);
-    assert(Py_T_OBJECT_EX >= 0);
-    assert(Py_T_LONGLONG >= 0);
-    assert(Py_T_ULONGLONG >= 0);
-    assert(Py_T_PYSSIZET >= 0);
+    assert(Py_T_SHORT == T_SHORT);
+    assert(Py_T_SHORT == T_SHORT);
+    assert(Py_T_INT == T_INT);
+    assert(Py_T_LONG == T_LONG);
+    assert(Py_T_FLOAT == T_FLOAT);
+    assert(Py_T_DOUBLE == T_DOUBLE);
+    assert(Py_T_STRING == T_STRING);
+    assert(_Py_T_OBJECT == T_OBJECT);
+    assert(Py_T_CHAR == T_CHAR);
+    assert(Py_T_BYTE == T_BYTE);
+    assert(Py_T_UBYTE == T_UBYTE);
+    assert(Py_T_USHORT == T_USHORT);
+    assert(Py_T_UINT == T_UINT);
+    assert(Py_T_ULONG == T_ULONG);
+    assert(Py_T_STRING_INPLACE == T_STRING_INPLACE);
+    assert(Py_T_BOOL == T_BOOL);
+    assert(Py_T_OBJECT_EX == T_OBJECT_EX);
+    assert(Py_T_LONGLONG == T_LONGLONG);
+    assert(Py_T_ULONGLONG == T_ULONGLONG);
+    assert(Py_T_PYSSIZET == T_PYSSIZET);
 #if PY_VERSION_HEX >= 0x03000000 && !defined(PYPY_VERSION)
-    assert(_Py_T_NONE >= 0);
+    assert(_Py_T_NONE == T_NONE);
 #endif
-
-    assert(Py_READONLY >= 0);
-    assert(Py_AUDIT_READ >= 0);
-    assert(_Py_WRITE_RESTRICTED >= 0);
+    assert(Py_READONLY == READONLY);
+    assert(Py_AUDIT_READ == READ_RESTRICTED);
+    assert(_Py_WRITE_RESTRICTED == PY_WRITE_RESTRICTED);
 
     Py_RETURN_NONE;
 }
