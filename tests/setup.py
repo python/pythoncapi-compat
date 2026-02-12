@@ -32,9 +32,6 @@ if not MSVC:
         '-Wall', '-Wextra',
         # Extra warnings
         '-Wconversion',
-        # /usr/lib64/pypy3.7/include/pyport.h:68:20: error: redefinition of typedef
-        # 'Py_hash_t' is a C11 feature
-        '-Wno-typedef-redefinition',
         # Formatting checks
         '-Wformat',
         '-Wformat-nonliteral',
@@ -47,6 +44,14 @@ else:
         # Treat all compiler warnings as compiler errors
         '/WX',
     ))
+    # Python 3.11 and older emits C4100 "unreferenced parameter" warnings
+    # on Py_UNUSED() parameters. Py_UNUSED() was modified in Python 3.12
+    # to support MSVC.
+    if sys.version_info >= (3, 12):
+        COMMON_FLAGS.extend((
+            # Display warnings level 1 to 4
+            '/W4',
+        ))
     CFLAGS = list(COMMON_FLAGS)
 CXXFLAGS = list(COMMON_FLAGS)
 
