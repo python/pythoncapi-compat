@@ -1569,6 +1569,11 @@ static inline int PyLong_IsZero(PyObject *obj)
 
 // gh-124502 added PyUnicode_Equal() to Python 3.14.0a0
 #if PY_VERSION_HEX < 0x030E00A0
+
+#if PY_VERSION_HEX >= 0x030d0000 && !defined(PYPY_VERSION)
+PyAPI_FUNC(int) _PyUnicode_Equal(PyObject *str1, PyObject *str2);
+#endif
+
 static inline int PyUnicode_Equal(PyObject *str1, PyObject *str2)
 {
     if (!PyUnicode_Check(str1)) {
@@ -1583,8 +1588,6 @@ static inline int PyUnicode_Equal(PyObject *str1, PyObject *str2)
     }
 
 #if PY_VERSION_HEX >= 0x030d0000 && !defined(PYPY_VERSION)
-    PyAPI_FUNC(int) _PyUnicode_Equal(PyObject *str1, PyObject *str2);
-
     return _PyUnicode_Equal(str1, str2);
 #elif PY_VERSION_HEX >= 0x03060000 && !defined(PYPY_VERSION)
     return _PyUnicode_EQ(str1, str2);
@@ -1607,11 +1610,14 @@ static inline PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
 
 
 #if PY_VERSION_HEX < 0x030E00A0
+
+#if PY_VERSION_HEX >= 0x03000000 && !defined(PYPY_VERSION)
+PyAPI_FUNC(Py_hash_t) _Py_HashBytes(const void *src, Py_ssize_t len);
+#endif
+
 static inline Py_hash_t Py_HashBuffer(const void *ptr, Py_ssize_t len)
 {
 #if PY_VERSION_HEX >= 0x03000000 && !defined(PYPY_VERSION)
-    PyAPI_FUNC(Py_hash_t) _Py_HashBytes(const void *src, Py_ssize_t len);
-
     return _Py_HashBytes(ptr, len);
 #else
     Py_hash_t hash;
@@ -1948,11 +1954,14 @@ PyLongWriter_Finish(PyLongWriter *writer)
 
 // gh-127350 added Py_fopen() and Py_fclose() to Python 3.14a4
 #if PY_VERSION_HEX < 0x030E00A4
+
+#if 0x030400A2 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+PyAPI_FUNC(FILE*) _Py_fopen_obj(PyObject *path, const char *mode);
+#endif
+
 static inline FILE* Py_fopen(PyObject *path, const char *mode)
 {
 #if 0x030400A2 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
-    PyAPI_FUNC(FILE*) _Py_fopen_obj(PyObject *path, const char *mode);
-
     return _Py_fopen_obj(path, mode);
 #else
     FILE *f;
