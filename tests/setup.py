@@ -32,9 +32,6 @@ if not MSVC:
         '-Wall', '-Wextra',
         # Extra warnings
         '-Wconversion',
-        # /usr/lib64/pypy3.7/include/pyport.h:68:20: error: redefinition of typedef
-        # 'Py_hash_t' is a C11 feature
-        '-Wno-typedef-redefinition',
         # Formatting checks
         '-Wformat',
         '-Wformat-nonliteral',
@@ -44,6 +41,8 @@ if not MSVC:
 else:
     # C compiler flags for MSVC
     COMMON_FLAGS.extend((
+        # Display warnings level 1 to 4
+        '/W4',
         # Treat all compiler warnings as compiler errors
         '/WX',
     ))
