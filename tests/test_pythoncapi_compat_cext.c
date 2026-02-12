@@ -2489,7 +2489,7 @@ test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_RETURN_NONE;
 }
 
-#if 0x030E0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+#if 0x030D0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
 static PyObject *
 test_set_immortal(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
@@ -2579,7 +2579,7 @@ static struct PyMethodDef methods[] = {
     {"test_byteswriter", test_byteswriter, METH_NOARGS, _Py_NULL},
     {"test_tuple", test_tuple, METH_NOARGS, _Py_NULL},
     {"test_try_incref", test_try_incref, METH_NOARGS, _Py_NULL},
-#if 0x030E0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+#if 0x030D0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
     {"test_set_immortal", test_set_immortal, METH_NOARGS, _Py_NULL},
 #endif
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}

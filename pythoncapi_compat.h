@@ -2659,11 +2659,11 @@ PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 }
 #endif
 
-#if 0x030E0000 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030F00A7 && !defined(PYPY_VERSION)
+#if 0x030D0000 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030F00A7 && !defined(PYPY_VERSION)
 // Immortal objects were implemented in Python 3.12, however there is no easy API
 // to make objects immortal until 3.14 which has _Py_SetImmortal(). Since
 // immortal objects are primarily needed for free-threading, this API is implemented
-// for 3.14 and above.
+// for 3.14 using _Py_SetImmortal() and uses private macros on 3.13.
 static inline int
 PyUnstable_SetImmortal(PyObject *op)
 {
@@ -2673,7 +2673,21 @@ PyUnstable_SetImmortal(PyObject *op)
     if (!PyUnstable_Object_IsUniquelyReferenced(op) || PyUnicode_Check(op)) {
         return 0;
     }
-    _Py_SetImmortal(op);
+#if 0x030E0000 <= PY_VERSION_HEX
+     _Py_SetImmortal(op);
+#else
+    // Python 3.13 doesn't export _Py_SetImmortal() function
+    if (PyObject_GC_IsTracked(op)) {
+        PyObject_GC_UnTrack(op);
+    }
+#ifdef Py_GIL_DISABLED
+    op->ob_tid = _Py_UNOWNED_TID;
+    op->ob_ref_local = _Py_IMMORTAL_REFCNT_LOCAL;
+    op->ob_ref_shared = 0;
+#else
+    op->ob_refcnt = _Py_IMMORTAL_REFCNT;
+#endif
+#endif
     return 1;
 }
 #endif
