@@ -2664,6 +2664,10 @@ PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 // to make objects immortal until 3.14 which has _Py_SetImmortal(). Since
 // immortal objects are primarily needed for free-threading, this API is implemented
 // for 3.14 using _Py_SetImmortal() and uses private macros on 3.13.
+#if 0x030E0000 <= PY_VERSION_HEX
+PyAPI_FUNC(void) _Py_SetImmortal(PyObject *op);
+#endif
+
 static inline int
 PyUnstable_SetImmortal(PyObject *op)
 {
@@ -2672,7 +2676,6 @@ PyUnstable_SetImmortal(PyObject *op)
         return 0;
     }
 #if 0x030E0000 <= PY_VERSION_HEX
-    PyAPI_FUNC(void) _Py_SetImmortal(PyObject *op);
     _Py_SetImmortal(op);
 #else
     // Python 3.13 doesn't export _Py_SetImmortal() function
