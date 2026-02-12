@@ -70,6 +70,11 @@ Python 3.15
 
    On PyPy, always returns ``-1``.
 
+.. c:function:: int PyUnstable_SetImmortal(PyObject *op)
+
+   See `PyUnstable_SetImmortal() documentation  <https://docs.python.org/dev/c-api/object.html#c.PyUnstable_SetImmortal>`__.
+
+   Availability: Python 3.13 and newer, not available on PyPy.
 
 Python 3.14
 -----------
