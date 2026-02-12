@@ -2667,16 +2667,13 @@ PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 static inline int
 PyUnstable_SetImmortal(PyObject *op)
 {
-#if 0x030E0000 <= PY_VERSION_HEX
-    PyAPI_FUNC(void) _Py_SetImmortal(PyObject *op);
-#else
-
     assert(op != NULL);
     if (!PyUnstable_Object_IsUniquelyReferenced(op) || PyUnicode_Check(op)) {
         return 0;
     }
 #if 0x030E0000 <= PY_VERSION_HEX
-     _Py_SetImmortal(op);
+    PyAPI_FUNC(void) _Py_SetImmortal(PyObject *op);
+    _Py_SetImmortal(op);
 #else
     // Python 3.13 doesn't export _Py_SetImmortal() function
     if (PyObject_GC_IsTracked(op)) {
