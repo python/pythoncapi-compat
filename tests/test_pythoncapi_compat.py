@@ -54,9 +54,7 @@ def display_title(title):
     if not VERBOSE:
         return
 
-    ver = sys.version_info
-    title = "Python %s.%s: %s" % (ver.major, ver.minor, title)
-
+    title = "%s: %s" % (python_version(), title)
     print(title)
     print("=" * len(title))
     print()
@@ -151,6 +149,9 @@ def python_version():
 
 
 def run_tests(module_name, lang):
+    if VERBOSE:
+        print("")
+
     title = "Test %s (%s)" % (module_name, lang)
     display_title(title)
 
