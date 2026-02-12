@@ -228,7 +228,7 @@ def main():
 
     build_ext()
 
-    tests = C_TESTS
+    tests = list(C_TESTS)
     if TEST_CXX:
         tests += CXX_TESTS
     for module_name, lang in tests:
