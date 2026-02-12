@@ -2667,7 +2667,9 @@ PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 static inline int
 PyUnstable_SetImmortal(PyObject *op)
 {
+#if 0x030E0000 <= PY_VERSION_HEX
     PyAPI_FUNC(void) _Py_SetImmortal(PyObject *op);
+#else
 
     assert(op != NULL);
     if (!PyUnstable_Object_IsUniquelyReferenced(op) || PyUnicode_Check(op)) {
