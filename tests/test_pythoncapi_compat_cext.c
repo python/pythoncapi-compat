@@ -2489,6 +2489,39 @@ test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_RETURN_NONE;
 }
 
+#if 0x030C0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+static PyObject *
+test_set_immortal(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject object;
+    memset(&object, 0, sizeof(PyObject));
+#ifdef Py_GIL_DISABLED
+    object.ob_tid = _Py_ThreadId();
+    object.ob_gc_bits = 0;
+    object.ob_ref_local = 1;
+    object.ob_ref_shared = 0;
+#else
+    object.ob_refcnt = 1;
+#endif
+    object.ob_type = &PyBaseObject_Type;
+
+    int rc = PyUnstable_SetImmortal(&object);
+    assert(rc == 1);
+    Py_DECREF(&object);  // should not dealloc
+
+    // Check already immortal object
+    rc = PyUnstable_SetImmortal(&object);
+    assert(rc == 0);
+
+    // Check unicode objects
+    PyObject *unicode = PyUnicode_FromString("test");
+    rc = PyUnstable_SetImmortal(unicode);
+    assert(rc == 0);
+    Py_DECREF(unicode);
+    Py_RETURN_NONE;
+}
+#endif
+
 
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
@@ -2546,6 +2579,9 @@ static struct PyMethodDef methods[] = {
     {"test_byteswriter", test_byteswriter, METH_NOARGS, _Py_NULL},
     {"test_tuple", test_tuple, METH_NOARGS, _Py_NULL},
     {"test_try_incref", test_try_incref, METH_NOARGS, _Py_NULL},
+#if 0x030C0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+    {"test_set_immortal", test_set_immortal, METH_NOARGS, _Py_NULL},
+#endif
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
