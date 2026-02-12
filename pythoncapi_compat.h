@@ -2664,10 +2664,11 @@ PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 // to make objects immortal until 3.14 which has _Py_SetImmortal(). Since
 // immortal objects are primarily needed for free-threading, this API is implemented
 // for 3.14 and above.
-extern void _Py_SetImmortal(PyObject *op);
 static inline int
 PyUnstable_SetImmortal(PyObject *op)
 {
+    PyAPI_FUNC(void) _Py_SetImmortal(PyObject *op);
+
     assert(op != NULL);
     if (!PyUnstable_Object_IsUniquelyReferenced(op) || PyUnicode_Check(op)) {
         return 0;
