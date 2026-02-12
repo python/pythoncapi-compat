@@ -2624,6 +2624,9 @@ module_exec(PyObject *module)
 #if PY_VERSION_HEX >= 0x03050000
 static PyModuleDef_Slot module_slots[] = {
     {Py_mod_exec, _Py_CAST(void*, module_exec)},
+#if PY_VERSION_HEX >= 0x030D0000
+    {Py_mod_gil, Py_MOD_GIL_NOT_USED},
+#endif
     {0, _Py_NULL}
 };
 #endif

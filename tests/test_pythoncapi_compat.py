@@ -19,6 +19,11 @@ try:
 except ImportError:
     # Python 2
     faulthandler = None
+try:
+    import sysconfig
+except ImportError:
+    # Python 3.1 and older
+    sysconfig = None
 
 # test.utils
 from utils import run_command, command_stdout
@@ -49,9 +54,7 @@ def display_title(title):
     if not VERBOSE:
         return
 
-    ver = sys.version_info
-    title = "Python %s.%s: %s" % (ver.major, ver.minor, title)
-
+    title = "%s: %s" % (python_version(), title)
     print(title)
     print("=" * len(title))
     print()
@@ -94,10 +97,13 @@ def _run_tests(tests, verbose):
         test_func()
 
 
+_HAS_CLEAR_INTERNAL_CACHES = hasattr(sys, '_clear_internal_caches')
 _HAS_CLEAR_TYPE_CACHE = hasattr(sys, '_clear_type_cache')
 
 def _refleak_cleanup():
-    if _HAS_CLEAR_TYPE_CACHE:
+    if _HAS_CLEAR_INTERNAL_CACHES:
+        sys._clear_internal_caches()
+    elif _HAS_CLEAR_TYPE_CACHE:
         sys._clear_type_cache()
     gc.collect()
 
@@ -134,10 +140,18 @@ def python_version():
             python_impl = "PyPy"
         else:
             python_impl = 'Python'
-    return "%s %s.%s (%s build)" % (python_impl, ver.major, ver.minor, build)
+    pyver = "%s.%s" % (ver.major, ver.minor)
+    if ver >= (3, 13):
+        if sysconfig.get_config_var('Py_GIL_DISABLED'):
+            # Free-threaded build
+            pyver += "t"
+    return "%s %s (%s build)" % (python_impl, pyver, build)
 
 
 def run_tests(module_name, lang):
+    if VERBOSE:
+        print("")
+
     title = "Test %s (%s)" % (module_name, lang)
     display_title(title)
 
