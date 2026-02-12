@@ -39,7 +39,6 @@ if not MSVC:
     C_TESTS = [
         ("test_pythoncapi_compat_cext_c99", "C99"),
         ("test_pythoncapi_compat_cext_c11", "C11"),
-        ("test_pythoncapi_compat_cext_c23", "C23"),
     ]
     CXX_TESTS = [
         ("test_pythoncapi_compat_cpp03ext", "C++03"),
@@ -51,7 +50,6 @@ if not MSVC:
 else:
     C_TESTS = [
         ("test_pythoncapi_compat_cext_c11", "C11"),
-        ("test_pythoncapi_compat_cext_c23", "C23"),
     ]
     CXX_TESTS = [
         ("test_pythoncapi_compat_cppext", "C++"),

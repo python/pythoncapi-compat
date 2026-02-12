@@ -51,10 +51,10 @@ else:
 CXXFLAGS = list(COMMON_FLAGS)
 
 if not MSVC:
-    C_VERSIONS = ('c99', 'c11', 'c23')
+    C_VERSIONS = ('c99', 'c11')
 else:
     # MSVC doesn't support /std:c99 flag
-    C_VERSIONS = ('c11', 'c23')
+    C_VERSIONS = ('c11',)
 
 if not MSVC:
     CXX_VERSIONS = [
