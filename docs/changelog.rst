@@ -1,6 +1,10 @@
 Changelog
 =========
 
+* 2026-02-12: Add functions:
+
+  * ``PyUnstable_SetImmortal()``
+
 * 2025-10-14: Add functions:
 
   * ``PyTuple_FromArray()``

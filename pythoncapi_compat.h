@@ -2660,6 +2660,10 @@ PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 #endif
 
 #if 0x030E0000 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030F00A7 && !defined(PYPY_VERSION)
+// Immortal objects were implemented in Python 3.12, however there is no easy API
+// to make objects immortal until 3.14 which has _Py_SetImmortal(). Since
+// immortal objects are primarily needed for free-threading, this API is implemented
+// for 3.14 and above.
 extern void _Py_SetImmortal(PyObject *op);
 static inline int
 PyUnstable_SetImmortal(PyObject *op)
