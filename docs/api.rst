@@ -74,6 +74,7 @@ Python 3.15
 
    See `PyUnstable_SetImmortal() documentation  <https://docs.python.org/dev/c-api/object.html#c.PyUnstable_SetImmortal>`__.
 
+   Availability: Python 3.14 and newer, not available on PyPy.
 
 Python 3.14
 -----------
