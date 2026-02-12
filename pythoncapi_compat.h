@@ -2659,7 +2659,7 @@ PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 }
 #endif
 
-#if 0x030C0000 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030F00A7 && !defined(PYPY_VERSION)
+#if 0x030E0000 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030F00A7 && !defined(PYPY_VERSION)
 extern void _Py_SetImmortal(PyObject *op);
 static inline int
 PyUnstable_SetImmortal(PyObject *op)
