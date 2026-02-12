@@ -32,19 +32,31 @@ from utils import run_command, command_stdout
 # Windows uses MSVC compiler
 MSVC = (os.name == "nt")
 
-TESTS = [
-    ("test_pythoncapi_compat_cext", "C"),
-]
+# C++ is only supported on Python 3.6 and newer
+TEST_CXX = (sys.version_info >= (3, 6))
+
 if not MSVC:
-    TESTS.extend((
+    C_TESTS = [
+        ("test_pythoncapi_compat_cext_c99", "C99"),
+        ("test_pythoncapi_compat_cext_c11", "C11"),
+        ("test_pythoncapi_compat_cext_c23", "C23"),
+    ]
+    CXX_TESTS = [
         ("test_pythoncapi_compat_cpp03ext", "C++03"),
         ("test_pythoncapi_compat_cpp11ext", "C++11"),
-    ))
+        ("test_pythoncapi_compat_cpp14ext", "C++14"),
+        ("test_pythoncapi_compat_cpp17ext", "C++17"),
+        ("test_pythoncapi_compat_cpp20ext", "C++20"),
+    ]
 else:
-    TESTS.extend((
+    C_TESTS = [
+        ("test_pythoncapi_compat_cext_c11", "C11"),
+        ("test_pythoncapi_compat_cext_c23", "C23"),
+    ]
+    CXX_TESTS = [
         ("test_pythoncapi_compat_cppext", "C++"),
         ("test_pythoncapi_compat_cpp14ext", "C++14"),
-    ))
+    ]
 
 
 VERBOSE = False
@@ -84,9 +96,12 @@ def import_tests(module_name):
 
     if not pythonpath:
         raise Exception("Failed to find the build directory")
-    sys.path.append(pythonpath)
-
-    return __import__(module_name)
+    old_sys_path = list(sys.path)
+    try:
+        sys.path.append(pythonpath)
+        return __import__(module_name)
+    finally:
+        sys.path[:] = old_sys_path
 
 
 def _run_tests(tests, verbose):
@@ -155,18 +170,7 @@ def run_tests(module_name, lang):
     title = "Test %s (%s)" % (module_name, lang)
     display_title(title)
 
-    try:
-        testmod = import_tests(module_name)
-    except ImportError:
-        # The C extension must always be available
-        if lang == "C":
-            raise
-
-        if VERBOSE:
-            print("%s: skip %s, missing %s extension"
-                  % (python_version(), lang, module_name))
-            print()
-        return
+    testmod = import_tests(module_name)
 
     if VERBOSE:
         empty_line = False
@@ -226,7 +230,10 @@ def main():
 
     build_ext()
 
-    for module_name, lang in TESTS:
+    tests = C_TESTS
+    if TEST_CXX:
+        tests += CXX_TESTS
+    for module_name, lang in tests:
         run_tests(module_name, lang)
 
 
