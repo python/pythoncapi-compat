@@ -7,7 +7,7 @@ functions for old Python versions.
 
 Supported Python versions:
 
-* Python 3.6 - 3.14
+* Python 3.6 - 3.15
 * PyPy 2.7 and PyPy 3.6 - 3.10
 
 Python 2.7 and Python 3.5 are no longer officially supported since GitHub
