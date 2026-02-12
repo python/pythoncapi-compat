@@ -16,14 +16,24 @@
 #  define PYTHON3 1
 #endif
 
-#if defined(__cplusplus) && __cplusplus >= 201402
+#if defined(__cplusplus) && __cplusplus >= 202002L
+#  define MODULE_NAME test_pythoncapi_compat_cpp20ext
+#elif defined(__cplusplus) && __cplusplus >= 201703L
+#  define MODULE_NAME test_pythoncapi_compat_cpp17ext
+#elif defined(__cplusplus) && __cplusplus >= 201402L
 #  define MODULE_NAME test_pythoncapi_compat_cpp14ext
-#elif defined(__cplusplus) && __cplusplus >= 201103
+#elif defined(__cplusplus) && __cplusplus >= 201103L
 #  define MODULE_NAME test_pythoncapi_compat_cpp11ext
 #elif defined(__cplusplus) && !defined(_MSC_VER)
 #  define MODULE_NAME test_pythoncapi_compat_cpp03ext
 #elif defined(__cplusplus)
 #  define MODULE_NAME test_pythoncapi_compat_cppext
+#elif defined (__STDC_VERSION__) && __STDC_VERSION__ >= 202311L
+#  define MODULE_NAME test_pythoncapi_compat_cext_c23
+#elif defined (__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+#  define MODULE_NAME test_pythoncapi_compat_cext_c11
+#elif defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#  define MODULE_NAME test_pythoncapi_compat_cext_c99
 #else
 #  define MODULE_NAME test_pythoncapi_compat_cext
 #endif

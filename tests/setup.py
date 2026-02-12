@@ -40,11 +40,7 @@ if not MSVC:
         '-Wformat-nonliteral',
         '-Wformat-security',
     ))
-    CFLAGS = COMMON_FLAGS + [
-        # Use C99 for pythoncapi_compat.c which initializes PyModuleDef with a
-        # mixture of designated and non-designated initializers
-        '-std=c99',
-    ]
+    CFLAGS = COMMON_FLAGS
 else:
     # C compiler flags for MSVC
     COMMON_FLAGS.extend((
@@ -53,6 +49,27 @@ else:
     ))
     CFLAGS = list(COMMON_FLAGS)
 CXXFLAGS = list(COMMON_FLAGS)
+
+if not MSVC:
+    C_VERSIONS = ('c99', 'c11')
+else:
+    # MSVC doesn't support /std:c99 flag
+    C_VERSIONS = ('c11',)
+
+if not MSVC:
+    CXX_VERSIONS = [
+        ('test_pythoncapi_compat_cpp03ext', ['-std=c++03']),
+        ('test_pythoncapi_compat_cpp11ext', ['-std=c++11']),
+        ('test_pythoncapi_compat_cpp14ext', ['-std=c++14']),
+        ('test_pythoncapi_compat_cpp17ext', ['-std=c++17']),
+        ('test_pythoncapi_compat_cpp20ext', ['-std=c++20']),
+    ]
+else:
+    # MSVC doesn't support /std:c++11
+    CXX_VERSIONS = [
+        ('test_pythoncapi_compat_cppext', None),
+        ('test_pythoncapi_compat_cpp14ext', ['/std:c++14', '/Zc:__cplusplus']),
+    ]
 
 
 def main():
@@ -75,27 +92,21 @@ def main():
         os.environ['CC'] = cmd
 
     # C extension
-    c_ext = Extension(
-        'test_pythoncapi_compat_cext',
-        sources=['test_pythoncapi_compat_cext.c'],
-        extra_compile_args=CFLAGS)
-    extensions = [c_ext]
+    extensions = []
+    for std in C_VERSIONS:
+        if not MSVC:
+            cflags = CFLAGS + ['-std=%s' % std]
+        else:
+            cflags = CFLAGS + ['/std:%s' % std]
+        c_ext = Extension(
+            'test_pythoncapi_compat_cext_%s' % std,
+            sources=['test_pythoncapi_compat_cext.c'],
+            extra_compile_args=cflags)
+        extensions.append(c_ext)
 
     if TEST_CXX:
         # C++ extension
-
-        # MSVC has /std flag but doesn't support /std:c++11
-        if not MSVC:
-            versions = [
-                ('test_pythoncapi_compat_cpp03ext', ['-std=c++03']),
-                ('test_pythoncapi_compat_cpp11ext', ['-std=c++11']),
-            ]
-        else:
-            versions = [
-                ('test_pythoncapi_compat_cppext', None),
-                ('test_pythoncapi_compat_cpp14ext', ['/std:c++14', '/Zc:__cplusplus']),
-            ]
-        for name, std_flags in versions:
+        for name, std_flags in CXX_VERSIONS:
             flags = list(CXXFLAGS)
             if std_flags is not None:
                 flags.extend(std_flags)
