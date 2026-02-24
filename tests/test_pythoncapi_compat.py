@@ -26,7 +26,7 @@ except ImportError:
     sysconfig = None
 
 # test.utils
-from utils import run_command, command_stdout
+from .utils import run_command, command_stdout
 
 
 # Windows uses MSVC compiler
