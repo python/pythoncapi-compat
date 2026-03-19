@@ -262,6 +262,7 @@ Not supported:
 * ``PyInitConfig_SetStrList()``
 * ``PyType_GetBaseByToken()``
 * ``PyUnicodeWriter_DecodeUTF8Stateful()``
+* ``PyUnicodeWriter_WriteUCS4()``
 * ``Py_InitializeFromInitConfig()``
 
 

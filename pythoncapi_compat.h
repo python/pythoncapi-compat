@@ -1425,6 +1425,11 @@ PyUnicodeWriter_WriteStr(PyUnicodeWriter *writer, PyObject *obj)
 static inline int
 PyUnicodeWriter_WriteRepr(PyUnicodeWriter *writer, PyObject *obj)
 {
+    if (obj == NULL) {
+        return _PyUnicodeWriter_WriteASCIIString((_PyUnicodeWriter*)writer,
+                                                 "<NULL>", 6);
+    }
+
     PyObject *str = PyObject_Repr(obj);
     if (str == NULL) {
         return -1;

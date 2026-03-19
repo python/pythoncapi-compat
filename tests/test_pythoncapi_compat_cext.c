@@ -1908,13 +1908,17 @@ test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
         goto error;
     }
     Py_CLEAR(str);
+    if (PyUnicodeWriter_WriteRepr(writer, NULL) < 0) {
+        goto error;
+    }
 
     {
         PyObject *result = PyUnicodeWriter_Finish(writer);
         if (result == NULL) {
             return NULL;
         }
-        assert(PyUnicode_EqualToUTF8(result, "var=long non-ASCII valu\xC3\xA9 'repr'"));
+        const char *expected = "var=long non-ASCII valu\xC3\xA9 'repr'<NULL>";
+        assert(PyUnicode_EqualToUTF8(result, expected));
         Py_DECREF(result);
     }
 
