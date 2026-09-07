@@ -1,6 +1,10 @@
 Changelog
 =========
 
+* 2026-09-07: Remove code to support Python 2.7, Python 3.5 and PyPy
+  for Python 2.7 ("pypy2").
+  Python 2.7 was no longer supported since August 2023.
+  Python 3.5 was no longer supported since October 2024.
 * 2026-02-12: Add functions:
 
   * ``PyUnstable_SetImmortal()``

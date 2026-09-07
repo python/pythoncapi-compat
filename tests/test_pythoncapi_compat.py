@@ -7,23 +7,13 @@ Usage::
     python3 run_tests.py
     python3 run_tests.py -v # verbose mode
 """
-from __future__ import absolute_import
-from __future__ import print_function
+import faulthandler
 import gc
 import os.path
 import shutil
 import subprocess
 import sys
-try:
-    import faulthandler
-except ImportError:
-    # Python 2
-    faulthandler = None
-try:
-    import sysconfig
-except ImportError:
-    # Python 3.1 and older
-    sysconfig = None
+import sysconfig
 
 # test.utils
 from utils import run_command, command_stdout

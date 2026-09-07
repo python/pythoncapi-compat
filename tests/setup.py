@@ -87,12 +87,8 @@ def main():
         cmd = [arg for arg in cmd if not arg.startswith('-std=')]
         if (sys.version_info >= (3, 8)):
             cmd = shlex.join(cmd)
-        elif (sys.version_info >= (3, 3)):
-            cmd = ' '.join(shlex.quote(arg) for arg in cmd)
         else:
-            # Python 2.7
-            import pipes
-            cmd = ' '.join(pipes.quote(arg) for arg in cmd)
+            cmd = ' '.join(shlex.quote(arg) for arg in cmd)
         # CC env var overrides sysconfig CC variable in setuptools
         os.environ['CC'] = cmd
 

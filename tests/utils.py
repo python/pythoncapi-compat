@@ -2,9 +2,6 @@ import subprocess
 import sys
 
 
-PYTHON3 = (sys.version_info >= (3,))
-
-
 def run_command(cmd, **kw):
     if hasattr(subprocess, 'run'):
         proc = subprocess.run(cmd, **kw)

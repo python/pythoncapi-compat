@@ -12,10 +12,6 @@
 #  error "Py_LIMITED_API is not supported"
 #endif
 
-#if PY_VERSION_HEX >= 0x03000000
-#  define PYTHON3 1
-#endif
-
 #if defined(__cplusplus) && __cplusplus >= 202002L
 #  define MODULE_NAME test_pythoncapi_compat_cpp20ext
 #elif defined(__cplusplus) && __cplusplus >= 201703L
@@ -72,12 +68,7 @@ static const char uninitialized[] = "uninitialized";
 static PyObject*
 create_string(const char *str)
 {
-    PyObject *obj;
-#ifdef PYTHON3
-    obj = PyUnicode_FromString(str);
-#else
-    obj = PyString_FromString(str);
-#endif
+    PyObject *obj = PyUnicode_FromString(str);
     assert(obj != _Py_NULL);
     return obj;
 }
@@ -439,11 +430,7 @@ static int
 test_module_add_type(PyObject *module)
 {
     PyTypeObject *type = &PyUnicode_Type;
-#ifdef PYTHON3
     const char *type_name = "str";
-#else
-    const char *type_name = "unicode";
-#endif
 #ifdef CHECK_REFCNT
     Py_ssize_t refcnt = Py_REFCNT(type);
 #endif
@@ -798,13 +785,8 @@ func_varargs(PyObject *Py_UNUSED(module), PyObject *args, PyObject *kwargs)
 static void
 check_int(PyObject *obj, int value)
 {
-#ifdef PYTHON3
     assert(PyLong_Check(obj));
     assert(PyLong_AsLong(obj) == value);
-#else
-    assert(PyInt_Check(obj));
-    assert(PyInt_AsLong(obj) == value);
-#endif
 }
 
 
@@ -947,13 +929,8 @@ test_vectorcall_args_kwnames(PyObject *func_varargs)
     assert(args_tuple != _Py_NULL);
     PyObject **args = &PyTuple_GET_ITEM(args_tuple, 0);
 
-#ifdef PYTHON3
     PyObject *key1 = PyUnicode_FromString("key1");
     PyObject *key2 = PyUnicode_FromString("key2");
-#else
-    PyObject *key1 = PyString_FromString("key1");
-    PyObject *key2 = PyString_FromString("key2");
-#endif
     assert(key1 != _Py_NULL);
     assert(key2 != _Py_NULL);
     PyObject *kwnames = PyTuple_Pack(2, key1, key2);
@@ -982,11 +959,7 @@ test_vectorcall_args_kwnames(PyObject *func_varargs)
     Py_ssize_t pos = 0;
     PyObject *key, *value;
     while (PyDict_Next(kwargs, &pos, &key, &value)) {
-#ifdef PYTHON3
         assert(PyUnicode_Check(key));
-#else
-        assert(PyString_Check(key));
-#endif
         if (PyObject_RichCompareBool(key, key1, Py_EQ)) {
             check_int(value, 4);
         }
@@ -1005,14 +978,7 @@ test_vectorcall_args_kwnames(PyObject *func_varargs)
 static PyObject *
 test_vectorcall(PyObject *module, PyObject *Py_UNUSED(args))
 {
-#ifndef PYTHON3
-    module = PyImport_ImportModule(MODULE_NAME_STR);
-    assert(module != _Py_NULL);
-#endif
     PyObject *func_varargs = PyObject_GetAttrString(module, "func_varargs");
-#ifndef PYTHON3
-    Py_DECREF(module);
-#endif
     if (func_varargs == _Py_NULL) {
         return _Py_NULL;
     }
@@ -1437,7 +1403,7 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyLong_IsNegative(obj) == 0);
     assert(PyLong_IsZero(obj) == 0);
 
-#if defined(PYTHON3) && !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     // test import/export API
     digit *digits;
     PyLongWriter *writer;
@@ -1498,7 +1464,7 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     const PyLongLayout *layout = PyLong_GetNativeLayout();
     assert(layout->digits_order == -1);
     assert(layout->digit_size == sizeof(digit));
-#endif // defined(PYTHON3) && !defined(PYPY_VERSION)
+#endif // !PYPY_VERSION
 
     Py_RETURN_NONE;
 }
@@ -1729,7 +1695,6 @@ test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
-#if PY_VERSION_HEX  >= 0x03050000
 #define TEST_PYTIME
 
 static PyObject *
@@ -1759,7 +1724,6 @@ test_time(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
     Py_RETURN_NONE;
 }
-#endif
 
 
 static void
@@ -1815,11 +1779,7 @@ check_get_constant(PyObject* (*get_constant)(unsigned int), int borrowed)
     // Py_CONSTANT_EMPTY_STR
     obj = get_constant(Py_CONSTANT_EMPTY_STR);
     assert(Py_TYPE(obj) == &PyUnicode_Type);
-#if PY_VERSION_HEX >= 0x03030000
     assert(PyUnicode_GetLength(obj) == 0);
-#else
-    assert(PyUnicode_GetSize(obj) == 0);
-#endif
     CLEAR(obj);
 
     // Py_CONSTANT_EMPTY_BYTES
@@ -2153,7 +2113,7 @@ test_structmember(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(Py_T_LONGLONG == T_LONGLONG);
     assert(Py_T_ULONGLONG == T_ULONGLONG);
     assert(Py_T_PYSSIZET == T_PYSSIZET);
-#if PY_VERSION_HEX >= 0x03000000 && !defined(PYPY_VERSION)
+#ifndef PYPY_VERSION
     assert(_Py_T_NONE == T_NONE);
 #endif
     assert(Py_READONLY == READONLY);
@@ -2253,11 +2213,7 @@ test_sys(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
     const char *stdout_str = "stdout";
     PyObject *stdout_obj = create_string(stdout_str);
-#if PYTHON3
     PyObject *sys_stdout = PySys_GetObject(stdout_str);  // borrowed ref
-#else
-    PyObject *sys_stdout = PySys_GetObject((char*)stdout_str);  // borrowed ref
-#endif
     const char *nonexistent_str = "nonexistent";
     PyObject *nonexistent_obj = create_string(nonexistent_str);
     PyObject *error_obj = PyLong_FromLong(1);
@@ -2635,7 +2591,6 @@ module_exec(PyObject *module)
 }
 
 
-#if PY_VERSION_HEX >= 0x03050000
 static PyModuleDef_Slot module_slots[] = {
     {Py_mod_exec, _Py_CAST(void*, module_exec)},
 #if PY_VERSION_HEX >= 0x030D0000
@@ -2643,21 +2598,15 @@ static PyModuleDef_Slot module_slots[] = {
 #endif
     {0, _Py_NULL}
 };
-#endif
 
 
-#ifdef PYTHON3
 static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,
     MODULE_NAME_STR,     // m_name
     _Py_NULL,            // m_doc
     0,                   // m_size
     methods,             // m_methods
-#if PY_VERSION_HEX >= 0x03050000
     module_slots,        // m_slots
-#else
-    _Py_NULL,            // m_reload
-#endif
     _Py_NULL,            // m_traverse
     _Py_NULL,            // m_clear
     _Py_NULL,            // m_free
@@ -2666,49 +2615,8 @@ static struct PyModuleDef module_def = {
 
 #define INIT_FUNC CONCAT(PyInit_, MODULE_NAME)
 
-#if PY_VERSION_HEX >= 0x03050000
 PyMODINIT_FUNC
 INIT_FUNC(void)
 {
     return PyModuleDef_Init(&module_def);
 }
-#else
-// Python 3.4
-PyMODINIT_FUNC
-INIT_FUNC(void)
-{
-    PyObject *module = PyModule_Create(&module_def);
-    if (module == _Py_NULL) {
-        return _Py_NULL;
-    }
-    if (module_exec(module) < 0) {
-        Py_DECREF(module);
-        return _Py_NULL;
-    }
-    return module;
-}
-#endif
-
-#else
-// Python 2
-
-#define INIT_FUNC CONCAT(init, MODULE_NAME)
-
-PyMODINIT_FUNC
-INIT_FUNC(void)
-{
-    PyObject *module;
-    module = Py_InitModule4(MODULE_NAME_STR,
-                            methods,
-                            _Py_NULL,
-                            _Py_NULL,
-                            PYTHON_API_VERSION);
-    if (module == _Py_NULL) {
-        return;
-    }
-
-    if (module_exec(module) < 0) {
-        return;
-    }
-}
-#endif

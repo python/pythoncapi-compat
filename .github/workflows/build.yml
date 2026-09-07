@@ -39,7 +39,6 @@ jobs:
           # - https://downloads.python.org/pypy/
           # - Only versions listed in this JSON are supported:
           #   https://downloads.python.org/pypy/versions.json
-          - "pypy2.7"
           - "pypy3.6"
           - "pypy3.7"
           - "pypy3.8"
@@ -49,7 +48,6 @@ jobs:
 
           # Old PyPy versions
           # See https://foss.heptapod.net/pypy/pypy/-/issues/3991
-          - "pypy2.7-v7.3.2"
           - "pypy3.6-v7.3.2"
           - "pypy3.7-v7.3.2"
 
@@ -117,21 +115,3 @@ jobs:
         run: python -VV
       - name: Run tests
         run: python runtests.py --current --verbose
-
-  test_python27:
-    # Get Python 2.7 from Ubuntu 22.04.
-    #
-    # Python 2.7 was removed from GHA setup-python in June 2023:
-    # https://github.com/actions/setup-python/issues/672
-    name: 'Test Python 2.7'
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Python 2.7
-        run: |
-          sudo apt-get update
-          sudo apt-get -yq install python2.7 python2.7-dev
-      - name: Display the Python version
-        run: python2.7 -VV
-      - name: Run tests
-        run: python2.7 runtests.py --current --verbose

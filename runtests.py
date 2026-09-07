@@ -8,17 +8,11 @@ Usage::
     python3 runtests.py --verbose
     python3 runtests.py --current --verbose
 """
-from __future__ import absolute_import
-from __future__ import print_function
 import argparse
 import os.path
 import shutil
 import sys
-try:
-    from shutil import which
-except ImportError:
-    # Python 2
-    from distutils.spawn import find_executable as which
+from shutil import which
 
 
 from tests.utils import run_command
@@ -32,7 +26,6 @@ PYTHONS = (
     # CPython
     "python3-debug",
     "python3",
-    "python2.7",
     "python3.6",
     "python3.7",
     "python3.8",
@@ -48,9 +41,6 @@ PYTHONS = (
     "python3.15t",
 
     # PyPy
-    "pypy",
-    "pypy2",
-    "pypy2.7",
     "pypy3",
     "pypy3.6",
     "pypy3.7",
