@@ -101,7 +101,7 @@ jobs:
           # Ubuntu: test deadsnakes Python versions which are not supported by
           # GHA python-versions.
           # https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa
-          - os: ubuntu-26.04
+          - os: ubuntu-24.04
             python: "3.7"
 
     steps:
