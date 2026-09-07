@@ -21,6 +21,9 @@ jobs:
         python:
           # Python versions (CPython):
           # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
+          #
+          # Python 3.7 is tested using deadsnakes (below).
+          # Python 3.6 is tested on Windows (below).
           - "3.8"
           - "3.9"
           - "3.10"
@@ -97,7 +100,8 @@ jobs:
 
           # Ubuntu: test deadsnakes Python versions which are not supported by
           # GHA python-versions.
-          - os: ubuntu-22.04
+          # https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa
+          - os: ubuntu-26.04
             python: "3.7"
 
     steps:
