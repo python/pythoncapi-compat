@@ -2,9 +2,6 @@ name: Build
 
 on: [push, pull_request, workflow_dispatch]
 
-env:
-  FORCE_COLOR: 1
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
