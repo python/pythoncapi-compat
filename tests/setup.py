@@ -12,6 +12,9 @@ except ImportError:
     import sysconfig
 
 
+# Set to true to debug C/C++ extensions in gdb
+DEBUG = False
+
 # C++ is only supported on Python 3.6 and newer
 TEST_CXX = (sys.version_info >= (3, 6))
 
@@ -76,8 +79,13 @@ else:
         ('test_pythoncapi_compat_cpp14ext', ['/std:c++14', '/Zc:__cplusplus']),
     ]
 
+DEBUG_FLAGS = ('-O0', '-ggdb')
+
 
 def main():
+    cflags = list(CFLAGS)
+    cxxflags = list(CXXFLAGS)
+
     # gh-105776: When "gcc -std=11" is used as the C++ compiler, -std=c11
     # option emits a C++ compiler warning. Remove "-std11" option from the
     # CC command.
@@ -92,23 +100,27 @@ def main():
         # CC env var overrides sysconfig CC variable in setuptools
         os.environ['CC'] = cmd
 
+    if DEBUG:
+        cflags.extend(DEBUG_FLAGS)
+        cxxflags.extend(DEBUG_FLAGS)
+
     # C extension
     extensions = []
     for std in C_VERSIONS:
         if not MSVC:
-            cflags = CFLAGS + ['-std=%s' % std]
+            flags = cflags + ['-std=%s' % std]
         else:
-            cflags = CFLAGS + ['/std:%s' % std]
+            flags = cflags + ['/std:%s' % std]
         c_ext = Extension(
             'test_pythoncapi_compat_cext_%s' % std,
             sources=['test_pythoncapi_compat_cext.c'],
-            extra_compile_args=cflags)
+            extra_compile_args=flags)
         extensions.append(c_ext)
 
     if TEST_CXX:
         # C++ extension
         for name, std_flags in CXX_VERSIONS:
-            flags = list(CXXFLAGS)
+            flags = list(cxxflags)
             if std_flags is not None:
                 flags.extend(std_flags)
             cpp_ext = Extension(
