@@ -45,7 +45,7 @@ jobs:
           - "pypy3.11"
 
           # Old PyPy versions
-          # See https://foss.heptapod.net/pypy/pypy/-/issues/3991
+          # See https://github.com/pypy/pypy/issues/3990
           - "pypy3.6-v7.3.2"
           - "pypy3.7-v7.3.2"
 
