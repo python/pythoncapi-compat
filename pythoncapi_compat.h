@@ -126,7 +126,8 @@ static inline void _Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
 
 
 // bpo-40421 added PyFrame_GetCode() to Python 3.9.0b1
-#if PY_VERSION_HEX < 0x030900B1 || defined(PYPY_VERSION)
+// PyPy added PyFrame_GetCode() to PyPy3.12 v8.0.0
+#if PY_VERSION_HEX < 0x030900B1 || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030C0000)
 static inline PyCodeObject* PyFrame_GetCode(PyFrameObject *frame)
 {
     assert(frame != _Py_NULL);
@@ -285,7 +286,8 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 
 
 // bpo-39947 added PyInterpreterState_Get() to Python 3.9.0a5
-#if PY_VERSION_HEX < 0x030900A5 || defined(PYPY_VERSION)
+// PyPy added PyInterpreterState_Get() to PyPy3.12 v8.0.0
+#if PY_VERSION_HEX < 0x030900A5 || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030C0000)
 static inline PyInterpreterState* PyInterpreterState_Get(void)
 {
     PyThreadState *tstate;
@@ -2130,7 +2132,8 @@ PyConfig_GetInt(const char *name, int *value)
 
 // gh-133144 added PyUnstable_Object_IsUniquelyReferenced() to Python 3.14.0b1.
 // Adapted from  _PyObject_IsUniquelyReferenced() implementation.
-#if PY_VERSION_HEX < 0x030E00B0
+// Not available on PyPy3.12: ob_refcnt carries an internal tag.
+#if PY_VERSION_HEX < 0x030E00B0 && (!defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000)
 static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
 {
 #if !defined(Py_GIL_DISABLED)
@@ -2148,7 +2151,8 @@ static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
 
 // gh-128926 added PyUnstable_TryIncRef() and PyUnstable_EnableTryIncRef() to
 // Python 3.14.0a5. Adapted from _Py_TryIncref() and _PyObject_SetMaybeWeakref().
-#if PY_VERSION_HEX < 0x030E00A5
+// Not available on PyPy3.12: ob_refcnt carries an internal tag.
+#if PY_VERSION_HEX < 0x030E00A5 && (!defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000)
 static inline int PyUnstable_TryIncRef(PyObject *op)
 {
 #ifndef Py_GIL_DISABLED
