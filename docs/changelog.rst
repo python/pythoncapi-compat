@@ -1,6 +1,8 @@
 Changelog
 =========
 
+* 2026-09-22: Add initial support for PyPy3.12 v8.0.0, which provides
+  ``PyFrame_GetCode()`` and ``PyInterpreterState_Get()``.
 * 2026-09-07: Remove code to support Python 2.7, Python 3.5 and PyPy
   for Python 2.7 ("pypy2").
   Python 2.7 was no longer supported since August 2023.
