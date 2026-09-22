@@ -1,6 +1,9 @@
 Changelog
 =========
 
+* 2026-09-22: Add support for PyPy3.12 v8.0.0.
+  ``PyUnstable_Object_IsUniquelyReferenced()``, ``PyUnstable_TryIncRef()``
+  and ``PyUnstable_EnableTryIncRef()`` are not available on PyPy3.12.
 * 2026-09-07: Remove code to support Python 2.7, Python 3.5 and PyPy
   for Python 2.7 ("pypy2").
   Python 2.7 was no longer supported since August 2023.

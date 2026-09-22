@@ -239,6 +239,20 @@ Python 3.14
 
    See `PyUnstable_Object_IsUniquelyReferenced() documentation <https://docs.python.org/dev/c-api/object.html#c.PyUnstable_Object_IsUniquelyReferenced>`__.
 
+   Not available on PyPy 3.12.
+
+.. c:function:: int PyUnstable_TryIncRef(PyObject *op)
+
+   See `PyUnstable_TryIncRef() documentation <https://docs.python.org/dev/c-api/object.html#c.PyUnstable_TryIncRef>`__.
+
+   Not available on PyPy 3.12.
+
+.. c:function:: void PyUnstable_EnableTryIncRef(PyObject *op)
+
+   See `PyUnstable_EnableTryIncRef() documentation <https://docs.python.org/dev/c-api/object.html#c.PyUnstable_EnableTryIncRef>`__.
+
+   Not available on PyPy 3.12.
+
 Not supported:
 
 * ``PyConfig_Names()``

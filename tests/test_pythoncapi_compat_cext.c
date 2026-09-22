@@ -1956,6 +1956,8 @@ error:
 }
 #endif
 
+// PyUnstable_Object_IsUniquelyReferenced() is not available on PyPy3.12.
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
 static PyObject *
 test_uniquely_referenced(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
 {
@@ -1975,6 +1977,7 @@ test_uniquely_referenced(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
 
     Py_RETURN_NONE;
 }
+#endif
 
 static PyObject *
 test_bytes(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
@@ -2419,7 +2422,9 @@ test_tuple(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     return test_tuple_fromarray();
 }
 
-// Test adapted from CPython's _testcapi/object.c
+// Test adapted from CPython's _testcapi/object.c.
+// PyUnstable_TryIncRef() is not available on PyPy3.12.
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
 static int TryIncref_dealloc_called = 0;
 
 static void
@@ -2458,6 +2463,7 @@ test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(TryIncref_dealloc_called == 1);
     Py_RETURN_NONE;
 }
+#endif
 
 #if 0x030D0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
 static PyObject *
@@ -2545,10 +2551,14 @@ static struct PyMethodDef methods[] = {
     {"test_config", test_config, METH_NOARGS, _Py_NULL},
 #endif
     {"test_sys", test_sys, METH_NOARGS, _Py_NULL},
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
     {"test_uniquely_referenced", test_uniquely_referenced, METH_NOARGS, _Py_NULL},
+#endif
     {"test_byteswriter", test_byteswriter, METH_NOARGS, _Py_NULL},
     {"test_tuple", test_tuple, METH_NOARGS, _Py_NULL},
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
     {"test_try_incref", test_try_incref, METH_NOARGS, _Py_NULL},
+#endif
 #if 0x030D0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
     {"test_set_immortal", test_set_immortal, METH_NOARGS, _Py_NULL},
 #endif
@@ -2580,6 +2590,7 @@ module_exec(PyObject *module)
         return -1;
     }
 #endif
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
     TryIncrefType.tp_name = "TryIncrefType";
     TryIncrefType.tp_basicsize = sizeof(PyObject);
     TryIncrefType.tp_dealloc = TryIncref_dealloc;
@@ -2587,6 +2598,7 @@ module_exec(PyObject *module)
     if (PyType_Ready(&TryIncrefType) < 0) {
         return -1;
     }
+#endif
     return 0;
 }
 
