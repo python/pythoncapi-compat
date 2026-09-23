@@ -43,6 +43,7 @@ jobs:
           - "pypy3.9"
           - "pypy3.10"
           - "pypy3.11"
+          - "pypy3.12"
 
           # Old PyPy versions
           # See https://github.com/pypy/pypy/issues/3990

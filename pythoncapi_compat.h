@@ -2132,7 +2132,8 @@ PyConfig_GetInt(const char *name, int *value)
 
 // gh-133144 added PyUnstable_Object_IsUniquelyReferenced() to Python 3.14.0b1.
 // Adapted from  _PyObject_IsUniquelyReferenced() implementation.
-#if PY_VERSION_HEX < 0x030E00B0
+// Not available on PyPy: Py_REFCNT() semantics is different on PyPy.
+#if PY_VERSION_HEX < 0x030E00B0 && !defined(PYPY_VERSION)
 static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
 {
 #if !defined(Py_GIL_DISABLED)
@@ -2150,7 +2151,8 @@ static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
 
 // gh-128926 added PyUnstable_TryIncRef() and PyUnstable_EnableTryIncRef() to
 // Python 3.14.0a5. Adapted from _Py_TryIncref() and _PyObject_SetMaybeWeakref().
-#if PY_VERSION_HEX < 0x030E00A5
+// Not available on PyPy: Py_REFCNT() semantics is different on PyPy.
+#if PY_VERSION_HEX < 0x030E00A5 && !defined(PYPY_VERSION)
 static inline int PyUnstable_TryIncRef(PyObject *op)
 {
 #ifndef Py_GIL_DISABLED
@@ -2221,7 +2223,7 @@ static inline void PyUnstable_EnableTryIncRef(PyObject *op)
     (void)op;  // unused argument
 #endif
 }
-#endif
+#endif  // PY_VERSION_HEX < 0x030E00A5 && !defined(PYPY_VERSION)
 
 
 #if PY_VERSION_HEX < 0x030F0000

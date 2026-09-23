@@ -1,7 +1,10 @@
 Changelog
 =========
 
-* 2026-09-22: Add initial support for PyPy3.12 v8.0.0, which provides
+* 2026-09-23: ``PyUnstable_Object_IsUniquelyReferenced()``,
+  ``PyUnstable_TryIncRef()`` and ``PyUnstable_EnableTryIncRef()`` are no longer
+  available on PyPy. ``Py_REFCNT()`` semantics is different on PyPy.
+* 2026-09-22: Add support for PyPy3.12 v8.0.0, which provides
   ``PyFrame_GetCode()`` and ``PyInterpreterState_Get()``.
 * 2026-09-07: Remove code to support Python 2.7, Python 3.5 and PyPy
   for Python 2.7 ("pypy2").
