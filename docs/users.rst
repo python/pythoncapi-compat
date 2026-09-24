@@ -49,18 +49,15 @@ Examples of projects using pythoncapi_compat.h
   (`commit <https://gitlab.gnome.org/GNOME/pygobject/-/commit/074c0348417b87d3003dbb409e6fc26b61121de3>`__,
   `pythoncapi-compat Meson subproject
   <https://gitlab.gnome.org/GNOME/pygobject/-/blob/main/subprojects/pythoncapi-compat.wrap?ref_type=heads>`__)
+* `Pillow <https://github.com/python-pillow/Pillow/>`_
+  (`src/thirdparty/pythoncapi_compat.h <https://github.com/python-pillow/Pillow/blob/main/src/thirdparty/pythoncapi_compat.h>`_)
+
 
 Projects not using pythoncapi_compat.h
 ======================================
 
 Projects not using ``pythoncapi_compat.h``:
 
-* numpy has its own compatibility layer, ``npy_pycompat.h`` and
-  ``npy_3kcompat.h`` header files. It supports more C compilers than
-  pythoncapi_compat.h: it supports ``__STRICT_ANSI__`` (ISO C90) for example.
-  Rejected `PR 18713: MAINT: Use pythoncapi_compat.h in npy_3kcompat.h
-  <https://github.com/numpy/numpy/pull/18713>`_ (when it was rejected, numpy
-  still had code for compatibility with Python 2.7).
 * Cython doesn't use pythoncapi_compat.h:
   `see Cython issue #3934
   <https://github.com/cython/cython/issues/3934>`_.
