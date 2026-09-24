@@ -51,6 +51,8 @@ Examples of projects using pythoncapi_compat.h
   <https://gitlab.gnome.org/GNOME/pygobject/-/blob/main/subprojects/pythoncapi-compat.wrap?ref_type=heads>`__)
 * `Pillow <https://github.com/python-pillow/Pillow/>`_
   (`src/thirdparty/pythoncapi_compat.h <https://github.com/python-pillow/Pillow/blob/main/src/thirdparty/pythoncapi_compat.h>`_)
+* `watchdog <https://github.com/gorakhargosh/watchdog/>`_
+  (`src/pythoncapi_compat.h <https://github.com/gorakhargosh/watchdog/blob/master/src/pythoncapi_compat.h>`_)
 
 
 Projects not using pythoncapi_compat.h
