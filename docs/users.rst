@@ -55,7 +55,6 @@ Examples of projects using pythoncapi_compat.h
   (`src/pythoncapi_compat.h <https://github.com/gorakhargosh/watchdog/blob/master/src/pythoncapi_compat.h>`_)
 
 
-
 Projects not using pythoncapi_compat.h
 ======================================
 
