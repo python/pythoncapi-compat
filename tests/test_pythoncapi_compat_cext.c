@@ -2654,7 +2654,7 @@ module_exec(PyObject *module)
 
 
 // On Python 3.15 and newer, use PySlot API
-#if PY_VERSION_HEX >= 0x030F0000
+#if PY_VERSION_HEX >= 0x030F0000 && !defined(MS_WINDOWS)
 
 PyABIInfo_VAR(abi_info);
 
