@@ -1612,7 +1612,16 @@ static inline int PyUnicode_Equal(PyObject *str1, PyObject *str2)
 #elif PY_VERSION_HEX >= 0x03090000 && defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     return _PyUnicode_EQ(str1, str2);
 #else
-    return (PyUnicode_Compare(str1, str2) == 0);
+    {
+        int res = PyUnicode_Compare(str1, str2);
+        if (res == 0) {
+            return 1;
+        }
+        if (res > 0) {
+            return 0;
+        }
+        return -1;
+    }
 #endif
 }
 #endif
