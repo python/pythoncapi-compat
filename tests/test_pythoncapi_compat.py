@@ -153,11 +153,13 @@ def python_version():
 
 
 def run_tests(module_name, std):
-    lang = std.upper()
+    lang = std.upper() if std else None
     if VERBOSE:
         print("")
 
-    title = "Test %s (%s)" % (module_name, lang)
+    title = f"Test {module_name}"
+    if lang:
+        titlte = f"{title} ({lang})"
     display_title(title)
 
     testmod = import_tests(module_name)
@@ -196,10 +198,9 @@ def run_tests(module_name, std):
     if VERBOSE:
         print()
 
-    msg = "%s %s tests succeeded!" % (len(tests), lang)
-    msg = "%s: %s" % (python_version(), msg)
+    msg = f"{python_version()}, {module_name}: {len(tests)} tests succeeded!"
     if check_refleak:
-        msg = "%s (no reference leak detected)" % msg
+        msg += " (no reference leak detected)"
     print(msg)
 
 
@@ -220,11 +221,9 @@ def main():
 
     build_ext()
 
-    tests = setup.C_VERSIONS + setup.CXX_VERSIONS
-    for module_name, std in tests:
+    tests = setup.C_TESTS + setup.CXX_TESTS
+    for module_name, std, limited in tests:
         run_tests(module_name, std)
-        if setup.TEST_LIMITED_C_API:
-            run_tests(module_name + "_limited", std)
 
 
 if __name__ == "__main__":
