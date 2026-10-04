@@ -62,8 +62,6 @@ Python 3.15
 
    See `PyTuple_FromArray() documentation  <https://docs.python.org/dev/c-api/tuple.html#c.PyTuple_FromArray>`__.
 
-   Not available on the limited C API.
-
 .. c:function:: Py_hash_t PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 
    See `PyUnstable_Unicode_GET_CACHED_HASH() documentation  <https://docs.python.org/dev/c-api/unicode.html#c.PyUnstable_Unicode_GET_CACHED_HASH>`__.
