@@ -632,7 +632,8 @@ static inline int PyWeakref_GetRef(PyObject *ref, PyObject **pobj)
 #endif
 
 // bpo-36974 added PyVectorcall_NARGS() to Python 3.8b1
-#if PY_VERSION_HEX < 0x030800B1 || defined(Py_LIMITED_API)
+#if (PY_VERSION_HEX < 0x030800B1 \
+        || (defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030C0000))
 static inline Py_ssize_t PyVectorcall_NARGS(size_t n)
 {
     return n & ~PY_VECTORCALL_ARGUMENTS_OFFSET;
