@@ -646,7 +646,7 @@ static inline PyObject*
 PyObject_Vectorcall(PyObject *callable, PyObject *const *args,
                      size_t nargsf, PyObject *kwnames)
 {
-#if PY_VERSION_HEX >= 0x030800B1 && !defined(PYPY_VERSION)
+#if PY_VERSION_HEX >= 0x030800B1 && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     // bpo-36974 added _PyObject_Vectorcall() to Python 3.8.0b1
     return _PyObject_Vectorcall(callable, args, nargsf, kwnames);
 #else
