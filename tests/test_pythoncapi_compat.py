@@ -16,6 +16,7 @@ import sys
 import sysconfig
 
 # test.utils
+import setup
 from utils import run_command, command_stdout
 
 
@@ -151,7 +152,8 @@ def python_version():
     return "%s %s (%s build)" % (python_impl, pyver, build)
 
 
-def run_tests(module_name, lang):
+def run_tests(module_name, std):
+    lang = std.upper()
     if VERBOSE:
         print("")
 
@@ -218,11 +220,11 @@ def main():
 
     build_ext()
 
-    tests = list(C_TESTS)
-    if TEST_CXX:
-        tests += CXX_TESTS
-    for module_name, lang in tests:
-        run_tests(module_name, lang)
+    tests = setup.C_VERSIONS + setup.CXX_VERSIONS
+    for module_name, std in tests:
+        run_tests(module_name, std)
+        if setup.TEST_LIMITED_C_API:
+            run_tests(module_name + "_limited", std)
 
 
 if __name__ == "__main__":

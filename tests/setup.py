@@ -2,18 +2,24 @@
 import os.path
 import shlex
 import sys
+
 try:
-    from setuptools import setup, Extension
-except ImportError:
-    from distutils.core import setup, Extension
-try:
-    from distutils import sysconfig
-except ImportError:
     import sysconfig
+except ImportError:
+    from distutils import sysconfig
 
 
 # Set to true to debug C/C++ extensions in gdb
 DEBUG = False
+
+FREE_THREADING = bool(sysconfig.get_config_var('Py_GIL_DISABLED'))
+if sys.implementation.name == 'cpython':
+    if FREE_THREADING:
+        TEST_LIMITED_C_API = (sys.version_info >= (3, 15))
+    else:
+        TEST_LIMITED_C_API = (sys.version_info >= (3, 11))
+else:
+    TEST_LIMITED_C_API = False
 
 # C++ is only supported on Python 3.6 and newer
 TEST_CXX = (sys.version_info >= (3, 6))
@@ -63,26 +69,48 @@ if not MSVC:
 else:
     # MSVC doesn't support /std:c99 flag
     C_VERSIONS = ('c11',)
+C_EXTENSION_PREFIX = 'test_pythoncapi_compat_cext_'
+C_VERSIONS = [(C_EXTENSION_PREFIX + std, std) for std in C_VERSIONS]
+
+LIMITED_SUFFIX = "_limited"
 
 if not MSVC:
     CXX_VERSIONS = [
-        ('test_pythoncapi_compat_cpp03ext', ['-std=c++03']),
-        ('test_pythoncapi_compat_cpp11ext', ['-std=c++11']),
-        ('test_pythoncapi_compat_cpp14ext', ['-std=c++14']),
-        ('test_pythoncapi_compat_cpp17ext', ['-std=c++17']),
-        ('test_pythoncapi_compat_cpp20ext', ['-std=c++20']),
+        'c++03',
+        'c++11',
+        'c++14',
+        'c++17',
+        'c++20',
     ]
 else:
     # MSVC doesn't support /std:c++11
     CXX_VERSIONS = [
-        ('test_pythoncapi_compat_cppext', None),
-        ('test_pythoncapi_compat_cpp14ext', ['/std:c++14', '/Zc:__cplusplus']),
+        None,
+        'c++14',
     ]
+CXX_EXTENSION_PREFIX = 'test_pythoncapi_compat_cppext'
+
+def cxx_extension_name(std):
+    if not std:
+        return CXX_EXTENSION_PREFIX
+
+    if std.startswith("c++"):
+        std = std[3:]
+    else:
+        raise ValueError(f"invalid options: {std!r}")
+    return CXX_EXTENSION_PREFIX + std
+
+CXX_VERSIONS = [(cxx_extension_name(options), options) for options in CXX_VERSIONS]
 
 DEBUG_FLAGS = ('-O0', '-ggdb')
 
 
 def main():
+    try:
+        from setuptools import setup, Extension
+    except ImportError:
+        from distutils.core import setup, Extension
+
     cflags = list(CFLAGS)
     cxxflags = list(CXXFLAGS)
 
@@ -104,34 +132,52 @@ def main():
         cflags.extend(DEBUG_FLAGS)
         cxxflags.extend(DEBUG_FLAGS)
 
+    if TEST_LIMITED_C_API:
+        limited = f'-DPy_LIMITED_API={sys.hexversion:#x}'
+        cflags.append(limited)
+        cxxflags.append(limited)
+
     # C extension
     extensions = []
-    for std in C_VERSIONS:
+    sources = ['test_pythoncapi_compat_cext.c']
+    for name, std in C_VERSIONS:
         if not MSVC:
-            flags = cflags + ['-std=%s' % std]
+            flags = cflags + [f'-std={std}']
         else:
-            flags = cflags + ['/std:%s' % std]
-        c_ext = Extension(
-            'test_pythoncapi_compat_cext_%s' % std,
-            sources=['test_pythoncapi_compat_cext.c'],
-            extra_compile_args=flags)
-        extensions.append(c_ext)
+            flags = cflags + [f'/std:{std}']
+
+        def add_extension(name):
+            ext_flags = [*flags, f'-DMODULE_NAME={name}']
+            ext = Extension(name, sources=sources, extra_compile_args=ext_flags)
+            extensions.append(ext)
+
+        add_extension(name)
+        if TEST_LIMITED_C_API:
+            add_extension(name + LIMITED_SUFFIX)
 
     if TEST_CXX:
         # C++ extension
-        for name, std_flags in CXX_VERSIONS:
+        sources = ['test_pythoncapi_compat_cppext.cpp']
+        for name, std in CXX_VERSIONS:
             flags = list(cxxflags)
-            if std_flags is not None:
+            if std is not None:
+                if MSVC:
+                    std_flags = [f'/std:{std}', '/Zc:__cplusplus']
+                else:
+                    std_flags = [f'-std={std}']
                 flags.extend(std_flags)
-            cpp_ext = Extension(
-                name,
-                sources=['test_pythoncapi_compat_cppext.cpp'],
-                extra_compile_args=flags,
-                language='c++')
-            extensions.append(cpp_ext)
 
-    setup(name="test_pythoncapi_compat",
-          ext_modules=extensions)
+            def add_extension(name):
+                ext_flags = [*flags, f'-DMODULE_NAME={name}']
+                ext = Extension(name, sources=sources,
+                                extra_compile_args=ext_flags, language='c++')
+                extensions.append(ext)
+
+            add_extension(name)
+            if TEST_LIMITED_C_API:
+                add_extension(name + LIMITED_SUFFIX)
+
+    setup(name="test_pythoncapi_compat", ext_modules=extensions)
 
 
 if __name__ == "__main__":
