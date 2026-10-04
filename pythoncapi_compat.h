@@ -2784,7 +2784,7 @@ PyBytesWriter_Format(PyBytesWriter *writer, const char *format, ...)
 #endif  // PY_VERSION_HEX < 0x030F00A1
 
 
-#if PY_VERSION_HEX < 0x030F00A1 && !defined(Py_LIMITED_API)
+#if PY_VERSION_HEX < 0x030F00A1
 static inline PyObject*
 PyTuple_FromArray(PyObject *const *array, Py_ssize_t size)
 {
@@ -2794,7 +2794,14 @@ PyTuple_FromArray(PyObject *const *array, Py_ssize_t size)
     }
     for (Py_ssize_t i=0; i < size; i++) {
         PyObject *item = array[i];
+#ifndef Py_LIMITED_API
         PyTuple_SET_ITEM(tuple, i, Py_NewRef(item));
+#else
+        if (PyTuple_SetItem(tuple, i, Py_NewRef(item)) < 0) {
+            Py_DECREF(tuple);
+            return NULL;
+        }
+#endif
     }
     return tuple;
 }

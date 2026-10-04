@@ -2415,6 +2415,8 @@ test_tuple_fromarray(void)
         PyLong_FromLong(2),
         PyLong_FromLong(3)
     };
+    assert(array[0] != NULL && array[1] != NULL && array[2] != NULL);
+
     PyObject *tuple = PyTuple_FromArray(array, 3);
     if (tuple == NULL) {
         goto error;
