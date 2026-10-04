@@ -386,6 +386,7 @@ test_calls(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000) && !defined(PYPY_VERSION)
 static PyObject *
 test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -394,21 +395,18 @@ test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
         return NULL;
     }
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900A6) && !defined(PYPY_VERSION)
     // test PyObject_GC_IsTracked()
     int tracked = PyObject_GC_IsTracked(tuple);
     assert(tracked);
-#endif
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900A6) && !defined(PYPY_VERSION)
     // test PyObject_GC_IsFinalized()
     int finalized = PyObject_GC_IsFinalized(tuple);
     assert(!finalized);
-#endif
 
     Py_DECREF(tuple);
     Py_RETURN_NONE;
 }
+#endif
 
 
 static int
@@ -2547,7 +2545,9 @@ static struct PyMethodDef methods[] = {
 #endif
     {"test_interpreter", test_interpreter, METH_NOARGS, _Py_NULL},
     {"test_calls", test_calls, METH_NOARGS, _Py_NULL},
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000) && !defined(PYPY_VERSION)
     {"test_gc", test_gc, METH_NOARGS, _Py_NULL},
+#endif
     {"test_module", test_module, METH_NOARGS, _Py_NULL},
 #if ((PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) \
         && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))

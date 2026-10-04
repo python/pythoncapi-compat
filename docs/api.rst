@@ -809,13 +809,13 @@ GC protocol
 
    See `PyObject_GC_IsTracked() documentation <https://docs.python.org/dev/c-api/gcsupport.html#c.PyObject_GC_IsTracked>`__.
 
-   Not available on PyPy nor on limited C API 3.8 and older.
+   Not available on PyPy nor on limited C API 3.9 and older.
 
 .. c:function:: int PyObject_GC_IsFinalized(PyObject *obj)
 
    See `PyObject_GC_IsFinalized() documentation <https://docs.python.org/dev/c-api/gcsupport.html#c.PyObject_GC_IsFinalized>`__.
 
-   Availability: Python 3.4. Not available on PyPy nor on limited C API 3.8 and
+   Availability: Python 3.4. Not available on PyPy nor on limited C API 3.9 and
    older.
 
 Module helper
