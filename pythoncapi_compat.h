@@ -1590,7 +1590,7 @@ static inline int PyLong_IsZero(PyObject *obj)
 // gh-124502 added PyUnicode_Equal() to Python 3.14.0a0
 #if PY_VERSION_HEX < 0x030E00A0
 
-#if PY_VERSION_HEX >= 0x030d0000 && !defined(PYPY_VERSION)
+#if PY_VERSION_HEX >= 0x030d0000 && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
 PyAPI_FUNC(int) _PyUnicode_Equal(PyObject *str1, PyObject *str2);
 #endif
 
@@ -1605,11 +1605,11 @@ static inline int PyUnicode_Equal(PyObject *str1, PyObject *str2)
         return -1;
     }
 
-#if PY_VERSION_HEX >= 0x030d0000 && !defined(PYPY_VERSION)
+#if PY_VERSION_HEX >= 0x030d0000 && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     return _PyUnicode_Equal(str1, str2);
 #elif !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     return _PyUnicode_EQ(str1, str2);
-#elif PY_VERSION_HEX >= 0x03090000 && defined(PYPY_VERSION)
+#elif PY_VERSION_HEX >= 0x03090000 && defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     return _PyUnicode_EQ(str1, str2);
 #else
     return (PyUnicode_Compare(str1, str2) == 0);
