@@ -1613,14 +1613,11 @@ static inline int PyUnicode_Equal(PyObject *str1, PyObject *str2)
     return _PyUnicode_EQ(str1, str2);
 #else
     {
-        int res = PyUnicode_Compare(str1, str2);
-        if (res == 0) {
-            return 1;
+        int cmp = PyUnicode_Compare(str1, str2);
+        if (cmp == -1 && PyErr_Occurred()) {
+            return -1;
         }
-        if (res > 0) {
-            return 0;
-        }
-        return -1;
+        return (cmp == 0);
     }
 #endif
 }
