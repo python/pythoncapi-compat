@@ -65,13 +65,23 @@ CXXFLAGS = list(COMMON_FLAGS)
 
 
 # C extensions
-C_EXTENSION_PREFIX = 'test_pythoncapi_compat_cext_'
+C_EXTENSION_PREFIX = 'test_pythoncapi_compat_cext'
+def c_extension_name(std):
+    if not std:
+        return C_EXTENSION_PREFIX
+
+    if std.startswith("c"):
+        std = std[1:]
+    else:
+        raise ValueError(f"invalid std: {std!r}")
+    return C_EXTENSION_PREFIX + std
+
 if not MSVC:
     C_TESTS = ('c99', 'c11')
 else:
     # MSVC doesn't support /std:c99 flag
     C_TESTS = ('c11',)
-C_TESTS = [(C_EXTENSION_PREFIX + std, std, False) for std in C_TESTS]
+C_TESTS = [(c_extension_name(std), std, False) for std in C_TESTS]
 if TEST_LIMITED_C_API:
     C_TESTS.append((C_EXTENSION_PREFIX + LIMITED_SUFFIX, None, True))
 
@@ -85,7 +95,7 @@ def cxx_extension_name(std):
     if std.startswith("c++"):
         std = std[3:]
     else:
-        raise ValueError(f"invalid options: {std!r}")
+        raise ValueError(f"invalid std: {std!r}")
     return CXX_EXTENSION_PREFIX + std
 
 if not MSVC:
