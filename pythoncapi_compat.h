@@ -330,9 +330,10 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 
 // bpo-39947 added PyInterpreterState_Get() to Python 3.9.0a5
 // PyPy added PyInterpreterState_Get() to PyPy3.12 v8.0.0
-#if (PY_VERSION_HEX < 0x030900A5 \
+// On Windows, PyInterpreterState_Get() was added to limited C API 3.10.
+#if ((PY_VERSION_HEX < 0x030900A5 \
         || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030C0000)) \
-        && !defined(Py_LIMITED_API)
+        && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000))
 static inline PyInterpreterState* PyInterpreterState_Get(void)
 {
     PyThreadState *tstate;

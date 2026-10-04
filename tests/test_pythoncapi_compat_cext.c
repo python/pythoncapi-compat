@@ -332,7 +332,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 static PyObject *
 test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900A5)
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
     // test PyInterpreterState_Get()
     PyInterpreterState *interp = PyInterpreterState_Get();
     assert(interp != _Py_NULL);
