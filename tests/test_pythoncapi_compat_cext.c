@@ -430,6 +430,7 @@ check_module_attr(PyObject *module, const char *name, PyObject *expected)
 static int
 test_module_add_type(PyObject *module)
 {
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
     PyTypeObject *type = &PyUnicode_Type;
     const char *type_name = "str";
 #ifdef CHECK_REFCNT
@@ -447,6 +448,7 @@ test_module_add_type(PyObject *module)
         return -1;
     }
     ASSERT_REFCNT(Py_REFCNT(_PyObject_CAST(type)) == refcnt);
+#endif  // !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
     return 0;
 }
 

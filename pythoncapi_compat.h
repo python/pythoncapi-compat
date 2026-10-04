@@ -439,7 +439,8 @@ PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
 
 
 // bpo-40024 added PyModule_AddType() to Python 3.9.0a5
-#if PY_VERSION_HEX < 0x030900A5
+// On Windows, PyModule_AddType() was added to limited C API 3.10.
+#if PY_VERSION_HEX < 0x030900A5 && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
 static inline int PyModule_AddType(PyObject *module, PyTypeObject *type)
 {
 #ifndef Py_LIMITED_API
