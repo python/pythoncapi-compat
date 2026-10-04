@@ -191,7 +191,7 @@ test_frame_getvar(PyFrameObject *frame)
 #endif
 
 
-#ifndef PYPY_VERSION
+#if !defined(PYPY_VERSION) && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900B1)
 static PyObject *
 test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -287,6 +287,7 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 #endif  // !PYPY_VERSION
 
 
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x03090000)
 static PyObject *
 test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -325,17 +326,22 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     Py_RETURN_NONE;
 }
+#endif
 
 
 static PyObject *
 test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900A5)
     // test PyInterpreterState_Get()
     PyInterpreterState *interp = PyInterpreterState_Get();
     assert(interp != _Py_NULL);
+
+    // test PyThreadState_GetInterpreter()
     PyThreadState *tstate = PyThreadState_Get();
     PyInterpreterState *interp2 = PyThreadState_GetInterpreter(tstate);
     assert(interp == interp2);
+#endif
 
 #if (0x030300A1 <= PY_VERSION_HEX \
         && (!defined(PYPY_VERSION_NUM) || PYPY_VERSION_NUM >= 0x7030000) \
@@ -388,13 +394,13 @@ test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
         return NULL;
     }
 
-#if !defined(PYPY_VERSION)
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900A6) && !defined(PYPY_VERSION)
     // test PyObject_GC_IsTracked()
     int tracked = PyObject_GC_IsTracked(tuple);
     assert(tracked);
 #endif
 
-#if PY_VERSION_HEX >= 0x030400F0 && !defined(PYPY_VERSION)
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900A6) && !defined(PYPY_VERSION)
     // test PyObject_GC_IsFinalized()
     int finalized = PyObject_GC_IsFinalized(tuple);
     assert(!finalized);
@@ -2028,6 +2034,7 @@ test_bytes(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
 static PyObject *
 test_iter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
@@ -2068,6 +2075,7 @@ test_iter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(iter);
     Py_RETURN_NONE;
 }
+#endif  // !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
 
 
 static PyObject *
@@ -2531,10 +2539,12 @@ test_set_immortal(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
-#ifndef PYPY_VERSION
+#if !defined(PYPY_VERSION) && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900B1)
     {"test_frame", test_frame, METH_NOARGS, _Py_NULL},
 #endif
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x03090000)
     {"test_thread_state", test_thread_state, METH_NOARGS, _Py_NULL},
+#endif
     {"test_interpreter", test_interpreter, METH_NOARGS, _Py_NULL},
     {"test_calls", test_calls, METH_NOARGS, _Py_NULL},
     {"test_gc", test_gc, METH_NOARGS, _Py_NULL},
@@ -2575,7 +2585,9 @@ static struct PyMethodDef methods[] = {
     {"test_unicodewriter_format", test_unicodewriter_format, METH_NOARGS, _Py_NULL},
 #endif
     {"test_bytes", test_bytes, METH_NOARGS, _Py_NULL},
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
     {"test_iter", test_iter, METH_NOARGS, _Py_NULL},
+#endif
     {"test_long_stdint", test_long_stdint, METH_NOARGS, _Py_NULL},
     {"test_structmember", test_structmember, METH_NOARGS, _Py_NULL},
     {"test_file", test_file, METH_NOARGS, _Py_NULL},

@@ -40,7 +40,7 @@ Python 3.15
 
    See `PyBytesWriter documentation  <https://docs.python.org/dev/c-api/bytes.html#pybyteswriter>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: PyObject* PySys_GetAttr(const char *name)
 
@@ -62,7 +62,7 @@ Python 3.15
 
    See `PyTuple_FromArray() documentation  <https://docs.python.org/dev/c-api/tuple.html#c.PyTuple_FromArray>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: Py_hash_t PyUnstable_Unicode_GET_CACHED_HASH(PyObject *op)
 
@@ -70,7 +70,7 @@ Python 3.15
 
    On PyPy, always returns ``-1``.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnstable_SetImmortal(PyObject *op)
 
@@ -86,55 +86,55 @@ Python 3.14
 
    See `PyLongLayout documentation <https://docs.python.org/dev/c-api/long.html#c.PyLongLayout>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: const PyLongLayout* PyLong_GetNativeLayout(void)
 
    See `PyLong_GetNativeLayout() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_GetNativeLayout>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:struct:: PyLongExport
 
    See `PyLongExport documentation <https://docs.python.org/dev/c-api/long.html#c.PyLongExport>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyLong_Export(PyObject *obj, PyLongExport *export_long)
 
    See `PyLong_Export() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_Export>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: void PyLong_FreeExport(PyLongExport *export_long)
 
    See `PyLong_FreeExport() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLong_FreeExport>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:struct:: PyLongWriter
 
    See `PyLongWriter documentation <https://docs.python.org/dev/c-api/long.html#c.PyLongWriter>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: PyLongWriter* PyLongWriter_Create(int negative, Py_ssize_t ndigits, void **digits)
 
    See `PyLongWriter_Create() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLongWriter_Create>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: PyObject* PyLongWriter_Finish(PyLongWriter *writer)
 
    See `PyLongWriter_Finish() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLongWriter_Finish>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: void PyLongWriter_Discard(PyLongWriter *writer)
 
    See `PyLongWriter_Discard() documentation  <https://docs.python.org/dev/c-api/long.html#c.PyLongWriter_Discard>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyLong_IsPositive(PyObject *obj)
 
@@ -156,6 +156,8 @@ Python 3.14
 
    See `PyIter_NextItem() documentation <https://docs.python.org/dev/c-api/iter.html#c.PyIter_NextItem>`__.
 
+   Not available on limited C API 3.9 and older.
+
 .. c:function:: PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
 
    See `PyBytes_Join() documentation <https://docs.python.org/dev/c-api/bytes.html#c.PyBytes_Join>`__.
@@ -172,67 +174,67 @@ Python 3.14
 
    See `PyUnicodeWriter_Create() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Create>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: PyObject* PyUnicodeWriter_Finish(PyUnicodeWriter *writer)
 
    See `PyUnicodeWriter_Finish() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Finish>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: void PyUnicodeWriter_Discard(PyUnicodeWriter *writer)
 
    See `PyUnicodeWriter_Discard() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Discard>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnicodeWriter_WriteChar(PyUnicodeWriter *writer, Py_UCS4 ch)
 
    See `PyUnicodeWriter_WriteChar() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteChar>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnicodeWriter_WriteUTF8(PyUnicodeWriter *writer, const char *str, Py_ssize_t size)
 
    See `PyUnicodeWriter_WriteUTF8() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteUTF8>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnicodeWriter_WriteASCII(PyUnicodeWriter *writer, const char *str, Py_ssize_t size)
 
    See `PyUnicodeWriter_WriteASCII() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteASCII>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnicodeWriter_WriteWideChar(PyUnicodeWriter *writer, const wchar_t *str, Py_ssize_t size)
 
    See `PyUnicodeWriter_WriteWideChar() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteWideChar>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnicodeWriter_WriteStr(PyUnicodeWriter *writer, PyObject *obj)
 
    See `PyUnicodeWriter_WriteStr() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteStr>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnicodeWriter_WriteRepr(PyUnicodeWriter *writer, PyObject *obj)
 
    See `PyUnicodeWriter_WriteRepr() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteRepr>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnicodeWriter_WriteSubstring(PyUnicodeWriter *writer, PyObject *str, Py_ssize_t start, Py_ssize_t end)
 
    See `PyUnicodeWriter_WriteSubstring() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteSubstring>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnicodeWriter_Format(PyUnicodeWriter *writer, const char *format, ...)
 
    See `PyUnicodeWriter_Format() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_Format>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyLong_AsInt32(PyObject *obj, int32_t *pvalue)
 
@@ -278,13 +280,13 @@ Python 3.14
 
    See `PyConfig_Get() documentation <https://docs.python.org/dev/c-api/init_config.html#c.PyConfig_Get>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyConfig_GetInt(const char *name, int *value)
 
    See `PyConfig_GetInt() documentation <https://docs.python.org/dev/c-api/init_config.html#c.PyConfig_GetInt>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnstable_Object_IsUniquelyReferenced(PyObject *op)
 
@@ -292,7 +294,7 @@ Python 3.14
 
    Not available on PyPy. ``Py_REFCNT()`` semantics is different on PyPy.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyUnstable_TryIncRef(PyObject *op)
 
@@ -405,19 +407,19 @@ Python 3.13
 
    See `PyObject_VisitManagedDict() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_VisitManagedDict>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: void PyObject_ClearManagedDict(PyObject *obj)
 
    See `PyObject_ClearManagedDict() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_ClearManagedDict>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: PyThreadState* PyThreadState_GetUnchecked(void)
 
    See `PyThreadState_GetUnchecked() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_GetUnchecked>`__.
 
-   Available on Python 3.5.2 and newer. Not available with the limited C API.
+   Available on Python 3.5.2 and newer. Not available on the limited C API.
 
 .. c:function:: int PyUnicode_EqualToUTF8(PyObject *unicode, const char *str)
 
@@ -447,50 +449,50 @@ Python 3.13
 
    See `Py_HashPointer() documentation <https://docs.python.org/dev/c-api/hash.html#c.Py_HashPointer>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:type:: PyTime_t
 
    A timestamp or duration in nanoseconds, represented as a signed 64-bit
    integer.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:var:: PyTime_t PyTime_MIN
 
    Minimum value of :c:type:`PyTime_t`.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:var:: PyTime_t PyTime_MAX
 
    Maximum value of :c:type:`PyTime_t`.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: double PyTime_AsSecondsDouble(PyTime_t t)
 
    See `PyTime_AsSecondsDouble() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_AsSecondsDouble>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyTime_Monotonic(PyTime_t *result)
 
    See `PyTime_Monotonic() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_Monotonic>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyTime_Time(PyTime_t *result)
 
    See `PyTime_Time() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_Time>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: int PyTime_PerfCounter(PyTime_t *result)
 
    See `PyTime_PerfCounter() documentation <https://docs.python.org/dev/c-api/time.html#c.PyTime_PerfCounter>`__.
 
-   Not available with the limited C API.
+   Not available on the limited C API.
 
 .. c:function:: PyObject* PyList_GetItemRef(PyObject *op, Py_ssize_t index)
 
@@ -559,31 +561,31 @@ Python 3.11
 
    See `PyCode_GetCellvars() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetCellvars>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: PyObject* PyCode_GetCode(PyCodeObject *code)
 
    See `PyCode_GetCode() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetCode>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: PyObject* PyCode_GetFreevars(PyCodeObject *code)
 
    See `PyCode_GetFreevars() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetFreevars>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: PyObject* PyCode_GetVarnames(PyCodeObject *code)
 
    See `PyCode_GetVarnames() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetVarnames>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: PyObject* PyFrame_GetBuiltins(PyFrameObject *frame)
 
    See `PyFrame_GetBuiltins() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetBuiltins>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: PyObject* PyFrame_GetGlobals(PyFrameObject *frame)
 
@@ -595,61 +597,63 @@ Python 3.11
 
    See `PyFrame_GetLasti() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetLasti>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: PyObject* PyFrame_GetLocals(PyFrameObject *frame)
 
    See `PyFrame_GetLocals() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetLocals>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: void PyThreadState_EnterTracing(PyThreadState *tstate)
 
    See `PyThreadState_EnterTracing() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_EnterTracing>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: void PyThreadState_LeaveTracing(PyThreadState *tstate)
 
    See `PyThreadState_LeaveTracing() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_LeaveTracing>`__.
 
-   Not available on PyPy
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: int PyFloat_Pack2(double x, unsigned char *p, int le)
 
    Pack a C double as the IEEE 754 binary16 half-precision format.
 
-   Availability: Python 3.6 and newer. Not available on PyPy
+   Availability: Python 3.6 and newer. Not available on PyPy nor on limited C
+   API 3.10 and older.
 
 .. c:function:: int PyFloat_Pack4(double x, unsigned char *p, int le)
 
    Pack a C double as the IEEE 754 binary32 single precision format.
 
-   Not available on PyPy
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: int PyFloat_Pack8(double x, unsigned char *p, int le)
 
    Pack a C double as the IEEE 754 binary64 double precision format.
 
-   Not available on PyPy
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: double PyFloat_Unpack2(const unsigned char *p, int le)
 
    Unpack the IEEE 754 binary16 half-precision format as a C double.
 
-   Availability: Python 3.6 and newer. Not available on PyPy
+   Availability: Python 3.6 and newer. Not available on PyPy nor on limited C
+   API 3.10 and older.
 
 .. c:function:: double PyFloat_Unpack4(const unsigned char *p, int le)
 
    Unpack the IEEE 754 binary32 single precision format as a C double.
 
-   Not available on PyPy
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 .. c:function:: double PyFloat_Unpack8(const unsigned char *p, int le)
 
    Unpack the IEEE 754 binary64 double precision format as a C double.
 
-   Not available on PyPy
+   Not available on PyPy nor on limited C API 3.10 and older.
 
 Not supported:
 
@@ -758,6 +762,8 @@ PyFrameObject
 
    See `PyFrame_GetCode() documentation <https://docs.python.org/dev/c-api/reflection.html#c.PyFrame_GetCode>`__.
 
+   Not available on limited C API 3.8 and older.
+
 .. c:function:: PyFrameObject* PyFrame_GetBack(PyFrameObject *frame)
 
    See `PyFrame_GetBack() documentation <https://docs.python.org/dev/c-api/reflection.html#c.PyFrame_GetBack>`__.
@@ -778,6 +784,8 @@ PyThreadState
 
    See `PyThreadState_GetInterpreter() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_GetInterpreter>`__.
 
+   Not available on limited C API 3.8 and older.
+
 .. c:function:: uint64_t PyThreadState_GetID(PyThreadState *tstate)
 
    See `PyThreadState_GetID() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_GetID>`__.
@@ -791,6 +799,8 @@ PyInterpreterState
 
    See `PyInterpreterState_Get() documentation <https://docs.python.org/dev/c-api/init.html#c.PyInterpreterState_Get>`__.
 
+   Not available on limited C API 3.8 and older.
+
 
 GC protocol
 ^^^^^^^^^^^
@@ -799,13 +809,14 @@ GC protocol
 
    See `PyObject_GC_IsTracked() documentation <https://docs.python.org/dev/c-api/gcsupport.html#c.PyObject_GC_IsTracked>`__.
 
-   Not available on PyPy.
+   Not available on PyPy nor on limited C API 3.8 and older.
 
 .. c:function:: int PyObject_GC_IsFinalized(PyObject *obj)
 
    See `PyObject_GC_IsFinalized() documentation <https://docs.python.org/dev/c-api/gcsupport.html#c.PyObject_GC_IsFinalized>`__.
 
-   Availability: Python 3.4. Not available on PyPy.
+   Availability: Python 3.4. Not available on PyPy nor on limited C API 3.8 and
+   older.
 
 Module helper
 ^^^^^^^^^^^^^
@@ -904,6 +915,8 @@ part of the Python C API.
 .. c:function:: PyFrameObject* _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 
    :c:func:`PyThreadState_GetFrame` variant. Not available on PyPy.
+
+   Not available on limited C API 3.8 and older.
 
 .. c:function:: PyCodeObject* _PyFrame_GetCodeBorrow(PyFrameObject *frame)
 

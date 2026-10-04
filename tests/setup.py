@@ -17,7 +17,7 @@ if sys.implementation.name == 'cpython':
     if FREE_THREADING:
         TEST_LIMITED_C_API = (sys.version_info >= (3, 15))
     else:
-        TEST_LIMITED_C_API = (sys.version_info >= (3, 11))
+        TEST_LIMITED_C_API = True
 else:
     TEST_LIMITED_C_API = False
 
