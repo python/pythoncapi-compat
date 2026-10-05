@@ -2656,7 +2656,7 @@ module_exec(PyObject *module)
 
 
 // On Python 3.15 and newer, use PySlot API
-#if PY_VERSION_HEX >= 0x030F0000 && !defined(MS_WINDOWS)
+#if PY_VERSION_HEX >= 0x030F0000
 
 PyABIInfo_VAR(abi_info);
 
@@ -2670,13 +2670,27 @@ static PySlot module_slots[] = {
     {0, 0, {0}, {0}}
 };
 
-#define INIT_FUNC CONCAT(PyModExport_, MODULE_NAME)
+#define EXPORT_FUNC CONCAT(PyModExport_, MODULE_NAME)
 
 PyMODEXPORT_FUNC
-INIT_FUNC(void)
+EXPORT_FUNC(void)
 {
     return module_slots;
 }
+
+#ifdef MS_WINDOWS
+#define INIT_FUNC CONCAT(PyInit_, MODULE_NAME)
+
+// Workaround for https://github.com/pypa/distutils/issues/387
+// https://docs.python.org/3.16/howto/abi3t-migration.html#module-export-hook
+PyMODINIT_FUNC
+INIT_FUNC(void)
+{
+    PyErr_SetString(PyExc_SystemError,
+                    "PyInit_* called for module with PyModExport_*");
+    return NULL;
+}
+#endif
 
 #else
 

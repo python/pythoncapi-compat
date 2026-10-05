@@ -16,8 +16,7 @@ MS_WINDOWS = (sys.platform == 'win32')
 FREE_THREADING = bool(sysconfig.get_config_var('Py_GIL_DISABLED'))
 if sys.implementation.name == 'cpython':
     if FREE_THREADING:
-        # FIXME: test the limited C API on Windows
-        TEST_LIMITED_C_API = (sys.version_info >= (3, 15)) and not MS_WINDOWS
+        TEST_LIMITED_C_API = (sys.version_info >= (3, 15))
     else:
         TEST_LIMITED_C_API = True
 else:
