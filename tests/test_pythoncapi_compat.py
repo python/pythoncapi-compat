@@ -16,6 +16,7 @@ import sys
 import sysconfig
 
 # test.utils
+import setup
 from utils import run_command, command_stdout
 
 
@@ -151,11 +152,14 @@ def python_version():
     return "%s %s (%s build)" % (python_impl, pyver, build)
 
 
-def run_tests(module_name, lang):
+def run_tests(module_name, std):
+    lang = std.upper() if std else None
     if VERBOSE:
         print("")
 
-    title = "Test %s (%s)" % (module_name, lang)
+    title = f"Test {module_name}"
+    if lang:
+        titlte = f"{title} ({lang})"
     display_title(title)
 
     testmod = import_tests(module_name)
@@ -194,10 +198,9 @@ def run_tests(module_name, lang):
     if VERBOSE:
         print()
 
-    msg = "%s %s tests succeeded!" % (len(tests), lang)
-    msg = "%s: %s" % (python_version(), msg)
+    msg = f"{python_version()}, {module_name}: {len(tests)} tests succeeded!"
     if check_refleak:
-        msg = "%s (no reference leak detected)" % msg
+        msg += " (no reference leak detected)"
     print(msg)
 
 
@@ -218,11 +221,9 @@ def main():
 
     build_ext()
 
-    tests = list(C_TESTS)
-    if TEST_CXX:
-        tests += CXX_TESTS
-    for module_name, lang in tests:
-        run_tests(module_name, lang)
+    tests = setup.C_TESTS + setup.CXX_TESTS
+    for module_name, std, limited in tests:
+        run_tests(module_name, std)
 
 
 if __name__ == "__main__":
