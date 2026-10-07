@@ -75,7 +75,6 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     assert(Py_XNewRef(_Py_NULL) == _Py_NULL);
 
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03100000
     // Py_SETREF()
     PyObject *setref = Py_NewRef(obj);
     PyObject *none = Py_None;
@@ -100,7 +99,6 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     Py_XSETREF(xsetref, _Py_NULL);
     assert(Py_REFCNT(obj) == refcnt);
     assert(xsetref == _Py_NULL);
-#endif
 
     // Py_SET_REFCNT
     Py_SET_REFCNT(obj, Py_REFCNT(obj));
