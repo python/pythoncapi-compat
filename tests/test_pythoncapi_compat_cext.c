@@ -75,7 +75,7 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     assert(Py_XNewRef(_Py_NULL) == _Py_NULL);
 
-#ifndef Py_LIMITED_API
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03100000
     // Py_SETREF()
     PyObject *setref = Py_NewRef(obj);
     PyObject *none = Py_None;
