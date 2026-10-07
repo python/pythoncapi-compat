@@ -1,6 +1,8 @@
 Changelog
 =========
 
+* 2026-10-07: Add ``Py_SETREF()`` and ``Py_XSETREF()`` to the limited C API
+  older than Python 3.16.
 * 2026-10-04: Add support for the limited C API (``Py_LIMITED_API``).
 * 2026-09-23: ``PyUnstable_Object_IsUniquelyReferenced()``,
   ``PyUnstable_TryIncRef()`` and ``PyUnstable_EnableTryIncRef()`` are no longer
