@@ -1,6 +1,8 @@
 Changelog
 =========
 
+* 2026-11-04: Add ``Py_SETREF()`` and ``Py_XSETREF()`` to the limited C API
+  older than Python 3.16.
 * 2026-10-12: Add functions:
 
   * ``PyEval_GetFrameBuiltins()``
