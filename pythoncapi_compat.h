@@ -355,11 +355,9 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 // PyPy added PyInterpreterState_Get() to PyPy3.12 v8.0.0
 // On Windows, PyInterpreterState_Get() was added to limited C API 3.10.
 #if ((PY_VERSION_HEX < 0x030900A5 \
-        || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030C0000)) \
-        && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000))
-
-static inline PyInterpreterState*
-PythonCAPICompat_PyInterpreterState_Get(void)
+            || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030C0000)) \
+        && !defined(Py_LIMITED_API))
+static inline PyInterpreterState* PyInterpreterState_Get(void)
 {
     PyThreadState *tstate;
     PyInterpreterState *interp;
@@ -374,19 +372,6 @@ PythonCAPICompat_PyInterpreterState_Get(void)
     }
     return interp;
 }
-
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000 && defined(MS_WINDOWS))
-static inline PyInterpreterState* PyInterpreterState_Get(void)
-{
-    return PythonCAPICompat_PyInterpreterState_Get();
-}
-#else
-    // PyInterpreterState_Get() is in the limited C API 3.9, but not in
-    // the 3.9 stable ABI on Windows. It was added to stable ABI on Windows
-    // in Python 3.10.  Use a macro to override C API function.
-#   define PyInterpreterState_Get() PythonCAPICompat_PyInterpreterState_Get()
-#endif
-
 #endif
 
 

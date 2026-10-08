@@ -820,7 +820,9 @@ PyInterpreterState
 
    See `PyInterpreterState_Get() documentation <https://docs.python.org/dev/c-api/init.html#c.PyInterpreterState_Get>`__.
 
-   Not available on limited C API 3.8 and older.
+   Not available on limited C API 3.8 and older on Unix.
+
+   Not available in stable ABI 3.9 and older on Windows.
 
 
 GC protocol

@@ -336,7 +336,10 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 static PyObject *
 test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000
+    // On Windows,PyInterpreterState_Get() is not available in stable ABI 3.9,
+    // only in stable ABI 3.10. Don't test it in limited C API 3.9 on Unix to
+    // make the test simpler.
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x030A0000
     // test PyInterpreterState_Get()
     PyInterpreterState *interp = PyInterpreterState_Get();
     assert(interp != _Py_NULL);
