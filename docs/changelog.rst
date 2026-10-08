@@ -7,6 +7,7 @@ Changelog
   * ``PyImport_ImportModuleAttrString()``
   * ``PyType_GetFullyQualifiedName()``
   * ``PyType_GetModuleName()``
+  * ``PyType_GetName()``
   * ``PyType_GetQualName()``
 
 * 2026-10-04: Add support for the limited C API (``Py_LIMITED_API``).

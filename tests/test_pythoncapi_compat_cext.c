@@ -2581,6 +2581,11 @@ test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif
     Py_DECREF(modname);
 
+    PyObject *name = PyType_GetName(type);
+    assert(name != NULL);
+    assert(PyUnicode_EqualToUTF8(name, "time") == 1);
+    Py_DECREF(name);
+
     PyObject *qualname = PyType_GetQualName(type);
     assert(qualname != NULL);
     assert(PyUnicode_EqualToUTF8(qualname, "time") == 1);

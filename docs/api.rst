@@ -667,6 +667,10 @@ Python 3.11
 
    Not available on PyPy nor on limited C API 3.10 and older.
 
+.. c:function:: PyObject* PyType_GetName(PyTypeObject *type)
+
+   See `PyType_GetName() documentation <https://docs.python.org/dev/c-api/type.html#c.PyType_GetName>`__.
+
 .. c:function:: PyObject* PyType_GetQualName(PyTypeObject *type)
 
    See `PyType_GetQualName() documentation <https://docs.python.org/dev/c-api/type.html#c.PyType_GetQualName>`__.
@@ -675,7 +679,6 @@ Python 3.11
 Not supported:
 
 * ``PyType_GetModuleByDef()``.
-* ``PyType_GetName()``.
 * ``Py_Version`` constant.
 * ``PyErr_GetHandledException()``, ``PyErr_SetHandledException()``.
 * ``PyFrame_GetGenerator()``.

@@ -2901,9 +2901,15 @@ PyImport_ImportModuleAttrString(const char *mod_name, const char *attr_name)
 #endif
 
 
-// Python 3.11 added PyType_GetQualName()
+// Python 3.11 added PyType_GetName() and PyType_GetQualName()
 #if (PY_VERSION_HEX < 0x030B0000 \
         || (defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x030B0000))
+static inline PyObject*
+PyType_GetName(PyTypeObject *type)
+{
+    return PyObject_GetAttrString(_PyObject_CAST(type), "__name__");
+}
+
 static inline PyObject*
 PyType_GetQualName(PyTypeObject *type)
 {
