@@ -637,14 +637,15 @@ static inline PyObject* PyImport_AddModuleRef(const char *name)
 // gh-105927 added PyWeakref_GetRef() to Python 3.13.0a1
 #if (PY_VERSION_HEX < 0x030D0000 \
         || (defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x030D0000))
-static inline int PyWeakref_GetRef(PyObject *ref, PyObject **pobj)
-{
+
 #if defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x030D0000 && PY_VERSION_HEX >= 0x030F0000
-    // Function removed from Python 3.15 C API, but it remains available
-    // in the stable ABI
-    PyAPI_FUNC(PyObject *) PyWeakref_GetObject(PyObject *ref);
+// Function removed from Python 3.15 C API, but it remains available
+// in the stable ABI
+PyAPI_FUNC(PyObject *) PyWeakref_GetObject(PyObject *ref);
 #endif
 
+static inline int PyWeakref_GetRef(PyObject *ref, PyObject **pobj)
+{
     PyObject *obj;
     if (ref != NULL && !PyWeakref_Check(ref)) {
         *pobj = NULL;
