@@ -2876,6 +2876,7 @@ PyImport_ImportModuleAttr(PyObject *mod_name, PyObject *attr_name)
     if (mod == NULL) {
         return NULL;
     }
+
     PyObject *result = PyObject_GetAttr(mod, attr_name);
     Py_DECREF(mod);
     return result;
@@ -2893,6 +2894,7 @@ PyImport_ImportModuleAttrString(const char *mod_name, const char *attr_name)
         Py_DECREF(mod_name_obj);
         return NULL;
     }
+
     PyObject *result = PyImport_ImportModuleAttr(mod_name_obj, attr_name_obj);
     Py_DECREF(attr_name_obj);
     Py_DECREF(mod_name_obj);

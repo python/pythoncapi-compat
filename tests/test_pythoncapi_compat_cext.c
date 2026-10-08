@@ -2572,6 +2572,7 @@ test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyType_Check(attr));
     PyTypeObject *type = (PyTypeObject*)attr;
 
+    // Test PyType_GetModuleName()
     PyObject *modname = PyType_GetModuleName(type);
     assert(modname != NULL);
 #if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
@@ -2581,16 +2582,19 @@ test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif
     Py_DECREF(modname);
 
+    // Test PyType_GetName()
     PyObject *name = PyType_GetName(type);
     assert(name != NULL);
     assert(PyUnicode_EqualToUTF8(name, "time") == 1);
     Py_DECREF(name);
 
+    // Test PyType_GetQualName()
     PyObject *qualname = PyType_GetQualName(type);
     assert(qualname != NULL);
     assert(PyUnicode_EqualToUTF8(qualname, "time") == 1);
     Py_DECREF(qualname);
 
+    // Test PyType_GetFullyQualifiedName()
     PyObject *fqn = PyType_GetFullyQualifiedName(type);
     assert(fqn != NULL);
 #if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
