@@ -2691,7 +2691,8 @@ static struct PyMethodDef methods[] = {
     {"test_long_stdint", test_long_stdint, METH_NOARGS, _Py_NULL},
     {"test_structmember", test_structmember, METH_NOARGS, _Py_NULL},
     {"test_file", test_file, METH_NOARGS, _Py_NULL},
-#if 0x03090000 <= PY_VERSION_HEX && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
+#if (0x03080000 <= PY_VERSION_HEX \
+        && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
     {"test_config", test_config, METH_NOARGS, _Py_NULL},
 #endif
     {"test_sys", test_sys, METH_NOARGS, _Py_NULL},
