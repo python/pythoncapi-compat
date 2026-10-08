@@ -14,6 +14,7 @@ DEBUG = False
 
 MS_WINDOWS = (sys.platform == 'win32')
 FREE_THREADING = bool(sysconfig.get_config_var('Py_GIL_DISABLED'))
+
 if sys.implementation.name == 'cpython':
     if FREE_THREADING:
         TEST_LIMITED_C_API = (sys.version_info >= (3, 15))
@@ -21,9 +22,17 @@ if sys.implementation.name == 'cpython':
         TEST_LIMITED_C_API = True
 else:
     TEST_LIMITED_C_API = False
+if TEST_LIMITED_C_API:
+    # Free Threading only support limited C API 3.15 and newer
+    TEST_OLD_LIMITED_C_API = (not FREE_THREADING)
+else:
+    TEST_OLD_LIMITED_C_API = False
+
+OLD_LIMITED_CAPI = f'-DPy_LIMITED_API=0x3020000'
 
 SRC_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 LIMITED_SUFFIX = "_limited"
+OLD_LIMITED_SUFFIX = "_limited32"
 # Windows uses MSVC compiler
 MSVC = (os.name == "nt")
 
@@ -83,6 +92,8 @@ else:
 C_TESTS = [(c_extension_name(std), std, False) for std in C_TESTS]
 if TEST_LIMITED_C_API:
     C_TESTS.append((C_EXTENSION_PREFIX + LIMITED_SUFFIX, None, True))
+if TEST_OLD_LIMITED_C_API:
+    C_TESTS.append((C_EXTENSION_PREFIX + OLD_LIMITED_SUFFIX, None, OLD_LIMITED_CAPI ))
 
 
 # C++ extensions
@@ -117,6 +128,8 @@ CXX_TESTS = [(cxx_extension_name(options), options, False)
                 for options in CXX_TESTS]
 if TEST_LIMITED_C_API:
     CXX_TESTS.append((CXX_EXTENSION_PREFIX + LIMITED_SUFFIX, CXX_DEFAULT_STD, True))
+if TEST_OLD_LIMITED_C_API:
+    CXX_TESTS.append((CXX_EXTENSION_PREFIX + OLD_LIMITED_SUFFIX, CXX_DEFAULT_STD, OLD_LIMITED_CAPI ))
 
 DEBUG_FLAGS = ('-O0', '-ggdb')
 
@@ -146,7 +159,9 @@ def main():
         os.environ['CC'] = cmd
 
     def add_common_flags(flags, limited):
-        if limited:
+        if isinstance(limited, str):
+            flags.append(limited)
+        elif limited:
             flags.append(limited_flag)
         if DEBUG:
             flags.extend(DEBUG_FLAGS)

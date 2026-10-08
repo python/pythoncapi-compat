@@ -167,7 +167,7 @@ def run_tests(module_name, std):
     if VERBOSE:
         empty_line = False
         for attr in ('__cplusplus', 'PY_VERSION', 'PY_VERSION_HEX',
-                     'PYPY_VERSION', 'PYPY_VERSION_NUM'):
+                     'PYPY_VERSION', 'PYPY_VERSION_NUM', 'Py_LIMITED_API'):
             try:
                 value = getattr(testmod, attr)
             except AttributeError:

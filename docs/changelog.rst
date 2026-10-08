@@ -1,7 +1,8 @@
 Changelog
 =========
 
-* 2026-10-06: Add functions:
+* 2026-10-08: Add support for the limited C API 3.2.
+* 2026-10-08: Add functions:
 
   * ``PyImport_ImportModuleAttr()``
   * ``PyImport_ImportModuleAttrString()``
