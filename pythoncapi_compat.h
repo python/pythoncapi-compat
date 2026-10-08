@@ -316,7 +316,8 @@ PyFrame_GetVarString(PyFrameObject *frame, const char *name)
 #endif
 
 
-// bpo-39947 added PyThreadState_GetInterpreter() to Python 3.9.0a5
+// Added to Python 3.9 and limited C API 3.9.
+// Added to PyPy 3.11.
 #if ((PY_VERSION_HEX < 0x030900A5 \
         || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030B0000)) \
         && !defined(Py_LIMITED_API))
@@ -351,9 +352,9 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 #endif
 
 
-// bpo-39947 added PyInterpreterState_Get() to Python 3.9.0a5
-// PyPy added PyInterpreterState_Get() to PyPy3.12 v8.0.0
-// On Windows, PyInterpreterState_Get() was added to limited C API 3.10.
+// Added to Python 3.9 and limited C API 3.9. On Windows, it's not available
+// before stable ABI 3.10.
+// Added to PyPy3.12 v8.0.0.
 #if ((PY_VERSION_HEX < 0x030900A5 \
             || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030C0000)) \
         && !defined(Py_LIMITED_API))
