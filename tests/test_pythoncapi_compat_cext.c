@@ -757,6 +757,28 @@ test_import(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(mod2);
     Py_DECREF(mod);
 
+    // Test PyImport_ImportModuleAttr()
+    PyObject *mod_name = PyUnicode_FromString("sys");
+    assert(mod_name != NULL);
+    PyObject *attr_name = PyUnicode_FromString("platform");
+    assert(attr_name != NULL);
+    PyObject *attr = PyImport_ImportModuleAttr(mod_name, attr_name);
+    Py_DECREF(mod_name);
+    Py_DECREF(attr_name);
+    if (attr == NULL) {
+        return NULL;
+    }
+    assert(PyUnicode_Check(attr));
+    Py_DECREF(attr);
+
+    // Test PyImport_ImportModuleAttrString()
+    attr = PyImport_ImportModuleAttrString("sys", "platform");
+    if (attr == NULL) {
+        return NULL;
+    }
+    assert(PyUnicode_Check(attr));
+    Py_DECREF(attr);
+
     Py_RETURN_NONE;
 }
 
@@ -2540,6 +2562,44 @@ test_set_immortal(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif
 
 
+static PyObject *
+test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    PyObject *attr = PyImport_ImportModuleAttrString("datetime", "time");
+    if (attr == NULL) {
+        return NULL;
+    }
+    assert(PyType_Check(attr));
+    PyTypeObject *type = (PyTypeObject*)attr;
+
+    PyObject *modname = PyType_GetModuleName(type);
+    assert(modname != NULL);
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
+    assert(PyUnicode_EqualToUTF8(modname, "datetime") == 1);
+#else
+    assert(PyUnicode_EqualToUTF8(modname, "_pydatetime") == 1);
+#endif
+    Py_DECREF(modname);
+
+    PyObject *qualname = PyType_GetQualName(type);
+    assert(qualname != NULL);
+    assert(PyUnicode_EqualToUTF8(qualname, "time") == 1);
+    Py_DECREF(qualname);
+
+    PyObject *fqn = PyType_GetFullyQualifiedName(type);
+    assert(fqn != NULL);
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
+    assert(PyUnicode_EqualToUTF8(fqn, "datetime.time") == 1);
+#else
+    assert(PyUnicode_EqualToUTF8(fqn, "_pydatetime.time") == 1);
+#endif
+    Py_DECREF(fqn);
+
+    Py_DECREF(type);
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2614,6 +2674,7 @@ static struct PyMethodDef methods[] = {
 #if 0x030D0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     {"test_set_immortal", test_set_immortal, METH_NOARGS, _Py_NULL},
 #endif
+    {"test_type", test_type, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 

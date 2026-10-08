@@ -306,6 +306,14 @@ Python 3.14
 
    Not available on PyPy. ``Py_REFCNT()`` semantics is different on PyPy.
 
+.. c:function:: PyObject* PyImport_ImportModuleAttr(PyObject *mod_name, PyObject *attr_name)
+
+   See `PyImport_ImportModuleAttr() documentation <https://docs.python.org/dev/c-api/import.html#c.PyImport_ImportModuleAttr>`__.
+
+.. c:function:: PyObject* PyImport_ImportModuleAttrString(const char *mod_name, const char *attr_name)
+
+   See `PyImport_ImportModuleAttrString() documentation <https://docs.python.org/dev/c-api/import.html#c.PyImport_ImportModuleAttrString>`__.
+
 Not supported:
 
 * ``PyConfig_Names()``
@@ -500,6 +508,14 @@ Python 3.13
 
    See `PyDict_SetDefaultRef() documentation <https://docs.python.org/dev/c-api/dict.html#c.PyDict_SetDefaultRef>`__.
 
+.. c:function:: PyObject* PyType_GetModuleName(PyTypeObject *type)
+
+   See `PyType_GetModuleName() documentation <https://docs.python.org/dev/c-api/type.html#c.PyType_GetModuleName>`__.
+
+.. c:function:: PyObject* PyType_GetFullyQualifiedName(PyTypeObject *type)
+
+   See `PyType_GetFullyQualifiedName() documentation <https://docs.python.org/dev/c-api/type.html#c.PyType_GetFullyQualifiedName>`__.
+
 
 Not supported:
 
@@ -510,8 +526,6 @@ Not supported:
 * ``PyObject_GenericHash()``.
 * ``PySys_Audit()``.
 * ``PySys_AuditTuple()``.
-* ``PyType_GetFullyQualifiedName()``
-* ``PyType_GetModuleName()``
 
 Python 3.12
 -----------
@@ -653,11 +667,15 @@ Python 3.11
 
    Not available on PyPy nor on limited C API 3.10 and older.
 
+.. c:function:: PyObject* PyType_GetQualName(PyTypeObject *type)
+
+   See `PyType_GetQualName() documentation <https://docs.python.org/dev/c-api/type.html#c.PyType_GetQualName>`__.
+
+
 Not supported:
 
 * ``PyType_GetModuleByDef()``.
 * ``PyType_GetName()``.
-* ``PyType_GetQualName()``.
 * ``Py_Version`` constant.
 * ``PyErr_GetHandledException()``, ``PyErr_SetHandledException()``.
 * ``PyFrame_GetGenerator()``.

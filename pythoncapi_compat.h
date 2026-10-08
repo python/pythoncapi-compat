@@ -1010,6 +1010,13 @@ PyUnicode_EqualToUTF8AndSize(PyObject *unicode, const char *str, Py_ssize_t str_
     PyErr_Fetch(&exc_type, &exc_value, &exc_tb);
 
 #ifndef Py_LIMITED_API
+    if (PyUnicode_READY(unicode) < 0) {
+        // Memory allocation failure. The API cannot report error,
+        // so ignore the exception and return 0.
+        res = 0;
+        goto done;
+    }
+
     if (PyUnicode_IS_ASCII(unicode)) {
         utf8 = PyUnicode_DATA(unicode);
         len = PyUnicode_GET_LENGTH(unicode);
@@ -2857,6 +2864,92 @@ PyUnstable_SetImmortal(PyObject *op)
     return 1;
 }
 #endif
+
+
+// Python 3.14 added PyImport_ImportModuleAttr()
+// and PyImport_ImportModuleAttrString()
+#if PY_VERSION_HEX < 0x030E0000 || defined(Py_LIMITED_API)
+static inline PyObject*
+PyImport_ImportModuleAttr(PyObject *mod_name, PyObject *attr_name)
+{
+    PyObject *mod = PyImport_Import(mod_name);
+    if (mod == NULL) {
+        return NULL;
+    }
+    PyObject *result = PyObject_GetAttr(mod, attr_name);
+    Py_DECREF(mod);
+    return result;
+}
+
+static inline PyObject *
+PyImport_ImportModuleAttrString(const char *mod_name, const char *attr_name)
+{
+    PyObject *mod_name_obj = PyUnicode_FromString(mod_name);
+    if (mod_name_obj == NULL) {
+        return NULL;
+    }
+    PyObject *attr_name_obj = PyUnicode_FromString(attr_name);
+    if (attr_name_obj == NULL) {
+        Py_DECREF(mod_name_obj);
+        return NULL;
+    }
+    PyObject *result = PyImport_ImportModuleAttr(mod_name_obj, attr_name_obj);
+    Py_DECREF(attr_name_obj);
+    Py_DECREF(mod_name_obj);
+    return result;
+}
+#endif
+
+
+// Python 3.11 added PyType_GetQualName()
+#if (PY_VERSION_HEX < 0x030B0000 \
+        || (defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x030B0000))
+static inline PyObject*
+PyType_GetQualName(PyTypeObject *type)
+{
+    return PyObject_GetAttrString(_PyObject_CAST(type), "__qualname__");
+}
+#endif
+
+
+// Python 3.13 added PyType_GetModuleName() and PyType_GetFullyQualifiedName()
+#if PY_VERSION_HEX < 0x030D0000
+static inline PyObject*
+PyType_GetModuleName(PyTypeObject *type)
+{
+    return PyObject_GetAttrString(_PyObject_CAST(type), "__module__");
+}
+
+static inline PyObject *
+PyType_GetFullyQualifiedName(PyTypeObject *type)
+{
+    PyObject *qualname = PyType_GetQualName(type);
+    if (qualname == NULL) {
+        return NULL;
+    }
+
+    PyObject *module = PyType_GetModuleName(type);
+    if (module == NULL) {
+        Py_DECREF(qualname);
+        return NULL;
+    }
+
+    PyObject *result;
+    if (PyUnicode_Check(module)
+        && PyUnicode_EqualToUTF8(module, "builtins") == 0
+        && PyUnicode_EqualToUTF8(module, "__main__") == 0)
+    {
+        result = PyUnicode_FromFormat("%U.%U", module, qualname);
+    }
+    else {
+        result = Py_NewRef(qualname);
+    }
+    Py_DECREF(module);
+    Py_DECREF(qualname);
+    return result;
+}
+#endif
+
 
 #ifdef __cplusplus
 }
