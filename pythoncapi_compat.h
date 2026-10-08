@@ -357,6 +357,8 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 #if ((PY_VERSION_HEX < 0x030900A5 \
         || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030C0000)) \
         && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000))
+
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000 && defined(MS_WINDOWS))
 static inline PyInterpreterState* PyInterpreterState_Get(void)
 {
     PyThreadState *tstate;
@@ -372,10 +374,33 @@ static inline PyInterpreterState* PyInterpreterState_Get(void)
     }
     return interp;
 }
+#else
+// PyInterpreterState_Get() is in the limited C API 3.9, but not in the 3.9
+// stable ABI on Windows. It was added to stable ABI on Windows in Python 3.10.
+// Use a macro to override C API function.
+static inline PyInterpreterState*
+PythonCAPI_Compat_PyInterpreterState_Get(void)
+{
+    PyThreadState *tstate;
+    PyInterpreterState *interp;
+
+    tstate = PyThreadState_GET();
+    if (tstate == _Py_NULL) {
+        Py_FatalError("GIL released (tstate is NULL)");
+    }
+    interp = tstate->interp;
+    if (interp == _Py_NULL) {
+        Py_FatalError("no current interpreter");
+    }
+    return interp;
+}
+#define PyInterpreterState_Get() PythonCAPI_Compat_PyInterpreterState_Get()
+#endif
+
 #endif
 
 
-// bpo-39947 added PyInterpreterState_Get() to Python 3.9.0a6
+// bpo-39947 added PyThreadState_GetID() to Python 3.9.0a6
 #if (0x030700A1 <= PY_VERSION_HEX && PY_VERSION_HEX < 0x030900A6 \
         && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
 static inline uint64_t PyThreadState_GetID(PyThreadState *tstate)
