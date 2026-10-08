@@ -191,7 +191,9 @@ test_frame_getvar(PyFrameObject *frame)
 #endif
 
 
-#if !defined(PYPY_VERSION) && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900B1)
+// PyThreadState_GetFrame() needs limited C API 3.9 or newer
+#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000) \
+        && !defined(PYPY_VERSION))
 static PyObject *
 test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -287,7 +289,9 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 #endif  // !PYPY_VERSION
 
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x03090000)
+// PyThreadState_GetInterpreter() and PyThreadState_GetFrame()
+// need limited C API 3.9
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000
 static PyObject *
 test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -332,7 +336,10 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 static PyObject *
 test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
+    // On Windows,PyInterpreterState_Get() is not available in stable ABI 3.9,
+    // only in stable ABI 3.10. Don't test it in limited C API 3.9 on Unix to
+    // make the test simpler.
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x030A0000
     // test PyInterpreterState_Get()
     PyInterpreterState *interp = PyInterpreterState_Get();
     assert(interp != _Py_NULL);
@@ -1827,7 +1834,16 @@ check_get_constant(PyObject* (*get_constant)(unsigned int), int borrowed)
     // Py_CONSTANT_EMPTY_STR
     obj = get_constant(Py_CONSTANT_EMPTY_STR);
     assert(Py_TYPE(obj) == &PyUnicode_Type);
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03030000
     assert(PyUnicode_GetLength(obj) == 0);
+#else
+    {
+        PyObject *empty = PyUnicode_FromStringAndSize("", 0);
+        assert(empty != NULL);
+        assert(PyUnicode_Compare(obj, empty) == 0);
+        Py_DECREF(empty);
+    }
+#endif
     CLEAR(obj);
 
     // Py_CONSTANT_EMPTY_BYTES
@@ -2089,12 +2105,16 @@ test_iter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(item == NULL);
     assert(!PyErr_Occurred());
 
+    // Limited C API 3.2 and 3.3 implementation cannot check
+    // if the first argument is an iterator
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX >= 0x03040000)
     // non-iterable object
     item = UNINITIALIZED_OBJ;
     assert(PyIter_NextItem(Py_None, &item) == -1);
     assert(item == NULL);
     assert(PyErr_ExceptionMatches(PyExc_TypeError));
     PyErr_Clear();
+#endif
 
     Py_DECREF(iter);
     Py_RETURN_NONE;
@@ -2612,10 +2632,11 @@ test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
-#if !defined(PYPY_VERSION) && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030900B1)
+#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000) \
+        && !defined(PYPY_VERSION))
     {"test_frame", test_frame, METH_NOARGS, _Py_NULL},
 #endif
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x03090000)
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000
     {"test_thread_state", test_thread_state, METH_NOARGS, _Py_NULL},
 #endif
     {"test_interpreter", test_interpreter, METH_NOARGS, _Py_NULL},
@@ -2712,6 +2733,11 @@ module_exec(PyObject *module)
         return -1;
     }
 #endif
+#ifdef Py_LIMITED_API
+    if (PyModule_AddIntMacro(module, Py_LIMITED_API)) {
+        return -1;
+    }
+#endif
 #if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     TryIncrefType.tp_name = "TryIncrefType";
     TryIncrefType.tp_basicsize = sizeof(PyObject);
@@ -2726,7 +2752,8 @@ module_exec(PyObject *module)
 
 
 // On Python 3.15 and newer, use PySlot API
-#if PY_VERSION_HEX >= 0x030F0000
+#if (PY_VERSION_HEX >= 0x030F0000 \
+        && (!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x030F0000))
 
 PyABIInfo_VAR(abi_info);
 
@@ -2762,7 +2789,7 @@ INIT_FUNC(void)
 }
 #endif
 
-#else
+#elif !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03050000
 
 static PyModuleDef_Slot module_slots[] = {
     {Py_mod_exec, _Py_CAST(void*, module_exec)},
@@ -2792,4 +2819,38 @@ INIT_FUNC(void)
 {
     return PyModuleDef_Init(&module_def);
 }
-#endif  // PY_VERSION_HEX < 0x030F0000
+
+#else
+
+// Implementation for limited C API 3.4 and older.
+// PyModuleDef_Slot was only added to the limited C API 3.5.
+
+static struct PyModuleDef module_def = {
+    PyModuleDef_HEAD_INIT,
+    MODULE_NAME_STR,     // m_name
+    _Py_NULL,            // m_doc
+    0,                   // m_size
+    methods,             // m_methods
+    _Py_NULL,            // m_slots
+    _Py_NULL,            // m_traverse
+    _Py_NULL,            // m_clear
+    _Py_NULL,            // m_free
+};
+
+
+#define INIT_FUNC CONCAT(PyInit_, MODULE_NAME)
+
+PyMODINIT_FUNC
+INIT_FUNC(void)
+{
+    PyObject *module = PyModule_Create(&module_def);
+    if (module == NULL) {
+        return NULL;
+    }
+    if (module_exec(module) < 0) {
+        return NULL;
+    }
+    return module;
+}
+
+#endif  // defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x03050000

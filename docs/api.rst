@@ -809,7 +809,9 @@ PyThreadState
 
    See `PyThreadState_GetID() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_GetID>`__.
 
-   Availability: Python 3.7. Not available on PyPy.
+   Availability: Python 3.7.
+
+   Not available on PyPy nor on limited C API 3.8 and older.
 
 PyInterpreterState
 ^^^^^^^^^^^^^^^^^^
@@ -818,7 +820,9 @@ PyInterpreterState
 
    See `PyInterpreterState_Get() documentation <https://docs.python.org/dev/c-api/init.html#c.PyInterpreterState_Get>`__.
 
-   Not available on limited C API 3.8 and older.
+   Not available on limited C API 3.8 and older on Unix.
+
+   Not available in stable ABI 3.9 and older on Windows.
 
 
 GC protocol
@@ -933,7 +937,9 @@ part of the Python C API.
 
 .. c:function:: PyFrameObject* _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
 
-   :c:func:`PyThreadState_GetFrame` variant. Not available on PyPy.
+   :c:func:`PyThreadState_GetFrame` variant.
+
+   Not available on PyPy nor with the limited C API 3.8 and older.
 
    Not available on limited C API 3.8 and older.
 
