@@ -12,6 +12,7 @@ import argparse
 import os.path
 import shutil
 import sys
+import time
 from shutil import which
 
 
@@ -85,6 +86,7 @@ def parse_args():
 
 
 def main():
+    start_time = time.perf_counter()
     args = parse_args()
 
     path = os.path.join(TEST_DIR, 'build')
@@ -112,6 +114,10 @@ def main():
         print("Tested: %s Python executables" % len(tested))
     else:
         run_tests_exe(sys.executable, args.verbose, tested)
+        print()
+
+    dt = time.perf_counter() - start_time
+    print(f"Total time: {dt:.1f} seconds")
 
 
 if __name__ == "__main__":
