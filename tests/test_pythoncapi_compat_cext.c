@@ -193,7 +193,7 @@ test_frame_getvar(PyFrameObject *frame)
 
 
 // PyThreadState_GetFrame() needs limited C API 3.9 or newer
-// PyPy 3.9 added PyCode_GetCode().
+// PyPy 3.11 added PyCode_GetCode().
 #if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000) \
         && (!defined(PYPY_VERSION) || PY_VERSION_HEX >= 0x030B0000))
 static PyObject *
