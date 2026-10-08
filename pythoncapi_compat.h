@@ -358,43 +358,33 @@ _PyThreadState_GetFrameBorrow(PyThreadState *tstate)
         || (defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030C0000)) \
         && !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000))
 
+static inline PyInterpreterState*
+PythonCAPICompat_PyInterpreterState_Get(void)
+{
+    PyThreadState *tstate;
+    PyInterpreterState *interp;
+
+    tstate = PyThreadState_GET();
+    if (tstate == _Py_NULL) {
+        Py_FatalError("GIL released (tstate is NULL)");
+    }
+    interp = tstate->interp;
+    if (interp == _Py_NULL) {
+        Py_FatalError("no current interpreter");
+    }
+    return interp;
+}
+
 #if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000 && defined(MS_WINDOWS))
 static inline PyInterpreterState* PyInterpreterState_Get(void)
 {
-    PyThreadState *tstate;
-    PyInterpreterState *interp;
-
-    tstate = PyThreadState_GET();
-    if (tstate == _Py_NULL) {
-        Py_FatalError("GIL released (tstate is NULL)");
-    }
-    interp = tstate->interp;
-    if (interp == _Py_NULL) {
-        Py_FatalError("no current interpreter");
-    }
-    return interp;
+    return PythonCAPICompat_PyInterpreterState_Get();
 }
 #else
-// PyInterpreterState_Get() is in the limited C API 3.9, but not in the 3.9
-// stable ABI on Windows. It was added to stable ABI on Windows in Python 3.10.
-// Use a macro to override C API function.
-static inline PyInterpreterState*
-PythonCAPI_Compat_PyInterpreterState_Get(void)
-{
-    PyThreadState *tstate;
-    PyInterpreterState *interp;
-
-    tstate = PyThreadState_GET();
-    if (tstate == _Py_NULL) {
-        Py_FatalError("GIL released (tstate is NULL)");
-    }
-    interp = tstate->interp;
-    if (interp == _Py_NULL) {
-        Py_FatalError("no current interpreter");
-    }
-    return interp;
-}
-#define PyInterpreterState_Get() PythonCAPI_Compat_PyInterpreterState_Get()
+    // PyInterpreterState_Get() is in the limited C API 3.9, but not in
+    // the 3.9 stable ABI on Windows. It was added to stable ABI on Windows
+    // in Python 3.10.  Use a macro to override C API function.
+#   define PyInterpreterState_Get() PythonCAPICompat_PyInterpreterState_Get()
 #endif
 
 #endif
@@ -1099,7 +1089,6 @@ PyUnicode_EqualToUTF8AndSize(PyObject *unicode, const char *str, Py_ssize_t str_
     else
 #endif
     {
-        // Python 3.3.0a1 added PyUnicode_AsUTF8AndSize()
 #if defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x030a0000
         bytes = PyUnicode_AsUTF8String(unicode);
         if (bytes == NULL) {
@@ -1111,6 +1100,7 @@ PyUnicode_EqualToUTF8AndSize(PyObject *unicode, const char *str, Py_ssize_t str_
         utf8 = PyBytes_AsString(bytes);
         len = PyBytes_Size(bytes);
 #else
+        // Python 3.10 added PyUnicode_AsUTF8AndSize() to the limited C API
         utf8 = PyUnicode_AsUTF8AndSize(unicode, &len);
         if (utf8 == NULL) {
             // Memory allocation failure. The API cannot report error,
