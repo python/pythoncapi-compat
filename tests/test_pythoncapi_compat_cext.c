@@ -396,7 +396,11 @@ test_calls(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x03090000) && !defined(PYPY_VERSION)
+// PyObject_GC_IsTracked() and PyObject_GC_IsFinalized() are part of the
+// limited C API 3.9. But on Windows, the functions are only exported in stable
+// ABI 3.10. Don't test the function in limited C API 3.9 on Unix to make the
+// test simpler.
+#if (!defined(Py_LIMITED_API) || PY_VERSION_HEX >= 0x030A0000) && !defined(PYPY_VERSION)
 static PyObject *
 test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -2651,7 +2655,7 @@ static struct PyMethodDef methods[] = {
 #endif
     {"test_interpreter", test_interpreter, METH_NOARGS, _Py_NULL},
     {"test_calls", test_calls, METH_NOARGS, _Py_NULL},
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x03090000) && !defined(PYPY_VERSION)
+#if (!defined(Py_LIMITED_API) || PY_VERSION_HEX >= 0x030A0000) && !defined(PYPY_VERSION)
     {"test_gc", test_gc, METH_NOARGS, _Py_NULL},
 #endif
     {"test_module", test_module, METH_NOARGS, _Py_NULL},

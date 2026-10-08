@@ -533,7 +533,7 @@ static inline int PyModule_AddType(PyObject *module, PyTypeObject *type)
 
 // bpo-40241 added PyObject_GC_IsTracked() to Python 3.9.0a6.
 // bpo-4688 added _PyObject_GC_IS_TRACKED() to Python 2.7.0a2.
-// On Windows, PyObject_GC_IsTracked() was only added to limited C API 3.10.
+// On Windows, PyObject_GC_IsTracked() was only added to stable ABI 3.10.
 #if PY_VERSION_HEX < 0x030900A6 && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
 static inline int PyObject_GC_IsTracked(PyObject* obj)
 {
@@ -543,7 +543,7 @@ static inline int PyObject_GC_IsTracked(PyObject* obj)
 
 // bpo-40241 added PyObject_GC_IsFinalized() to Python 3.9.0a6.
 // bpo-18112 added _PyGCHead_FINALIZED() to Python 3.4.0 final.
-// On Windows, PyObject_GC_IsFinalized() was only added to limited C API 3.10.
+// On Windows, PyObject_GC_IsFinalized() was only added to stable ABI 3.10.
 #if PY_VERSION_HEX < 0x030900A6 && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
 static inline int PyObject_GC_IsFinalized(PyObject *obj)
 {
