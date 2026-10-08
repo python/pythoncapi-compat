@@ -2213,9 +2213,11 @@ static inline int Py_fclose(FILE *file)
 #endif
 
 
-#if (0x03080000 <= PY_VERSION_HEX \
+#if (0x03090000 <= PY_VERSION_HEX \
      && PY_VERSION_HEX < 0x030E0000 \
      && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
+
+// Use the internal C API added to Python 3.9
 PyAPI_FUNC(const PyConfig*) _Py_GetConfig(void);
 
 static inline PyObject*
