@@ -278,13 +278,15 @@ Python 3.14
 
    See `PyConfig_Get() documentation <https://docs.python.org/dev/c-api/init_config.html#c.PyConfig_Get>`__.
 
-   Not available on the limited C API.
+   Not available on PyPy nor on the limited C API.
 
 .. c:function:: int PyConfig_GetInt(const char *name, int *value)
 
    See `PyConfig_GetInt() documentation <https://docs.python.org/dev/c-api/init_config.html#c.PyConfig_GetInt>`__.
 
-   Not available on the limited C API.
+   Available on Python 3.9 and newer.
+
+   Not available on PyPy nor on the limited C API.
 
 .. c:function:: int PyUnstable_Object_IsUniquelyReferenced(PyObject *op)
 
@@ -573,31 +575,31 @@ Python 3.11
 
    See `PyCode_GetCellvars() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetCellvars>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: PyObject* PyCode_GetCode(PyCodeObject *code)
 
    See `PyCode_GetCode() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetCode>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: PyObject* PyCode_GetFreevars(PyCodeObject *code)
 
    See `PyCode_GetFreevars() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetFreevars>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: PyObject* PyCode_GetVarnames(PyCodeObject *code)
 
    See `PyCode_GetVarnames() documentation <https://docs.python.org/dev/c-api/code.html#c.PyCode_GetVarnames>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: PyObject* PyFrame_GetBuiltins(PyFrameObject *frame)
 
    See `PyFrame_GetBuiltins() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetBuiltins>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: PyObject* PyFrame_GetGlobals(PyFrameObject *frame)
 
@@ -609,63 +611,65 @@ Python 3.11
 
    See `PyFrame_GetLasti() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetLasti>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: PyObject* PyFrame_GetLocals(PyFrameObject *frame)
 
    See `PyFrame_GetLocals() documentation <https://docs.python.org/dev/c-api/frame.html#c.PyFrame_GetLocals>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: void PyThreadState_EnterTracing(PyThreadState *tstate)
 
    See `PyThreadState_EnterTracing() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_EnterTracing>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: void PyThreadState_LeaveTracing(PyThreadState *tstate)
 
    See `PyThreadState_LeaveTracing() documentation <https://docs.python.org/dev/c-api/init.html#c.PyThreadState_LeaveTracing>`__.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: int PyFloat_Pack2(double x, unsigned char *p, int le)
 
    Pack a C double as the IEEE 754 binary16 half-precision format.
 
-   Availability: Python 3.6 and newer. Not available on PyPy nor on limited C
-   API 3.10 and older.
+   Availability: Python 3.6 and newer.
+
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: int PyFloat_Pack4(double x, unsigned char *p, int le)
 
    Pack a C double as the IEEE 754 binary32 single precision format.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: int PyFloat_Pack8(double x, unsigned char *p, int le)
 
    Pack a C double as the IEEE 754 binary64 double precision format.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: double PyFloat_Unpack2(const unsigned char *p, int le)
 
    Unpack the IEEE 754 binary16 half-precision format as a C double.
 
-   Availability: Python 3.6 and newer. Not available on PyPy nor on limited C
-   API 3.10 and older.
+   Availability: Python 3.6 and newer.
+
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: double PyFloat_Unpack4(const unsigned char *p, int le)
 
    Unpack the IEEE 754 binary32 single precision format as a C double.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: double PyFloat_Unpack8(const unsigned char *p, int le)
 
    Unpack the IEEE 754 binary64 double precision format as a C double.
 
-   Not available on PyPy nor on limited C API 3.10 and older.
+   Not available on PyPy nor on limited C API.
 
 .. c:function:: PyObject* PyType_GetName(PyTypeObject *type)
 

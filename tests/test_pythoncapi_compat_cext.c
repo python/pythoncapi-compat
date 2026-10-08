@@ -21,20 +21,20 @@
 
 // Ignore reference count checks on PyPy
 #ifndef PYPY_VERSION
-#  define CHECK_REFCNT
+#   define CHECK_REFCNT
 #endif
 
 // CPython 3.12 beta 1 implements immortal objects (PEP 683)
-#if 0x030C00B1 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
-   // Don't check reference count of Python 3.12 immortal objects (ex: bool
-   // and str types)
-#  define IMMORTAL_OBJS
+#if _Py_PACK_VERSION(3, 12) <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+    // Don't check reference count of Python 3.12 immortal objects (ex: bool
+    // and str types)
+#   define IMMORTAL_OBJS
 #endif
 
 #ifdef CHECK_REFCNT
-#  define ASSERT_REFCNT(expr) assert(expr)
+#   define ASSERT_REFCNT(expr) assert(expr)
 #else
-#  define ASSERT_REFCNT(expr)
+#   define ASSERT_REFCNT(expr)
 #endif
 
 // Marker to check that pointer value was set
@@ -75,7 +75,7 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     assert(Py_XNewRef(_Py_NULL) == _Py_NULL);
 
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03100000
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 16)
     // Py_SETREF()
     PyObject *setref = Py_NewRef(obj);
     PyObject *none = Py_None;
@@ -104,7 +104,7 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     // Py_SET_REFCNT
     Py_SET_REFCNT(obj, Py_REFCNT(obj));
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 < 0x030a0000
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 < _Py_PACK_VERSION(3, 10)
     // Py_SET_TYPE
     Py_SET_TYPE(obj, Py_TYPE(obj));
 #endif
@@ -192,8 +192,8 @@ test_frame_getvar(PyFrameObject *frame)
 
 
 // PyThreadState_GetFrame() needs limited C API 3.9 or newer
-#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000) \
-        && !defined(PYPY_VERSION))
+#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 9)) \
+     && !defined(PYPY_VERSION))
 static PyObject *
 test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -250,7 +250,7 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyObject *locals = PyFrame_GetLocals(frame);
     assert(locals != _Py_NULL);
     // Python 3.13 creates a local proxy
-#if PY_VERSION_HEX < 0x030D0000
+#if PY_VERSION_HEX < _Py_PACK_VERSION(3, 13)
     assert(PyDict_Check(locals));
 #endif
 
@@ -291,7 +291,7 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
 // PyThreadState_GetInterpreter() and PyThreadState_GetFrame()
 // need limited C API 3.9
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 9)
 static PyObject *
 test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -312,7 +312,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     Py_XDECREF(_PyObject_CAST(frame));
 #endif
 
-#if 0x030700A1 <= PY_VERSION_HEX && !defined(PYPY_VERSION)
+#if _Py_PACK_VERSION(3, 7) <= PY_VERSION_HEX && !defined(PYPY_VERSION)
     uint64_t id = PyThreadState_GetID(tstate);
     assert(id > 0);
 #endif
@@ -323,7 +323,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyThreadState_LeaveTracing(tstate);
 #endif
 
-#if PY_VERSION_HEX >= 0x03050200 && !defined(Py_LIMITED_API)
+#if PY_VERSION_HEX >= _Py_PACK_VERSION(3, 5) && !defined(Py_LIMITED_API)
     // PyThreadState_GetUnchecked()
     assert(PyThreadState_GetUnchecked() == tstate);
 #endif
@@ -339,7 +339,7 @@ test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     // On Windows,PyInterpreterState_Get() is not available in stable ABI 3.9,
     // only in stable ABI 3.10. Don't test it in limited C API 3.9 on Unix to
     // make the test simpler.
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x030A0000
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 10)
     // test PyInterpreterState_Get()
     PyInterpreterState *interp = PyInterpreterState_Get();
     assert(interp != _Py_NULL);
@@ -350,9 +350,9 @@ test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(interp == interp2);
 #endif
 
-#if (0x030300A1 <= PY_VERSION_HEX \
-        && (!defined(PYPY_VERSION_NUM) || PYPY_VERSION_NUM >= 0x7030000) \
-        && (!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x030D0000))
+#if (_Py_PACK_VERSION(3, 3) <= PY_VERSION_HEX \
+     && (!defined(PYPY_VERSION_NUM) || PYPY_VERSION_NUM >= 0x7030000) \
+     && (!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 13)))
     // test Py_IsFinalizing()
     assert(Py_IsFinalizing() == 0);
 #endif
@@ -393,7 +393,8 @@ test_calls(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 }
 
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000) && !defined(PYPY_VERSION)
+#if ((PY_VERSION_HEX >= _Py_PACK_VERSION(3, 10) || !defined(Py_LIMITED_API)) \
+     && !defined(PYPY_VERSION))
 static PyObject *
 test_gc(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -433,7 +434,6 @@ check_module_attr(PyObject *module, const char *name, PyObject *expected)
 }
 
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
 // test PyModule_AddType()
 static int
 test_module_add_type(PyObject *module)
@@ -457,7 +457,6 @@ test_module_add_type(PyObject *module)
     ASSERT_REFCNT(Py_REFCNT(_PyObject_CAST(type)) == refcnt);
     return 0;
 }
-#endif  // !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
 
 
 // test PyModule_AddObjectRef()
@@ -541,11 +540,9 @@ test_module(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     }
     assert(PyModule_Check(module));
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
     if (test_module_add_type(module) < 0) {
         goto error;
     }
-#endif
     if (test_module_addobjectref(module) < 0) {
         goto error;
     }
@@ -562,8 +559,7 @@ error:
 }
 
 
-#if ((PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) \
-        && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
+#if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
 static PyObject *
 test_float_pack(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
@@ -572,7 +568,7 @@ test_float_pack(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     char data[8];
     const double d = 1.5;
 
-#if PY_VERSION_HEX >= 0x030600B1
+#if PY_VERSION_HEX >= _Py_PACK_VERSION(3, 6)
 #  define HAVE_FLOAT_PACK2
 #endif
 
@@ -793,7 +789,7 @@ test_import(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 static void
 gc_collect(void)
 {
-#if defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030B0000
+#if defined(PYPY_VERSION) && PY_VERSION_HEX < _Py_PACK_VERSION(3, 11)
     PyObject *mod = PyImport_ImportModule("gc");
     assert(mod != _Py_NULL);
 
@@ -881,7 +877,6 @@ test_weakref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030C0000)
 static void
 check_int(PyObject *obj, int value)
 {
@@ -1040,7 +1035,7 @@ test_vectorcall(PyObject *module, PyObject *Py_UNUSED(args))
     Py_DECREF(func_varargs);
     Py_RETURN_NONE;
 }
-#endif  // !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030C0000)
+
 
 
 static PyObject *
@@ -1523,8 +1518,9 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
 // --- HeapCTypeWithManagedDict --------------------------------------------
 
-// Py_TPFLAGS_MANAGED_DICT was added to Python 3.11.0a3 but is not implemented on PyPy
-#if (PY_VERSION_HEX >= 0x030B00A3 \
+// Py_TPFLAGS_MANAGED_DICT was added to Python 3.11,
+// but is not implemented on PyPy
+#if (PY_VERSION_HEX >= _Py_PACK_VERSION(3, 11) \
         && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
 #  define TEST_MANAGED_DICT
 
@@ -1601,7 +1597,7 @@ test_managed_dict(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
     Py_RETURN_NONE;
 }
-#endif  // PY_VERSION_HEX >= 0x030B00A3
+#endif  // PY_VERSION_HEX >= _Py_PACK_VERSION(3, 11)
 
 
 static PyObject *
@@ -1718,8 +1714,8 @@ test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif
 
 
-#if ((!defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x030400B1) \
-     || (defined(PYPY_VERSION) && PY_VERSION_HEX >= 0x03070000 \
+#if ((!defined(PYPY_VERSION) && PY_VERSION_HEX >= _Py_PACK_VERSION(3, 4)) \
+     || (defined(PYPY_VERSION) && PY_VERSION_HEX >= _Py_PACK_VERSION(3, 7) \
          && PYPY_VERSION_NUM >= 0x07030800)) && !defined(Py_LIMITED_API)
     // Just check that constants are available
     size_t bits = PyHASH_BITS;
@@ -1834,7 +1830,7 @@ check_get_constant(PyObject* (*get_constant)(unsigned int), int borrowed)
     // Py_CONSTANT_EMPTY_STR
     obj = get_constant(Py_CONSTANT_EMPTY_STR);
     assert(Py_TYPE(obj) == &PyUnicode_Type);
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03030000
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 3)
     assert(PyUnicode_GetLength(obj) == 0);
 #else
     {
@@ -1871,7 +1867,7 @@ test_get_constant(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
-#if (PY_VERSION_HEX < 0x030E0000 && PY_VERSION_HEX >= 0x03060000 \
+#if (PY_VERSION_HEX < _Py_PACK_VERSION(3, 14) && PY_VERSION_HEX >= _Py_PACK_VERSION(3, 6) \
         && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
 #define TEST_UNICODEWRITER 1
 
@@ -2074,7 +2070,7 @@ test_bytes(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < _Py_PACK_VERSION(3, 10))
 static PyObject *
 test_iter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
@@ -2107,7 +2103,7 @@ test_iter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 
     // Limited C API 3.2 and 3.3 implementation cannot check
     // if the first argument is an iterator
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX >= 0x03040000)
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX >= _Py_PACK_VERSION(3, 4))
     // non-iterable object
     item = UNINITIALIZED_OBJ;
     assert(PyIter_NextItem(Py_None, &item) == -1);
@@ -2119,7 +2115,7 @@ test_iter(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(iter);
     Py_RETURN_NONE;
 }
-#endif  // !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
+#endif  // !(defined(Py_LIMITED_API) && PY_VERSION_HEX < _Py_PACK_VERSION(3, 10))
 
 
 static PyObject *
@@ -2212,8 +2208,8 @@ test_file(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
-#if (0x03090000 <= PY_VERSION_HEX \
-        && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
+#if (_Py_PACK_VERSION(3, 9) <= PY_VERSION_HEX \
+     && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
 static PyObject *
 test_config(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
@@ -2250,7 +2246,7 @@ test_config(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     Py_DECREF(obj);
 
     // Get the last member
-#if 0x030A0000 <= PY_VERSION_HEX
+#if _Py_PACK_VERSION(3, 10) <= PY_VERSION_HEX
     obj = PyConfig_Get("warn_default_encoding");
 #else
     obj = PyConfig_Get("user_site_directory");
@@ -2548,7 +2544,8 @@ test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 #endif  // !PYPY_VERSION
 
-#if 0x030D0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
+#if (_Py_PACK_VERSION(3, 13) <= PY_VERSION_HEX \
+     && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
 static PyObject *
 test_set_immortal(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 {
@@ -2595,7 +2592,7 @@ test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     // Test PyType_GetModuleName()
     PyObject *modname = PyType_GetModuleName(type);
     assert(modname != NULL);
-#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < _Py_PACK_VERSION(3, 12)
     assert(PyUnicode_EqualToUTF8(modname, "datetime") == 1);
 #else
     assert(PyUnicode_EqualToUTF8(modname, "_pydatetime") == 1);
@@ -2617,7 +2614,7 @@ test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     // Test PyType_GetFullyQualifiedName()
     PyObject *fqn = PyType_GetFullyQualifiedName(type);
     assert(fqn != NULL);
-#if !defined(PYPY_VERSION) || PY_VERSION_HEX < 0x030C0000
+#if !defined(PYPY_VERSION) || PY_VERSION_HEX < _Py_PACK_VERSION(3, 12)
     assert(PyUnicode_EqualToUTF8(fqn, "datetime.time") == 1);
 #else
     assert(PyUnicode_EqualToUTF8(fqn, "_pydatetime.time") == 1);
@@ -2632,21 +2629,20 @@ test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
-#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000) \
-        && !defined(PYPY_VERSION))
+#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 9)) \
+     && !defined(PYPY_VERSION))
     {"test_frame", test_frame, METH_NOARGS, _Py_NULL},
 #endif
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03090000
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 9)
     {"test_thread_state", test_thread_state, METH_NOARGS, _Py_NULL},
 #endif
     {"test_interpreter", test_interpreter, METH_NOARGS, _Py_NULL},
     {"test_calls", test_calls, METH_NOARGS, _Py_NULL},
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000) && !defined(PYPY_VERSION)
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < _Py_PACK_VERSION(3, 10)) && !defined(PYPY_VERSION)
     {"test_gc", test_gc, METH_NOARGS, _Py_NULL},
 #endif
     {"test_module", test_module, METH_NOARGS, _Py_NULL},
-#if ((PY_VERSION_HEX <= 0x030B00A1 || 0x030B00A7 <= PY_VERSION_HEX) \
-        && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
+#if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     {"test_float_pack", test_float_pack, METH_NOARGS, _Py_NULL},
 #endif
 #if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
@@ -2656,9 +2652,7 @@ static struct PyMethodDef methods[] = {
     {"test_import", test_import, METH_NOARGS, _Py_NULL},
     {"test_weakref", test_weakref, METH_NOARGS, _Py_NULL},
     {"func_varargs", (PyCFunction)(void*)func_varargs, METH_VARARGS | METH_KEYWORDS, _Py_NULL},
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030C0000)
     {"test_vectorcall", test_vectorcall, METH_NOARGS, _Py_NULL},
-#endif
     {"test_getattr", test_getattr, METH_NOARGS, _Py_NULL},
     {"test_getitem", test_getitem, METH_NOARGS, _Py_NULL},
     {"test_dict_api", test_dict_api, METH_NOARGS, _Py_NULL},
@@ -2681,13 +2675,13 @@ static struct PyMethodDef methods[] = {
     {"test_unicodewriter_format", test_unicodewriter_format, METH_NOARGS, _Py_NULL},
 #endif
     {"test_bytes", test_bytes, METH_NOARGS, _Py_NULL},
-#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < 0x030A0000)
+#if !(defined(Py_LIMITED_API) && PY_VERSION_HEX < _Py_PACK_VERSION(3, 10))
     {"test_iter", test_iter, METH_NOARGS, _Py_NULL},
 #endif
     {"test_long_stdint", test_long_stdint, METH_NOARGS, _Py_NULL},
     {"test_structmember", test_structmember, METH_NOARGS, _Py_NULL},
     {"test_file", test_file, METH_NOARGS, _Py_NULL},
-#if 0x03090000 <= PY_VERSION_HEX && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
+#if _Py_PACK_VERSION(3, 9) <= PY_VERSION_HEX && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     {"test_config", test_config, METH_NOARGS, _Py_NULL},
 #endif
     {"test_sys", test_sys, METH_NOARGS, _Py_NULL},
@@ -2701,7 +2695,7 @@ static struct PyMethodDef methods[] = {
 #if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     {"test_try_incref", test_try_incref, METH_NOARGS, _Py_NULL},
 #endif
-#if 0x030D0000 <= PY_VERSION_HEX && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
+#if _Py_PACK_VERSION(3, 13) <= PY_VERSION_HEX && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     {"test_set_immortal", test_set_immortal, METH_NOARGS, _Py_NULL},
 #endif
     {"test_type", test_type, METH_NOARGS, _Py_NULL},
@@ -2752,8 +2746,8 @@ module_exec(PyObject *module)
 
 
 // On Python 3.15 and newer, use PySlot API
-#if (PY_VERSION_HEX >= 0x030F0000 \
-        && (!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x030F0000))
+#if (PY_VERSION_HEX >= _Py_PACK_VERSION(3, 15) \
+        && (!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 15)))
 
 PyABIInfo_VAR(abi_info);
 
@@ -2789,11 +2783,11 @@ INIT_FUNC(void)
 }
 #endif
 
-#elif !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= 0x03050000
+#elif !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 5)
 
 static PyModuleDef_Slot module_slots[] = {
     {Py_mod_exec, _Py_CAST(void*, module_exec)},
-#if PY_VERSION_HEX >= 0x030D0000
+#if PY_VERSION_HEX >= _Py_PACK_VERSION(3, 13)
     {Py_mod_gil, Py_MOD_GIL_NOT_USED},
 #endif
     {0, _Py_NULL}
@@ -2853,4 +2847,4 @@ INIT_FUNC(void)
     return module;
 }
 
-#endif  // defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x03050000
+#endif  // defined(Py_LIMITED_API) && Py_LIMITED_API+0 < _Py_PACK_VERSION(3, 5)
