@@ -24,7 +24,7 @@ extern "C" {
 #include <stdio.h>                // fclose()
 #include <string.h>               // memcpy()
 
-// Python 3.11.0b4 added PyFrame_Back() to Python.h
+// Python 3.11.0b4 added PyFrame_GetBack() to Python.h
 #if PY_VERSION_HEX < 0x030b00B4 && !defined(PYPY_VERSION)
 #  include "frameobject.h"        // PyFrameObject, PyFrame_GetBack()
 #endif

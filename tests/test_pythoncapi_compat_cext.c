@@ -214,6 +214,8 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(frame2 == frame);
     assert(Py_REFCNT(_PyObject_CAST(frame)) == frame_refcnt);
 
+    // Test issue: the current thread has no code on PyPy
+#ifndef PYPY_VERSION
     // test PyFrame_GetCode()
     PyCodeObject *code = PyFrame_GetCode(frame);
     assert(code != _Py_NULL);
@@ -227,6 +229,7 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(code2 == code);
     assert(Py_REFCNT(_PyObject_CAST(code)) == code_refcnt);
     Py_DECREF(code);
+#endif
 
 #if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     // PyFrame_GetBack()
@@ -620,13 +623,15 @@ test_float_pack(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 static PyObject *
 test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
-    PyThreadState *tstate = PyThreadState_Get();
-    PyFrameObject *frame = PyThreadState_GetFrame(tstate);
-    if (frame == _Py_NULL) {
-        PyErr_SetString(PyExc_AssertionError, "PyThreadState_GetFrame failed");
-        return _Py_NULL;
+    PyObject *func = PyImport_ImportModuleAttrString("colorsys", "rgb_to_yiq");
+    if (func == NULL) {
+        return NULL;
     }
-    PyCodeObject *code = PyFrame_GetCode(frame);
+    PyObject *code_obj = PyObject_GetAttrString(func, "__code__");
+    Py_DECREF(func);
+
+    assert(PyCode_Check(code_obj));
+    PyCodeObject *code = (PyCodeObject*)code_obj;
 
     // Test PyCode_GetCode()
     {
@@ -664,7 +669,6 @@ test_code(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     }
 
     Py_DECREF(code);
-    Py_DECREF(frame);
     Py_RETURN_NONE;
 }
 #endif
