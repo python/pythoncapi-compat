@@ -472,8 +472,10 @@ PyModule_AddObjectRef(PyObject *module, const char *name, PyObject *value)
 // bpo-40024 added PyModule_AddType() to Python 3.9.0a5
 // On Windows, PyModule_AddType() was added to limited C API 3.9.
 #if (PY_VERSION_HEX < 0x030900A5 \
-        || (defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x03090000))
-static inline int PyModule_AddType(PyObject *module, PyTypeObject *type)
+        || (defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x03090000) \
+        || (defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x030A0000 && defined(MS_WINDOWS)))
+static inline int
+_PythonCAPICompat_Module_AddType(PyObject *module, PyTypeObject *type)
 {
 #ifndef Py_LIMITED_API
     const char *name, *dot;
@@ -515,6 +517,17 @@ static inline int PyModule_AddType(PyObject *module, PyTypeObject *type)
     return res;
 #endif
 }
+
+#if defined(Py_LIMITED_API) && Py_LIMITED_API+0 < 0x030A0000 && defined(MS_WINDOWS)
+    // On Python 3.9, PyModule_AddType() is part of the limited C API,
+    // but the function is not exported in the stable ABI.
+#   define PyModule_AddType _PythonCAPICompat_Module_AddType
+#else
+static inline int PyModule_AddType(PyObject *module, PyTypeObject *type)
+{
+    return _PythonCAPICompat_Module_AddType(module, type);
+}
+#endif
 #endif
 
 
