@@ -2,12 +2,12 @@
 pythoncapi_compat.h API
 +++++++++++++++++++++++
 
-The ``pythoncapi_compat.h`` header file provides implementations of recent
-functions for old Python versions.
+The ``pythoncapi_compat.h`` header file provides implementations of around 150
+recent functions for old Python versions.
 
 Supported Python versions:
 
-* Python 3.6 - 3.15
+* Python 3.6 - 3.16
 * PyPy 3.6 - 3.12
 
 C++03 and C++11 are supported on Python 3.6 and newer.
