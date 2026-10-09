@@ -465,7 +465,9 @@ Python 3.13
 
    See `Py_HashPointer() documentation <https://docs.python.org/dev/c-api/hash.html#c.Py_HashPointer>`__.
 
-   Not available on the limited C API.
+.. c:function:: Py_hash_t PyObject_GenericHash(PyObject *obj)
+
+   See `PyObject_GenericHash() documentation <https://docs.python.org/dev/c-api/hash.html#c.PyObject_GenericHash>`__.
 
 .. c:type:: PyTime_t
 
@@ -533,7 +535,6 @@ Not supported:
 * ``PyLong_AsNativeBytes()``
 * ``PyLong_FromNativeBytes()``
 * ``PyLong_FromUnsignedNativeBytes()``
-* ``PyObject_GenericHash()``.
 * ``PySys_Audit()``.
 * ``PySys_AuditTuple()``.
 

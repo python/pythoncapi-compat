@@ -1236,14 +1236,39 @@ PyDict_PopString(PyObject *dict, const char *key, PyObject **result)
 
 
 // gh-111545 added Py_HashPointer() to Python 3.13
-#if PY_VERSION_HEX < _Py_PACK_VERSION(3, 13) && !defined(Py_LIMITED_API)
+#if PY_VERSION_HEX < _Py_PACK_VERSION(3, 13) || defined(Py_LIMITED_API)
 static inline Py_hash_t Py_HashPointer(const void *ptr)
 {
-#if PY_VERSION_HEX >= _Py_PACK_VERSION(3, 9) && !defined(PYPY_VERSION)
+#if PY_VERSION_HEX >= _Py_PACK_VERSION(3, 9) && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
     return _Py_HashPointer(ptr);
-#else
+#elif !defined(Py_LIMITED_API)
+    // PyPy _Py_HashPointer() argument type is "void*", not "const void*"
     return _Py_HashPointer(_Py_CAST(void*, ptr));
+#else
+    // Limited C API implementation
+    uintptr_t x = (uintptr_t)ptr;
+    Py_BUILD_ASSERT(sizeof(x) == sizeof(ptr));
+
+    // Bottom 3 or 4 bits are likely to be 0; rotate x by 4 to the right
+    // to avoid excessive hash collisions for dicts and sets.
+    x = (x >> 4) | (x << (8 * sizeof(uintptr_t) - 4));
+
+    if (x == (uintptr_t)-1) {
+        x = (uintptr_t)-2;
+    }
+
+    Py_BUILD_ASSERT(sizeof(x) == sizeof(Py_hash_t));
+    return (Py_hash_t)x;
 #endif
+}
+#endif
+
+
+#if PY_VERSION_HEX < _Py_PACK_VERSION(3, 13) || defined(Py_LIMITED_API)
+Py_hash_t
+PyObject_GenericHash(PyObject *obj)
+{
+    return Py_HashPointer(obj);
 }
 #endif
 

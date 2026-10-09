@@ -1,7 +1,8 @@
 Changelog
 =========
 
-* 2026-10-10: Add ``PyUnicodeWriter_WriteUCS4()`` function.
+* 2026-10-10: Add ``PyObject_GenericHash()`` and
+  ``PyUnicodeWriter_WriteUCS4()`` functions.
 * 2026-10-08: Add support for the limited C API 3.2.
 * 2026-10-08: Add functions:
 
