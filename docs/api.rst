@@ -193,6 +193,12 @@ Python 3.14
 
    Not available on the limited C API.
 
+.. c:function:: int PyUnicodeWriter_WriteUCS4(PyUnicodeWriter *writer, const Py_UCS4 *ucs4, Py_ssize_t size)
+
+   See `PyUnicodeWriter_WriteUCS4() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteUCS4>`__.
+
+   Not available on the limited C API.
+
 .. c:function:: int PyUnicodeWriter_WriteUTF8(PyUnicodeWriter *writer, const char *str, Py_ssize_t size)
 
    See `PyUnicodeWriter_WriteUTF8() documentation <https://docs.python.org/dev/c-api/unicode.html#c.PyUnicodeWriter_WriteUTF8>`__.
@@ -338,7 +344,6 @@ Not supported:
 * ``PyInitConfig_SetStrList()``
 * ``PyType_GetBaseByToken()``
 * ``PyUnicodeWriter_DecodeUTF8Stateful()``
-* ``PyUnicodeWriter_WriteUCS4()``
 * ``Py_InitializeFromInitConfig()``
 
 

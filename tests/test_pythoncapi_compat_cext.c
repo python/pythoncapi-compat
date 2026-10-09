@@ -1899,6 +1899,7 @@ test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
         return NULL;
     }
     int ret;
+    const Py_UCS4 ucs4[] = {'u', 'c', 's', '4'};
 
     // test PyUnicodeWriter_WriteStr()
     PyObject *str = PyUnicode_FromString("var");
@@ -1940,6 +1941,14 @@ test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
         goto error;
     }
 
+    // test PyUnicodeWriter_WriteUCS4()
+    if (PyUnicodeWriter_WriteUCS4(writer, ucs4, Py_ARRAY_LENGTH(ucs4)) < 0) {
+        goto error;
+    }
+    if (PyUnicodeWriter_WriteChar(writer, ' ') < 0) {
+        goto error;
+    }
+
     // test PyUnicodeWriter_WriteRepr()
     str = PyUnicode_FromString("repr");
     if (str == NULL) {
@@ -1958,7 +1967,7 @@ test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
         if (result == NULL) {
             return NULL;
         }
-        const char *expected = "var=long non-ASCII valu\xC3\xA9 'repr'<NULL>";
+        const char *expected = "var=long non-ASCII valu\xC3\xA9 ucs4 'repr'<NULL>";
         assert(PyUnicode_EqualToUTF8(result, expected));
         Py_DECREF(result);
     }

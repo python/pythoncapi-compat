@@ -1621,6 +1621,21 @@ PyUnicodeWriter_WriteSubstring(PyUnicodeWriter *writer, PyObject *str,
 }
 
 static inline int
+PyUnicodeWriter_WriteUCS4(PyUnicodeWriter *writer,
+                          const Py_UCS4 *ucs4, Py_ssize_t size)
+{
+    PyObject *str = PyUnicode_FromKindAndData(PyUnicode_4BYTE_KIND,
+                                              ucs4, size);
+    if (str == NULL) {
+        return -1;
+    }
+
+    int res = _PyUnicodeWriter_WriteStr((_PyUnicodeWriter*)writer, str);
+    Py_DECREF(str);
+    return res;
+}
+
+static inline int
 PyUnicodeWriter_Format(PyUnicodeWriter *writer, const char *format, ...)
 {
     va_list vargs;
