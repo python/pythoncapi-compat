@@ -3,6 +3,9 @@ import sys
 
 
 def _run_command(cmd, **kw):
+    sys.stdout.flush()
+    sys.stderr.flush()
+
     kw['shell'] = False
     if hasattr(subprocess, 'run'):
         proc = subprocess.run(cmd, **kw)
