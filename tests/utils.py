@@ -10,6 +10,7 @@ def _run_command(cmd, **kw):
         proc = subprocess.Popen(cmd, **kw)
         try:
             proc.communicate()
+            proc.wait()
         except:
             proc.kill()
             proc.wait()

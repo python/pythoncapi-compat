@@ -12,6 +12,7 @@ import argparse
 import os.path
 import shutil
 import sys
+import tempfile
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -51,10 +52,10 @@ PYTHONS = (
 )
 
 
-def get_test_command(executable, verbose):
+def get_test_command(executable, verbose, build_dir):
     # Don't use realpath() for the executed command to support virtual
     # environments
-    cmd = [executable, TEST_COMPAT]
+    cmd = [executable, TEST_COMPAT, build_dir]
     if verbose:
         cmd.append('-v')
     return cmd
@@ -90,8 +91,9 @@ def run_tests_parallel(args):
         jobs.append(executable)
 
     def worker(executable):
-        cmd = get_test_command(executable, args.verbose)
-        return get_output(cmd)
+        with tempfile.TemporaryDirectory() as build_dir:
+            cmd = get_test_command(executable, args.verbose, build_dir)
+            return get_output(cmd)
 
     if hasattr(os, 'process_cpu_count'):
         max_workers = os.process_cpu_count()
@@ -127,6 +129,13 @@ def test_upgrade_pythoncapi(args):
     print()
 
 
+def test_current_version(args):
+    with tempfile.TemporaryDirectory() as build_dir:
+        cmd = get_test_command(sys.executable, args.verbose, build_dir)
+        run_command(cmd)
+    print()
+
+
 def main():
     start_time = time.perf_counter()
     args = parse_args()
@@ -136,9 +145,7 @@ def main():
     if not args.current:
         run_tests_parallel(args)
     else:
-        cmd = get_test_command(sys.executable, args.verbose)
-        run_command(cmd)
-        print()
+        test_current_version(args)
 
     dt = time.perf_counter() - start_time
     print(f"Total time: {dt:.1f} seconds")

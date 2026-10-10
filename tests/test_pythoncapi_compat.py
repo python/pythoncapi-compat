@@ -7,6 +7,7 @@ Usage::
     python3 run_tests.py
     python3 run_tests.py -v # verbose mode
 """
+import argparse
 import faulthandler
 import gc
 import os.path
@@ -14,7 +15,6 @@ import shutil
 import subprocess
 import sys
 import sysconfig
-import tempfile
 
 # test.utils
 import setup
@@ -202,28 +202,36 @@ def run_tests(build_dir, module_name, std):
         msg += " (no reference leak detected)"
     print(msg)
 
+    # Unload the extension module
+    testmod = None
+    del sys.modules[module_name]
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose',
+                        action='store_true')  # on/off flag
+    parser.add_argument('build_dir')
+    return parser.parse_args()
+
 
 def main():
     global VERBOSE
-    VERBOSE = ("-v" in sys.argv[1:] or "--verbose" in sys.argv[1:])
+    args = parse_args()
+    VERBOSE = args.verbose
+    build_dir = args.build_dir
 
-    if (3, 13) <= sys.version_info <= (3, 13, 0, 'alpha', 4):
-        print("SKIP Python 3.13 alpha 1..4: not supported!")
-        return
-
-    if faulthandler is not None:
-        faulthandler.enable()
+    faulthandler.enable()
 
     src_dir = os.path.dirname(__file__)
     if src_dir:
         os.chdir(src_dir)
 
-    with tempfile.TemporaryDirectory() as build_dir:
-        build_ext(build_dir)
+    build_ext(build_dir)
 
-        tests = setup.C_TESTS + setup.CXX_TESTS
-        for module_name, std, limited in tests:
-            run_tests(build_dir, module_name, std)
+    tests = setup.C_TESTS + setup.CXX_TESTS
+    for module_name, std, limited in tests:
+        run_tests(build_dir, module_name, std)
 
 
 if __name__ == "__main__":
