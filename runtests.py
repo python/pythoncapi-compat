@@ -55,7 +55,7 @@ PYTHONS = (
 def get_test_command(executable, verbose, build_dir):
     # Don't use realpath() for the executed command to support virtual
     # environments
-    cmd = [executable, TEST_COMPAT, build_dir]
+    cmd = [executable, "-u", TEST_COMPAT, build_dir]
     if verbose:
         cmd.append('-v')
     return cmd
@@ -122,7 +122,7 @@ def run_tests_parallel(args):
 def test_upgrade_pythoncapi(args):
     # upgrade_pythoncapi.py requires Python 3.6 or newer
     print(f"Run {TEST_UPGRADE}")
-    cmd = [sys.executable, TEST_UPGRADE]
+    cmd = [sys.executable, "-u", TEST_UPGRADE]
     if args.verbose:
         cmd.append('-v')
     run_command(cmd)

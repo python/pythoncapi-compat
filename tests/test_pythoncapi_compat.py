@@ -65,7 +65,7 @@ def display_title(title):
 
 def build_ext(build_dir):
     display_title("Build test extensions")
-    cmd = [sys.executable, "setup.py", "build", "--build-base", build_dir]
+    cmd = [sys.executable, "-u", "setup.py", "build", "--build-base", build_dir]
     if VERBOSE:
         run_command(cmd)
         print()
@@ -216,12 +216,12 @@ def parse_args():
 
 
 def main():
+    faulthandler.enable()
+
     global VERBOSE
     args = parse_args()
     VERBOSE = args.verbose
     build_dir = args.build_dir
-
-    faulthandler.enable()
 
     src_dir = os.path.dirname(__file__)
     if src_dir:
