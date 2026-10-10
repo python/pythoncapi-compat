@@ -4,8 +4,7 @@ Python C API compatibility
 
 The ``pythoncapi-compat`` project can be used to write a C or C++ extension
 supporting a wide range of Python versions with a single code base.  It is made
-of the ``pythoncapi_compat.h`` header file and the ``upgrade_pythoncapi.py``
-script.
+of the ``pythoncapi_compat.h`` header file.
 
 * Homepage: `GitHub pythoncapi-compat project
   <https://github.com/python/pythoncapi-compat>`_.
@@ -18,7 +17,6 @@ Documentation:
    :maxdepth: 2
 
    api
-   upgrade
    users
    tests
    changelog
