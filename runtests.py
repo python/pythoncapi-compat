@@ -68,6 +68,8 @@ def parse_args():
     parser.add_argument('-c', '--current', action="store_true",
                         help="Only test the current Python executable "
                              "(don't test multiple Python versions)")
+    parser.add_argument('-j', '--jobs', type=int,
+                        help="Number of jobs run in parallel")
     return parser.parse_args()
 
 
@@ -95,10 +97,12 @@ def run_tests_parallel(args):
             cmd = get_test_command(executable, args.verbose, build_dir)
             return get_output(cmd)
 
-    if hasattr(os, 'process_cpu_count'):
-        max_workers = os.process_cpu_count()
-    else:
-        max_workers = os.cpu_count()
+    max_workers = args.jobs
+    if not max_workers:
+        if hasattr(os, 'process_cpu_count'):
+            max_workers = os.process_cpu_count()
+        else:
+            max_workers = os.cpu_count()
 
     print()
     print(f"Run {len(jobs)} jobs with {max_workers} workers (threads)")
@@ -107,7 +111,7 @@ def run_tests_parallel(args):
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         exitcode = None
         for exitcode, stdout in executor.map(worker, jobs):
-            print(stdout, end='')
+            print(stdout, end='', flush=True)
             if exitcode:
                 break
 
