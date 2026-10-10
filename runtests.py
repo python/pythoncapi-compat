@@ -20,7 +20,6 @@ from tests.utils import get_output, run_command
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'tests')
 TEST_COMPAT = os.path.join(TEST_DIR, "test_pythoncapi_compat.py")
-TEST_UPGRADE = os.path.join(TEST_DIR, "test_upgrade_pythoncapi.py")
 
 PYTHONS = (
     # CPython
@@ -123,16 +122,6 @@ def run_tests_parallel(args):
     print(f"Tested: {len(jobs)} Python executables")
 
 
-def test_upgrade_pythoncapi(args):
-    # upgrade_pythoncapi.py requires Python 3.6 or newer
-    print(f"Run {TEST_UPGRADE}")
-    cmd = [sys.executable, "-u", TEST_UPGRADE]
-    if args.verbose:
-        cmd.append('-v')
-    run_command(cmd)
-    print()
-
-
 def test_current_version(args):
     with tempfile.TemporaryDirectory() as build_dir:
         cmd = get_test_command(sys.executable, args.verbose, build_dir)
@@ -143,8 +132,6 @@ def test_current_version(args):
 def main():
     start_time = time.perf_counter()
     args = parse_args()
-
-    test_upgrade_pythoncapi(args)
 
     if not args.current:
         run_tests_parallel(args)

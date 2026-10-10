@@ -1,6 +1,7 @@
 Changelog
 =========
 
+* 2026-10-11: Remove the ``upgrade_pythoncapi.py`` script.
 * 2026-10-10: Add ``PyObject_GenericHash()`` and
   ``PyUnicodeWriter_WriteUCS4()`` functions. runtests.py now runs tests in
   parallel.
