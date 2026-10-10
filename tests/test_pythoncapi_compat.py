@@ -173,7 +173,7 @@ def run_tests(module_name, std):
             except AttributeError:
                 pass
             else:
-                if attr in ("PY_VERSION_HEX", "PYPY_VERSION_NUM"):
+                if attr in ('PY_VERSION_HEX', 'Py_LIMITED_API', 'PYPY_VERSION_NUM'):
                     value = "0x%x" % value
                 print("%s: %s" % (attr, value))
                 empty_line = True

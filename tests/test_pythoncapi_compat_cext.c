@@ -1762,6 +1762,22 @@ test_hash(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
         Py_DECREF(abc);
     }
 
+    // Test PyObject_GenericHash()
+    {
+        PyObject *object_type = PyImport_ImportModuleAttrString("builtins", "object");
+        if (object_type == NULL) {
+            return NULL;
+        }
+        PyObject *object = PyObject_CallNoArgs(object_type);
+        Py_DECREF(object_type);
+        if (object == NULL) {
+            return NULL;
+        }
+
+        assert(PyObject_GenericHash(object) == Py_HashPointer(object));
+        Py_DECREF(object);
+    }
+
     Py_RETURN_NONE;
 }
 
