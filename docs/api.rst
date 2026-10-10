@@ -78,6 +78,35 @@ Python 3.15
 
    Not available on PyPy, and not on the limited C API.
 
+Not supported:
+
+* ``PyABIInfo_Check()``
+* ``PyAnyDict_Check()``
+* ``PyAnyDict_CheckExact()``
+* ``PyArg_ParseArray()``
+* ``PyArg_ParseArrayAndKeywords()``
+* ``PyFrozenDict_Check()``
+* ``PyFrozenDict_CheckExact()``
+* ``PyFrozenDict_New()``
+* ``PyImport_CreateModuleFromInitfunc()``
+* ``PyModule_FromSlotsAndSpec()``
+* ``PyModule_GetState_DuringGC()``
+* ``PyModule_GetToken_DuringGC()``
+* ``PyObject_CallFinalizerFromDealloc()``
+* ``PyObject_Dump()``
+* ``PyObject_GetItemData_DuringGC()``
+* ``PyObject_GetTypeData_DuringGC()``
+* ``PyType_FromSlots()``
+* ``PyType_GetBaseByToken_DuringGC()``
+* ``PyType_GetModuleByToken_DuringGC()``
+* ``PyType_GetModuleState_DuringGC()``
+* ``PyType_GetModule_DuringGC()``
+* ``PyUnstable_DumpTraceback()``
+* ``PyUnstable_DumpTracebackThreads()``
+* ``PyUnstable_ThreadState_ResetStackProtection()``
+* ``PyUnstable_ThreadState_SetStackProtection()``
+
+
 Python 3.14
 -----------
 
@@ -528,6 +557,13 @@ Python 3.13
 
    See `PyType_GetFullyQualifiedName() documentation <https://docs.python.org/dev/c-api/type.html#c.PyType_GetFullyQualifiedName>`__.
 
+.. c:macro:: Py_BEGIN_CRITICAL_SECTION(op)
+.. c:macro:: Py_END_CRITICAL_SECTION()
+.. c:macro:: Py_BEGIN_CRITICAL_SECTION2(a, b)
+.. c:macro:: Py_END_CRITICAL_SECTION2()
+
+   See `Py_BEGIN_CRITICAL_SECTION() documentation
+   <https://docs.python.org/dev/c-api/synchronization.html#c.Py_BEGIN_CRITICAL_SECTION>`_.
 
 Not supported:
 

@@ -17,8 +17,8 @@ Documentation:
 .. toctree::
    :maxdepth: 2
 
-   upgrade
    api
+   upgrade
    users
    tests
    changelog
