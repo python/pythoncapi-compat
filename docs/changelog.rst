@@ -2,7 +2,8 @@ Changelog
 =========
 
 * 2026-10-10: Add ``PyObject_GenericHash()`` and
-  ``PyUnicodeWriter_WriteUCS4()`` functions.
+  ``PyUnicodeWriter_WriteUCS4()`` functions. runtests.py now runs tests in
+  parallel.
 * 2026-10-08: Add support for the limited C API 3.2.
 * 2026-10-08: Add functions:
 

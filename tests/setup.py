@@ -28,7 +28,7 @@ if TEST_LIMITED_C_API:
 else:
     TEST_OLD_LIMITED_C_API = False
 
-OLD_LIMITED_CAPI = f'-DPy_LIMITED_API=0x3020000'
+OLD_LIMITED_CAPI = '-DPy_LIMITED_API=0x3020000'
 
 SRC_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), '..'))
 LIMITED_SUFFIX = "_limited"
@@ -136,9 +136,9 @@ DEBUG_FLAGS = ('-O0', '-ggdb')
 
 def main():
     try:
-        from setuptools import setup, Extension
+        from setuptools import Extension, setup
     except ImportError:
-        from distutils.core import setup, Extension
+        from distutils.core import Extension, setup
 
     cflags = list(CFLAGS)
     cxxflags = list(CXXFLAGS)

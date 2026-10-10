@@ -13,11 +13,9 @@ import os.path
 import shutil
 import sys
 import time
-from shutil import which
+from concurrent.futures import ThreadPoolExecutor
 
-
-from tests.utils import run_command
-
+from tests.utils import get_output, run_command
 
 TEST_DIR = os.path.join(os.path.dirname(__file__), 'tests')
 TEST_COMPAT = os.path.join(TEST_DIR, "test_pythoncapi_compat.py")
@@ -53,26 +51,13 @@ PYTHONS = (
 )
 
 
-def run_tests_exe(executable, verbose, tested):
-    tested_key = os.path.realpath(executable)
-    if tested_key in tested:
-        return
-
+def get_test_command(executable, verbose):
     # Don't use realpath() for the executed command to support virtual
     # environments
     cmd = [executable, TEST_COMPAT]
     if verbose:
         cmd.append('-v')
-    run_command(cmd)
-    tested.add(tested_key)
-
-
-def run_tests(python, verbose, tested):
-    executable = which(python)
-    if not executable:
-        print("Ignore missing Python executable: %s" % python)
-        return
-    run_tests_exe(executable, verbose, tested)
+    return cmd
 
 
 def parse_args():
@@ -85,35 +70,74 @@ def parse_args():
     return parser.parse_args()
 
 
+def run_tests_parallel(args):
+    jobs = []
+
+    tested = set()
+    tested_key = os.path.realpath(sys.executable)
+    tested.add(tested_key)
+    jobs.append(sys.executable)
+
+    for python in PYTHONS:
+        executable = shutil.which(python)
+        if not executable:
+            print(f"Ignore missing Python executable: {python}")
+            continue
+        tested_key = os.path.realpath(executable)
+        if tested_key in tested:
+            continue
+        tested.add(tested_key)
+        jobs.append(executable)
+
+    def worker(executable):
+        cmd = get_test_command(executable, args.verbose)
+        return get_output(cmd)
+
+    if hasattr(os, 'process_cpu_count'):
+        max_workers = os.process_cpu_count()
+    else:
+        max_workers = os.cpu_count()
+
+    print()
+    print(f"Run {len(jobs)} jobs with {max_workers} workers (threads)")
+    print()
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        exitcode = None
+        for exitcode, stdout in executor.map(worker, jobs):
+            print(stdout, end='')
+            if exitcode:
+                break
+
+        if exitcode:
+            executor.shutdown(wait=True, cancel_futures=True)
+            sys.exit(exitcode)
+
+    print()
+    print(f"Tested: {len(jobs)} Python executables")
+
+
+def test_upgrade_pythoncapi(args):
+    # upgrade_pythoncapi.py requires Python 3.6 or newer
+    print(f"Run {TEST_UPGRADE}")
+    cmd = [sys.executable, TEST_UPGRADE]
+    if args.verbose:
+        cmd.append('-v')
+    run_command(cmd)
+    print()
+
+
 def main():
     start_time = time.perf_counter()
     args = parse_args()
 
-    path = os.path.join(TEST_DIR, 'build')
-    if os.path.exists(path):
-        shutil.rmtree(path)
+    test_upgrade_pythoncapi(args)
 
-    # upgrade_pythoncapi.py requires Python 3.6 or newer
-    if sys.version_info >= (3, 6):
-        print("Run %s" % TEST_UPGRADE)
-        cmd = [sys.executable, TEST_UPGRADE]
-        if args.verbose:
-            cmd.append('-v')
-        run_command(cmd)
-    else:
-        print("Don't test upgrade_pythoncapi.py: it requires Python 3.6")
-    print()
-
-    tested = set()
     if not args.current:
-        for python in PYTHONS:
-            run_tests(python, args.verbose, tested)
-        run_tests_exe(sys.executable, args.verbose, tested)
-
-        print()
-        print("Tested: %s Python executables" % len(tested))
+        run_tests_parallel(args)
     else:
-        run_tests_exe(sys.executable, args.verbose, tested)
+        cmd = get_test_command(sys.executable, args.verbose)
+        run_command(cmd)
         print()
 
     dt = time.perf_counter() - start_time

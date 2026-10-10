@@ -14,10 +14,11 @@ import shutil
 import subprocess
 import sys
 import sysconfig
+import tempfile
 
 # test.utils
 import setup
-from utils import run_command, command_stdout
+from utils import run_command, get_output
 
 
 # Windows uses MSVC compiler
@@ -62,26 +63,24 @@ def display_title(title):
     sys.stdout.flush()
 
 
-def build_ext():
+def build_ext(build_dir):
     display_title("Build test extensions")
-    if os.path.exists("build"):
-        shutil.rmtree("build")
-    cmd = [sys.executable, "setup.py", "build"]
+    cmd = [sys.executable, "setup.py", "build", "--build-base", build_dir]
     if VERBOSE:
         run_command(cmd)
         print()
     else:
-        exitcode, stdout = command_stdout(cmd, stderr=subprocess.STDOUT)
+        exitcode, stdout = get_output(cmd)
         if exitcode:
             print(stdout.rstrip())
             sys.exit(exitcode)
 
 
-def import_tests(module_name):
+def import_tests(build_dir, module_name):
     pythonpath = None
-    for name in os.listdir("build"):
+    for name in os.listdir(build_dir):
         if name.startswith('lib.'):
-            pythonpath = os.path.join("build", name)
+            pythonpath = os.path.join(build_dir, name)
 
     if not pythonpath:
         raise Exception("Failed to find the build directory")
@@ -152,7 +151,7 @@ def python_version():
     return "%s %s (%s build)" % (python_impl, pyver, build)
 
 
-def run_tests(module_name, std):
+def run_tests(build_dir, module_name, std):
     lang = std.upper() if std else None
     if VERBOSE:
         print("")
@@ -162,7 +161,7 @@ def run_tests(module_name, std):
         titlte = f"{title} ({lang})"
     display_title(title)
 
-    testmod = import_tests(module_name)
+    testmod = import_tests(build_dir, module_name)
 
     if VERBOSE:
         empty_line = False
@@ -219,11 +218,12 @@ def main():
     if src_dir:
         os.chdir(src_dir)
 
-    build_ext()
+    with tempfile.TemporaryDirectory() as build_dir:
+        build_ext(build_dir)
 
-    tests = setup.C_TESTS + setup.CXX_TESTS
-    for module_name, std, limited in tests:
-        run_tests(module_name, std)
+        tests = setup.C_TESTS + setup.CXX_TESTS
+        for module_name, std, limited in tests:
+            run_tests(build_dir, module_name, std)
 
 
 if __name__ == "__main__":
