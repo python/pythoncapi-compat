@@ -10,13 +10,12 @@ Supported Python versions:
 * Python 3.6 - 3.16
 * PyPy 3.6 - 3.12
 
-C++03 and C++11 are supported on Python 3.6 and newer.
-
 A C11 subset (without optional features) is required, like ``static inline``
 functions: see `PEP 7 <https://www.python.org/dev/peps/pep-0007/>`_.
 
-Some functions related to frame objects and ``PyThreadState`` are not available
-on PyPy.
+C++03 and C++11 are supported on Python 3.6 and newer.
+
+Private functions (name starting with ``_Py``) are not supported.
 
 Latest version of the header file:
 `pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/main/pythoncapi_compat.h>`_.
@@ -354,6 +353,14 @@ Python 3.14
 
    See `PyImport_ImportModuleAttrString() documentation <https://docs.python.org/dev/c-api/import.html#c.PyImport_ImportModuleAttrString>`__.
 
+.. c:function:: uint32_t Py_PACK_FULL_VERSION(int major, int minor, int micro, int release_level, int release_serial)
+
+   See `Py_PACK_FULL_VERSION() documentation <https://docs.python.org/dev/c-api/apiabiversion.html#c.Py_PACK_FULL_VERSION>`__.
+
+.. c:function:: uint32_t Py_PACK_VERSION(int major, int minor)
+
+   See `Py_PACK_VERSION() documentation <https://docs.python.org/dev/c-api/apiabiversion.html#c.Py_PACK_VERSION>`__.
+
 Not supported:
 
 * ``PyConfig_Names()``
@@ -371,13 +378,23 @@ Not supported:
 * ``PyInitConfig_SetInt()``
 * ``PyInitConfig_SetStr()``
 * ``PyInitConfig_SetStrList()``
+* ``PyMonitoring_FireBranchLeftEvent()``
+* ``PyMonitoring_FireBranchRightEvent()``
+* ``PyType_Freeze()``
 * ``PyType_GetBaseByToken()``
 * ``PyUnicodeWriter_DecodeUTF8Stateful()``
+* ``PyUnstable_IsImmortal()``
+* ``PyUnstable_Object_EnableDeferredRefcount()``
+* ``PyUnstable_Object_IsUniqueReferencedTemporary()``
 * ``Py_InitializeFromInitConfig()``
 
 
 Python 3.13
 -----------
+
+.. c:function:: PyObject* Py_GetConstant(unsigned int constant_id)
+
+   See `Py_GetConstant() documentation <https://docs.python.org/dev/c-api/object.html#c.Py_GetConstant>`__.
 
 .. c:function:: int PyDict_GetItemRef(PyObject *p, PyObject *key, PyObject **result)
 
@@ -452,11 +469,15 @@ Python 3.13
 
    See `PyObject_VisitManagedDict() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_VisitManagedDict>`__.
 
+   Availability: Python 3.11 and newer.
+
    Not available on the limited C API.
 
 .. c:function:: void PyObject_ClearManagedDict(PyObject *obj)
 
    See `PyObject_ClearManagedDict() documentation <https://docs.python.org/dev/c-api/object.html#c.PyObject_ClearManagedDict>`__.
+
+   Availability: Python 3.11 and newer.
 
    Not available on the limited C API.
 
@@ -583,8 +604,33 @@ Not supported:
 * ``PyLong_AsNativeBytes()``
 * ``PyLong_FromNativeBytes()``
 * ``PyLong_FromUnsignedNativeBytes()``
-* ``PySys_Audit()``.
-* ``PySys_AuditTuple()``.
+* ``PyMonitoring_EnterScope()``
+* ``PyMonitoring_ExitScope()``
+* ``PyMonitoring_FireCRaiseEvent()``
+* ``PyMonitoring_FireCReturnEvent()``
+* ``PyMonitoring_FireCallEvent()``
+* ``PyMonitoring_FireExceptionHandledEvent()``
+* ``PyMonitoring_FireJumpEvent()``
+* ``PyMonitoring_FireLineEvent()``
+* ``PyMonitoring_FirePyResumeEvent()``
+* ``PyMonitoring_FirePyReturnEvent()``
+* ``PyMonitoring_FirePyStartEvent()``
+* ``PyMonitoring_FirePyThrowEvent()``
+* ``PyMonitoring_FirePyUnwindEvent()``
+* ``PyMonitoring_FirePyYieldEvent()``
+* ``PyMonitoring_FireRaiseEvent()``
+* ``PyMonitoring_FireReraiseEvent()``
+* ``PyMonitoring_FireStopIterationEvent()``
+* ``PyMutex_Lock()``
+* ``PyMutex_Unlock()``
+* ``PyRefTracer_GetTracer()``
+* ``PyRefTracer_SetTracer()``
+* ``PySys_Audit()``
+* ``PySys_AuditTuple()``
+* ``PyTime_MonotonicRaw()``
+* ``PyTime_PerfCounterRaw()``
+* ``PyTime_TimeRaw()``
+
 
 Python 3.12
 -----------
@@ -601,10 +647,6 @@ Python 3.12
 
    Not available on PyPy nor with the limited C API.
 
-.. c:function:: PyObject* Py_GetConstant(unsigned int constant_id)
-
-   See `Py_GetConstant() documentation <https://docs.python.org/dev/c-api/object.html#c.Py_GetConstant>`__.
-
 .. c:function:: PyObject* Py_GetConstantBorrowed(unsigned int constant_id)
 
    See `Py_GetConstantBorrowed() documentation <https://docs.python.org/dev/c-api/object.html#c.Py_GetConstantBorrowed>`__.
@@ -612,18 +654,30 @@ Python 3.12
 
 Not supported:
 
-* ``PyDict_AddWatcher()``, ``PyDict_Watch()``.
-* ``PyCode_AddWatcher()``, ``PyCode_ClearWatcher()``.
-* ``PyErr_GetRaisedException()``, ``PyErr_SetRaisedException()``.
-* ``_PyErr_ChainExceptions1()``.
-* ``PyErr_DisplayException()``.
-* ``_Py_IsImmortal()``.
-* ``Py_NewInterpreterFromConfig()``.
-* ``PyException_GetArgs()``, ``PyException_SetArgs()``.
-* ``PyEval_SetProfileAllThreads()``, ``PyEval_SetTraceAllThreads()``.
-* ``PyFunction_SetVectorcall()``.
-* ``PyType_FromMetaclass()``: implementation too big to be backported.
-* ``PyVectorcall_Call()``.
+* ``PyCode_AddWatcher()``
+* ``PyCode_ClearWatcher()``
+* ``PyDict_AddWatcher()``
+* ``PyDict_Watch()``
+* ``PyErr_DisplayException()``
+* ``PyErr_GetRaisedException()``
+* ``PyErr_SetRaisedException()``
+* ``PyEval_SetProfileAllThreads()``
+* ``PyEval_SetTraceAllThreads()``
+* ``PyException_GetArgs()``
+* ``PyException_SetArgs()``
+* ``PyFunction_SetVectorcall()``
+* ``PyObject_GetTypeData()``
+* ``PyType_AddWatcher()``
+* ``PyType_FromMetaclass()`` (implementation too big to be backported)
+* ``PyType_Watch()``
+* ``PyUnstable_Code_GetExtra()``
+* ``PyUnstable_Code_New()``
+* ``PyUnstable_Code_NewWithPosOnlyArgs()``
+* ``PyUnstable_Code_SetExtra()``
+* ``PyUnstable_Eval_RequestCodeExtraIndex()``
+* ``PyVectorcall_Call()``
+* ``Py_NewInterpreterFromConfig()``
+
 
 Python 3.11
 -----------
@@ -739,10 +793,12 @@ Python 3.11
 
 Not supported:
 
-* ``PyType_GetModuleByDef()``.
-* ``Py_Version`` constant.
-* ``PyErr_GetHandledException()``, ``PyErr_SetHandledException()``.
-* ``PyFrame_GetGenerator()``.
+* ``PyErr_GetHandledException()``
+* ``PyErr_SetHandledException()``
+* ``PyFrame_GetGenerator()``
+* ``PyType_GetModuleByDef()``
+* ``Py_Version`` constant
+
 
 Python 3.10
 -----------
@@ -777,14 +833,18 @@ Python 3.10
 
 Not supported:
 
-* ``PyCodec_Unregister()``.
-* ``PyDateTime_DATE_GET_TZINFO()``, ``PyDateTime_TIME_GET_TZINFO()``.
-* ``PyErr_SetInterruptEx()``.
-* ``PyGC_Enable()``, ``PyGC_Disable()`` and ``PyGC_IsEnabled()``.
-* ``PyIter_Send()``.
-* ``PySet_CheckExact()``.
-* ``Py_TPFLAGS_DISALLOW_INSTANTIATION`` constant.
-* ``Py_TPFLAGS_IMMUTABLETYPE`` constant.
+* ``PyCodec_Unregister()``
+* ``PyDateTime_DATE_GET_TZINFO()``
+* ``PyDateTime_TIME_GET_TZINFO()``
+* ``PyErr_SetInterruptEx()``
+* ``PyGC_Disable()``
+* ``PyGC_Enable()``
+* ``PyGC_IsEnabled()``
+* ``PyIter_Send()``
+* ``PySet_CheckExact()``
+* ``Py_TPFLAGS_DISALLOW_INSTANTIATION`` constant
+* ``Py_TPFLAGS_IMMUTABLETYPE`` constant
+
 
 Python 3.9
 ----------
@@ -827,12 +887,6 @@ PyObject
 .. c:macro:: PY_VECTORCALL_ARGUMENTS_OFFSET
 
    See `PY_VECTORCALL_ARGUMENTS_OFFSET documentation <https://docs.python.org/dev/c-api/call.html#PY_VECTORCALL_ARGUMENTS_OFFSET>`__.
-
-Not supported:
-
-* ``PyVectorcall_CallMethod()``.
-* ``PyType_FromModuleAndSpec()``
-
 
 
 PyFrameObject
@@ -909,6 +963,17 @@ Module helper
 
    See `PyModule_AddType() documentation <https://docs.python.org/dev/c-api/module.html#c.PyModule_AddType>`__.
 
+
+Not supported
+^^^^^^^^^^^^^
+
+* ``PyObject_VectorcallMethod()``
+* ``PyType_FromModuleAndSpec()``
+* ``PyType_GetModule()``
+* ``PyType_GetModuleState()``
+* ``PyVectorcall_CallMethod()``
+
+
 Python 3.8
 ----------
 
@@ -916,17 +981,48 @@ Not supported:
 
 * ``PyCode_NewWithPosOnlyArgs()``.
 
+
 Python 3.7
 ----------
 
 Not supported:
 
-* ``PyImport_GetModule()``.
-* ``PyInterpreterState_GetID()``.
-* ``PySlice_Unpack()``, ``PySlice_AdjustIndices()``.
-* ``PyTimeZone_FromOffset()``, ``PyTimeZone_FromOffsetAndName()``.
-* ``Py_RETURN_RICHCOMPARE()``.
-* ``Py_UNREACHABLE`` macro.
+* ``PyContextToken_CheckExact()``
+* ``PyContextToken_CheckExact()``
+* ``PyContextVar_CheckExact()``
+* ``PyContextVar_Get()``
+* ``PyContextVar_New()``
+* ``PyContextVar_Reset()``
+* ``PyContextVar_Set()``
+* ``PyContext_AddWatcher()``
+* ``PyContext_CheckExact()``
+* ``PyContext_ClearWatcher()``
+* ``PyContext_Copy()``
+* ``PyContext_CopyCurrent()``
+* ``PyContext_Enter()``
+* ``PyContext_Exit()``
+* ``PyContext_New()``
+* ``PyImport_GetModule()``
+* ``PyInterpreterState_GetID()``
+* ``PyOS_AfterFork_Child()``
+* ``PyOS_AfterFork_Parent()``
+* ``PyOS_BeforeFork()``
+* ``PySlice_AdjustIndices()``
+* ``PySlice_Unpack()``
+* ``PyThread_tss_alloc()``
+* ``PyThread_tss_create()``
+* ``PyThread_tss_delete()``
+* ``PyThread_tss_free()``
+* ``PyThread_tss_get()``
+* ``PyThread_tss_is_created()``
+* ``PyThread_tss_set()``
+* ``PyTimeZone_FromOffset()``
+* ``PyTimeZone_FromOffsetAndName()``
+* ``PyTraceMalloc_Track()``
+* ``PyTraceMalloc_Untrack()``
+* ``Py_RETURN_RICHCOMPARE()``
+* ``Py_UNREACHABLE`` macro
+
 
 Python 3.6
 ----------
@@ -938,8 +1034,9 @@ Not supported:
 * ``PyOS_FSPath()``.
 * ``Py_FinalizeEx()``.
 
-Python 3.5.2
-------------
+
+Python 3.5
+----------
 
 .. c:macro:: Py_SETREF(op, op2)
 
@@ -947,12 +1044,20 @@ Python 3.5.2
 
 Not supported:
 
-* ``PyCodec_NameReplaceErrors()``.
-* ``PyErr_FormatV()``.
-* ``PyExc_RecursionError``.
-* ``PyModule_FromDefAndSpec()``, ``PyModule_FromDefAndSpec2()``,
-  and ``PyModule_ExecDef()``.
-* ``PyNumber_MatrixMultiply()`` and ``PyNumber_InPlaceMatrixMultiply()``.
+* ``PyCodec_NameReplaceErrors()``
+* ``PyErr_FormatV()``
+* ``PyExc_RecursionError``
+* ``PyMem_Calloc()``
+* ``PyMem_RawCalloc()``
+* ``PyModule_ExecDef()``
+* ``PyModule_FromDefAndSpec()``
+* ``PyModule_FromDefAndSpec2()``
+* ``PyNumber_InPlaceMatrixMultiply()``
+* ``PyNumber_MatrixMultiply()``
+* ``PyObject_Calloc()``
+* ``Py_DecodeLocale()``
+* ``Py_EncodeLocale()``
+
 
 Python 3.4
 ----------
@@ -960,6 +1065,33 @@ Python 3.4
 .. c:macro:: Py_UNUSED(name)
 
    See `Py_UNUSED() documentation <https://docs.python.org/dev/c-api/intro.html#c.Py_UNUSED>`__.
+
+Not supported:
+
+* ``PyObject_LengthHint()``
+* ``PyStructSequence_InitType2()``
+* ``PyType_GetSlot()``
+* ``Py_SetStandardStreamEncoding()``
+
+
+Python 3.3
+----------
+
+Not supported:
+
+* ``PyMemoryView_FromMemory()``
+* ``PyUnicode_AsUCS4()``
+* ``PyUnicode_AsUCS4Copy()``
+* ``PyUnicode_CopyCharacters()``
+* ``PyUnicode_FindChar()``
+* ``PyUnicode_FromKindAndData()``
+* ``PyUnicode_GET_LENGTH()``
+* ``PyUnicode_GetLength()``
+* ``PyUnicode_New()``
+* ``PyUnicode_ReadChar()``
+* ``PyUnicode_Substring()``
+* ``PyUnicode_WriteChar()``
+
 
 Python 3.2
 ----------
@@ -971,13 +1103,33 @@ Not supported:
 * ``PyLong_AsLongLongAndOverflow()``.
 * ``PyErr_NewExceptionWithDoc()``.
 
+
 Python 3.1
 ----------
 
 Not supported:
 
-* ``PyOS_string_to_double()``.
-* ``PyCapsule`` API.
+* ``PyCapsule_CheckExact()``
+* ``PyCapsule_GetContext()``
+* ``PyCapsule_GetDestructor()``
+* ``PyCapsule_GetName()``
+* ``PyCapsule_GetPointer()``
+* ``PyCapsule_Import()``
+* ``PyCapsule_IsValid()``
+* ``PyCapsule_New()``
+* ``PyCapsule_SetContext()``
+* ``PyCapsule_SetDestructor()``
+* ``PyCapsule_SetName()``
+* ``PyCapsule_SetPointer()``
+* ``PyOS_string_to_double()``
+
+
+Python 3.0
+----------
+
+There are too many changes compared to Python 2.7, but it's no longer useful
+to document them.
+
 
 Borrow variant
 --------------
