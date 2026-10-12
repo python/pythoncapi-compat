@@ -216,7 +216,7 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 #ifndef Py_LIMITED_API
     assert(PyCode_Check(code));
 #endif
-
+    Py_DECREF(code);
 #endif
 
 #if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
