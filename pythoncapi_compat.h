@@ -202,15 +202,6 @@ static inline PyCodeObject* PyFrame_GetCode(PyFrameObject *frame)
 }
 #endif
 
-#if !defined(Py_LIMITED_API) || PY_VERSION_HEX >= _Py_PACK_VERSION(3, 9)
-static inline PyCodeObject* _PyFrame_GetCodeBorrow(PyFrameObject *frame)
-{
-    PyCodeObject *code = PyFrame_GetCode(frame);
-    Py_DECREF(code);
-    return code;
-}
-#endif
-
 
 // bpo-40421 added PyFrame_GetBack() to Python 3.9
 #if (PY_VERSION_HEX < _Py_PACK_VERSION(3, 9) \
@@ -219,15 +210,6 @@ static inline PyFrameObject* PyFrame_GetBack(PyFrameObject *frame)
 {
     assert(frame != _Py_NULL);
     return _Py_CAST(PyFrameObject*, Py_XNewRef(frame->f_back));
-}
-#endif
-
-#if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
-static inline PyFrameObject* _PyFrame_GetBackBorrow(PyFrameObject *frame)
-{
-    PyFrameObject *back = PyFrame_GetBack(frame);
-    Py_XDECREF(back);
-    return back;
 }
 #endif
 
@@ -350,17 +332,6 @@ static inline PyFrameObject* PyThreadState_GetFrame(PyThreadState *tstate)
 {
     assert(tstate != _Py_NULL);
     return _Py_CAST(PyFrameObject *, Py_XNewRef(tstate->frame));
-}
-#endif
-
-#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 9)) \
-     && (!defined(PYPY_VERSION) || PY_VERSION_HEX >= _Py_PACK_VERSION(3, 11)))
-static inline PyFrameObject*
-_PyThreadState_GetFrameBorrow(PyThreadState *tstate)
-{
-    PyFrameObject *frame = PyThreadState_GetFrame(tstate);
-    Py_XDECREF(_PyObject_CAST(frame));
-    return frame;
 }
 #endif
 

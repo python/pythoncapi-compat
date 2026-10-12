@@ -7,6 +7,11 @@ Changelog
   * ``PyEval_GetFrameGlobals()``
   * ``PyEval_GetFrameLocals()``
 
+* 2026-10-12: Delete 5 ``Borrow`` functions which were specific to
+  pythoncapi-compat and only used by the removed script
+  ``upgrade_pythoncapi.py``: ``_Py_StealRef()`` ``_Py_XStealRef()``
+  ``_PyThreadState_GetFrameBorrow()`` ``_PyFrame_GetCodeBorrow()``
+  and ``_PyFrame_GetBackBorrow()``.
 * 2026-10-11: Remove the ``upgrade_pythoncapi.py`` script.
 * 2026-10-10: Add ``PyObject_GenericHash()`` and
   ``PyUnicodeWriter_WriteUCS4()`` functions. runtests.py now runs tests in
