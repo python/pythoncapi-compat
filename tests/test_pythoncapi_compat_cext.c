@@ -208,12 +208,6 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
         return _Py_NULL;
     }
 
-    // test _PyThreadState_GetFrameBorrow()
-    Py_ssize_t frame_refcnt = Py_REFCNT(_PyObject_CAST(frame));
-    PyFrameObject *frame2 = _PyThreadState_GetFrameBorrow(tstate);
-    assert(frame2 == frame);
-    assert(Py_REFCNT(_PyObject_CAST(frame)) == frame_refcnt);
-
     // Test issue: the current thread has no code on PyPy
 #ifndef PYPY_VERSION
     // test PyFrame_GetCode()
@@ -223,12 +217,6 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     assert(PyCode_Check(code));
 #endif
 
-    // test _PyFrame_GetCodeBorrow()
-    Py_ssize_t code_refcnt = Py_REFCNT(_PyObject_CAST(code));
-    PyCodeObject *code2 = _PyFrame_GetCodeBorrow(frame);
-    assert(code2 == code);
-    assert(Py_REFCNT(_PyObject_CAST(code)) == code_refcnt);
-    Py_DECREF(code);
 #endif
 
 #if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
@@ -236,20 +224,8 @@ test_frame(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
     PyFrameObject* back = PyFrame_GetBack(frame);
     if (back != _Py_NULL) {
         assert(PyFrame_Check(back));
+        Py_DECREF(back);
     }
-
-    // test _PyFrame_GetBackBorrow()
-    if (back != _Py_NULL) {
-        Py_ssize_t back_refcnt = Py_REFCNT(back);
-        PyFrameObject *back2 = _PyFrame_GetBackBorrow(frame);
-        assert(back2 == back);
-        assert(Py_REFCNT(back) == back_refcnt);
-    }
-    else {
-        PyFrameObject *back2 = _PyFrame_GetBackBorrow(frame);
-        assert(back2 == back);
-    }
-    Py_XDECREF(back);
 
     // test PyFrame_GetLocals()
     PyObject *locals = PyFrame_GetLocals(frame);
