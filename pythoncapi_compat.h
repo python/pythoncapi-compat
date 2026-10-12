@@ -3132,6 +3132,29 @@ PyType_GetFullyQualifiedName(PyTypeObject *type)
 #endif
 
 
+// Python 3.13 added PyEval_GetFrameLocals(), PyEval_GetFrameGlobals() and
+// PyEval_GetFrameBuiltins() (PEP 667).
+#if PY_VERSION_HEX < _Py_PACK_VERSION(3, 13)
+static inline PyObject*
+PyEval_GetFrameLocals(void)
+{
+    return Py_XNewRef(PyEval_GetLocals());
+}
+
+static inline PyObject*
+PyEval_GetFrameGlobals(void)
+{
+    return Py_XNewRef(PyEval_GetGlobals());
+}
+
+static inline PyObject*
+PyEval_GetFrameBuiltins(void)
+{
+    return Py_XNewRef(PyEval_GetBuiltins());
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

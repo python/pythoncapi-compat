@@ -557,6 +557,18 @@ Python 3.13
 
    See `PyType_GetFullyQualifiedName() documentation <https://docs.python.org/dev/c-api/type.html#c.PyType_GetFullyQualifiedName>`__.
 
+.. c:function:: PyObject* PyEval_GetFrameLocals(void)
+
+   See `PyEval_GetFrameLocals() documentation <https://docs.python.org/dev/c-api/reflection.html#c.PyEval_GetFrameLocals>`__.
+
+.. c:function:: PyObject* PyEval_GetFrameGlobals(void)
+
+   See `PyEval_GetFrameGlobals() documentation <https://docs.python.org/dev/c-api/reflection.html#c.PyEval_GetFrameGlobals>`__.
+
+.. c:function:: PyObject* PyEval_GetFrameBuiltins(void)
+
+   See `PyEval_GetFrameBuiltins() documentation <https://docs.python.org/dev/c-api/reflection.html#c.PyEval_GetFrameBuiltins>`__.
+
 .. c:macro:: Py_BEGIN_CRITICAL_SECTION(op)
 .. c:macro:: Py_END_CRITICAL_SECTION()
 .. c:macro:: Py_BEGIN_CRITICAL_SECTION2(a, b)

@@ -2669,6 +2669,34 @@ test_type(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
+static PyObject *
+test_eval(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
+{
+    // Test PyEval_GetFrameLocals()
+    PyObject *locals = PyEval_GetFrameLocals();
+    if (locals != NULL) {
+        assert(PyMapping_Check(locals));
+        Py_DECREF(locals);
+    }
+
+    // Test PyEval_GetFrameGlobals()
+    PyObject *globals = PyEval_GetFrameGlobals();
+    if (globals != NULL) {
+        assert(PyMapping_Check(globals));
+        Py_DECREF(globals);
+    }
+
+    // Test PyEval_GetFrameBuiltins()
+    PyObject *builtins = PyEval_GetFrameBuiltins();
+    if (builtins != NULL) {
+        assert(PyMapping_Check(builtins));
+        Py_DECREF(builtins);
+    }
+
+    Py_RETURN_NONE;
+}
+
+
 static struct PyMethodDef methods[] = {
     {"test_object", test_object, METH_NOARGS, _Py_NULL},
     {"test_py_is", test_py_is, METH_NOARGS, _Py_NULL},
@@ -2744,6 +2772,7 @@ static struct PyMethodDef methods[] = {
     {"test_set_immortal", test_set_immortal, METH_NOARGS, _Py_NULL},
 #endif
     {"test_type", test_type, METH_NOARGS, _Py_NULL},
+    {"test_eval", test_eval, METH_NOARGS, _Py_NULL},
     {_Py_NULL, _Py_NULL, 0, _Py_NULL}
 };
 
