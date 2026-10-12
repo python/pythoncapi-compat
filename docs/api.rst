@@ -15,7 +15,7 @@ functions: see `PEP 7 <https://www.python.org/dev/peps/pep-0007/>`_.
 
 C++03 and C++11 are supported on Python 3.6 and newer.
 
-Private functions (name prefixed by ``_Py``) are not supported.
+Private functions (name starting with ``_Py``) are not supported.
 
 Latest version of the header file:
 `pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/main/pythoncapi_compat.h>`_.
@@ -677,8 +677,6 @@ Not supported:
 * ``PyUnstable_Eval_RequestCodeExtraIndex()``
 * ``PyVectorcall_Call()``
 * ``Py_NewInterpreterFromConfig()``
-* ``_PyErr_ChainExceptions1()``
-* ``_Py_IsImmortal()``
 
 
 Python 3.11
