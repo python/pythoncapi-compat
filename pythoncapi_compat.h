@@ -687,8 +687,7 @@ _Py_COMP_DIAG_POP
 
 // bpo-36974 added PyVectorcall_NARGS() to Python 3.8b1
 #if (PY_VERSION_HEX < _Py_PACK_VERSION(3, 8) \
-     || (defined(Py_LIMITED_API) && PY_VERSION_HEX < _Py_PACK_VERSION(3, 12) \
-         && !defined(PYPY_VERSION)))
+     || (defined(Py_LIMITED_API) && PY_VERSION_HEX < _Py_PACK_VERSION(3, 12)))
 static inline Py_ssize_t PyVectorcall_NARGS(size_t n)
 {
     return n & ~PY_VECTORCALL_ARGUMENTS_OFFSET;
@@ -698,8 +697,7 @@ static inline Py_ssize_t PyVectorcall_NARGS(size_t n)
 
 // gh-105922 added PyObject_Vectorcall() to Python 3.9
 #if (PY_VERSION_HEX < _Py_PACK_VERSION(3, 9) \
-     || (defined(Py_LIMITED_API) && Py_LIMITED_API+0 < _Py_PACK_VERSION(3, 12) \
-         && !defined(PYPY_VERSION)))
+     || (defined(Py_LIMITED_API) && Py_LIMITED_API+0 < _Py_PACK_VERSION(3, 12)))
 static inline PyObject*
 PyObject_Vectorcall(PyObject *callable, PyObject *const *args,
                      size_t nargsf, PyObject *kwnames)
