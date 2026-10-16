@@ -7,8 +7,10 @@
 
 #include "pythoncapi_compat.h"
 
-#define STR(NAME) #NAME
-#define CONCAT(a, b) a ## b
+#define _STR(NAME) #NAME
+#define STR(NAME) _STR(NAME)
+#define _CONCAT(a, b) a ## b
+#define CONCAT(a, b) _CONCAT(a, b)
 
 // No method and no module exec method needed, most basic C extension
 
