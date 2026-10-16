@@ -1236,7 +1236,7 @@ static inline Py_hash_t Py_HashPointer(const void *ptr)
 
 
 #if PY_VERSION_HEX < _Py_PACK_VERSION(3, 13) || defined(Py_LIMITED_API)
-Py_hash_t
+static inline Py_hash_t
 PyObject_GenericHash(PyObject *obj)
 {
     return Py_HashPointer(obj);
