@@ -12,6 +12,10 @@
 #define _CONCAT(a, b) a ## b
 #define CONCAT(a, b) _CONCAT(a, b)
 
+
+// No method and no module exec method needed, most basic C extension
+
+
 // Use PySlot API on Python 3.15 and newer and on limited C API 3.15 and newer
 #if (PY_VERSION_HEX >= _Py_PACK_VERSION(3, 15) \
      && (!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 15)))
@@ -49,8 +53,6 @@ INIT_FUNC(void)
 #endif
 
 #else
-
-// No method and no module exec method needed, most basic C extension
 
 static struct PyModuleDef module_def = {
     PyModuleDef_HEAD_INIT,

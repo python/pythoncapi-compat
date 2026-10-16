@@ -10,7 +10,7 @@ Supported Python versions:
 * Python 3.6 - 3.16
 * PyPy 3.6 - 3.12
 
-The limited C API is not supported on PyPy.
+The limited C API is only supported on CPython.
 
 A C11 subset (without optional features) is required, like ``static inline``
 functions: see `PEP 7 <https://www.python.org/dev/peps/pep-0007/>`_.
