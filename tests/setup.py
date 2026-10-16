@@ -202,6 +202,28 @@ def main():
             language='c++')
         extensions.append(ext)
 
+    # Build a C extension with two C files to detect when a pythoncapi_compat.h
+    # function is implemented without "static inline".
+    sources = [
+        'extension.c',
+        'static_inline.c',
+    ]
+    for limited in (False, True):
+        if limited and not TEST_LIMITED_C_API:
+            continue
+        name = 'test_pythoncapi_compat_ext'
+        assert name != C_EXTENSION_PREFIX
+        flags = list(COMMON_FLAGS)
+        if limited:
+            name += LIMITED_SUFFIX
+            flags.append(limited_flag)
+        flags.append(f'-DMODULE_NAME={name}')
+        ext = Extension(
+            name,
+            sources=sources,
+            extra_compile_args=flags)
+        extensions.append(ext)
+
     setup(name="test_pythoncapi_compat", ext_modules=extensions)
 
 

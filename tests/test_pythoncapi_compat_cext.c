@@ -1,15 +1,15 @@
 // Always enable assertions
 #undef NDEBUG
 
+#ifndef MODULE_NAME
+#   error "MODULE_NAME macro is not set"
+#endif
+
 #include "pythoncapi_compat.h"
 #include <structmember.h>   // T_SHORT, READONLY
 
 #ifdef NDEBUG
 #   error "assertions must be enabled"
-#endif
-
-#ifndef MODULE_NAME
-#   error "MODULE_NAME macro is not set"
 #endif
 
 #define _STR(NAME) #NAME
