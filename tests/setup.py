@@ -209,6 +209,8 @@ def main():
         'static_inline.c',
     ]
     for limited in (False, True):
+        if limited and not TEST_LIMITED_C_API:
+            continue
         name = 'test_pythoncapi_compat_ext'
         assert name != C_EXTENSION_PREFIX
         flags = list(COMMON_FLAGS)
