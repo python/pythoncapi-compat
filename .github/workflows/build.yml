@@ -18,9 +18,9 @@ jobs:
           # Python versions (CPython):
           # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
           #
-          # Python 3.7 is tested on Ubuntu 22.04 (below).
           # Python 3.6 is tested on Windows (below).
-          - "3.8"
+          # Python 3.7 is tested on Ubuntu 22.04 (below).
+          # Python 3.8 is tested on Ubuntu 24.04 (below).
           - "3.9"
           - "3.10"
           - "3.11"
