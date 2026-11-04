@@ -169,6 +169,34 @@ static inline void _Py_SET_REFCNT(PyObject *ob, Py_ssize_t refcnt)
 #endif
 
 
+// Python 3.6 added Py_SETREF() and Py_XSETREF() macros.
+// Python 3.16 adds them to the limited C API.
+// Don't use the more advanced typeof()/__typeof__() or C++ (auto)
+// implementation, but only the memcpy() implementation to keep the code short.
+#ifndef Py_SETREF
+#define Py_SETREF(dst, src) \
+    do { \
+        PyObject **_tmp_dst_ptr = _Py_CAST(PyObject**, &(dst)); \
+        PyObject *_tmp_old_dst; \
+        PyObject *_tmp_src = _PyObject_CAST(src); \
+        memcpy(&_tmp_old_dst, _tmp_dst_ptr, sizeof(PyObject*)); \
+        memcpy(_tmp_dst_ptr, &_tmp_src, sizeof(PyObject*)); \
+        Py_DECREF(_tmp_old_dst); \
+    } while (0)
+#endif
+#ifndef Py_XSETREF
+#define Py_XSETREF(dst, src) \
+    do { \
+        PyObject **_tmp_dst_ptr = _Py_CAST(PyObject**, &(dst)); \
+        PyObject *_tmp_old_dst; \
+        PyObject *_tmp_src = _PyObject_CAST(src); \
+        memcpy(&_tmp_old_dst, _tmp_dst_ptr, sizeof(PyObject*)); \
+        memcpy(_tmp_dst_ptr, &_tmp_src, sizeof(PyObject*)); \
+        Py_XDECREF(_tmp_old_dst); \
+    } while (0)
+#endif
+
+
 // bpo-39573 added Py_SET_TYPE() to Python 3.9
 #if !defined(Py_SET_TYPE) && PY_VERSION_HEX < _Py_PACK_VERSION(3, 9)
 static inline void _Py_SET_TYPE(PyObject *ob, PyTypeObject *type)
