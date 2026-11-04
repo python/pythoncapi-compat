@@ -20,8 +20,7 @@ jobs:
           #
           # Python 3.6 is tested on Windows (below).
           # Python 3.7 is tested on Ubuntu 22.04 (below).
-          # Python 3.8 is tested on Ubuntu 24.04 (below).
-          - "3.9"
+          # Python 3.8 and 3.9 are tested on Ubuntu 24.04 (below).
           - "3.10"
           - "3.11"
           - "3.12"
@@ -109,6 +108,8 @@ jobs:
             python: "3.7"
           - os: ubuntu-24.04
             python: "3.8"
+          - os: ubuntu-24.04
+            python: "3.9"
 
     steps:
         # https://github.com/actions/checkout
