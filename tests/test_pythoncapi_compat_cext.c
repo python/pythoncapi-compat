@@ -1896,8 +1896,10 @@ test_get_constant(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
-#if (PY_VERSION_HEX < _Py_PACK_VERSION(3, 14) && PY_VERSION_HEX >= _Py_PACK_VERSION(3, 6) \
-     && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
+// PyUnicodeWriter was added to the limited C API 3.16.0a2.
+#if (!defined(PYPY_VERSION) \
+     && (!defined(Py_LIMITED_API) \
+         || Py_LIMITED_API+0 >= _Py_PACK_FULL_VERSION(3, 16, 0, 0xA, 2)))
 #define TEST_UNICODEWRITER 1
 
 static PyObject *
@@ -1951,7 +1953,8 @@ test_unicodewriter(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args))
     }
 
     // test PyUnicodeWriter_WriteUCS4()
-    if (PyUnicodeWriter_WriteUCS4(writer, ucs4, Py_ARRAY_LENGTH(ucs4)) < 0) {
+    // Python 3.14 expects "Py_UCS4*", Python 3.15 expects "const Py_UCS4*"
+    if (PyUnicodeWriter_WriteUCS4(writer, (Py_UCS4*)ucs4, Py_ARRAY_LENGTH(ucs4)) < 0) {
         goto error;
     }
     if (PyUnicodeWriter_WriteChar(writer, ' ') < 0) {
