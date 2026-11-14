@@ -3154,9 +3154,10 @@ PyEval_GetFrameBuiltins(void)
 #endif
 
 
-// Python 3.16 adds PyDict_AsFrozenDictAndClear()
+// Python 3.16.0a2 adds PyDict_AsFrozenDictAndClear()
 #if (_Py_PACK_VERSION(3, 15) <= PY_VERSION_HEX \
-     && PY_VERSION_HEX < _Py_PACK_VERSION(3, 16))
+     && (PY_VERSION_HEX < _Py_PACK_FULL_VERSION(3, 16, 0, 0xA, 2) \
+         || defined(Py_LIMITED_API)))
 static inline PyObject *
 PyDict_AsFrozenDictAndClear(PyObject *dict)
 {
