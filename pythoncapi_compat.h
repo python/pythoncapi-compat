@@ -3154,6 +3154,42 @@ PyEval_GetFrameBuiltins(void)
 #endif
 
 
+// Python 3.16 adds PyDict_AsFrozenDictAndClear()
+#if (_Py_PACK_VERSION(3, 15) <= PY_VERSION_HEX \
+     && PY_VERSION_HEX < _Py_PACK_VERSION(3, 16))
+static inline PyObject *
+PyDict_AsFrozenDictAndClear(PyObject *dict)
+{
+    if (dict == NULL || !PyDict_Check(dict)) {
+        PyErr_BadInternalCall();
+        return NULL;
+    }
+
+#ifndef Py_LIMITED_API
+    PyObject *res = PyFrozenDict_New(dict);
+#else
+    // PyFrozenDict_New() is not part of the limited C API.
+    // Instead, get the built-in "frozendict" type and call frozendict(dict).
+    PyObject *builtins = PyEval_GetFrameBuiltins();
+    assert(builtins != NULL);
+    PyObject *frozendict_type = PyMapping_GetItemString(builtins, "frozendict");
+    Py_DECREF(builtins);
+    if (frozendict_type == NULL) {
+        return NULL;
+    }
+
+    PyObject *res = PyObject_CallOneArg(frozendict_type, dict);
+    Py_DECREF(frozendict_type);
+#endif
+    if (res == NULL) {
+        return NULL;
+    }
+    PyDict_Clear(dict);
+    return res;
+}
+#endif
+
+
 #ifdef __cplusplus
 }
 #endif

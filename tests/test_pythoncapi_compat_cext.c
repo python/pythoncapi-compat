@@ -1155,6 +1155,9 @@ test_dict_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     PyObject *invalid_dict = NULL;
     PyObject *get_value = NULL;
     int res;
+#if _Py_PACK_VERSION(3, 15) <= PY_VERSION_HEX
+    PyObject *frozendict = NULL;
+#endif
 
     // test PyDict_New()
     dict = PyDict_New();
@@ -1244,6 +1247,22 @@ test_dict_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyErr_ExceptionMatches(PyExc_TypeError));
     PyErr_Clear();
     assert(get_value == NULL);
+
+#if _Py_PACK_VERSION(3, 15) <= PY_VERSION_HEX
+    assert(PyDict_Size(dict) == 1);
+    frozendict = PyDict_AsFrozenDictAndClear(dict);
+    assert(frozendict != NULL);
+#ifndef Py_LIMITED_API
+    assert(PyFrozenDict_CheckExact(frozendict));
+#else
+    assert(Py_TYPE(frozendict) != &PyDict_Type);
+#endif
+    assert(PyDict_GetItemRef(frozendict, key, &get_value) == 1);
+    assert(get_value == value);
+    Py_DECREF(get_value);
+    Py_DECREF(frozendict);
+    assert(PyDict_Size(dict) == 0);
+#endif
 
     Py_DECREF(dict);
     Py_DECREF(key);
