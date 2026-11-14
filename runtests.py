@@ -38,6 +38,8 @@ PYTHONS = (
     "python3.14t",
     "python3.15",
     "python3.15t",
+    "python3.16",
+    "python3.16t",
 
     # PyPy
     "pypy3",
