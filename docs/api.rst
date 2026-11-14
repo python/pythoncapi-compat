@@ -349,6 +349,8 @@ Python 3.14
 
    Not available on PyPy. ``Py_REFCNT()`` semantics is different on PyPy.
 
+   Not available on the limited C API.
+
 .. c:function:: void PyUnstable_EnableTryIncRef(PyObject *op)
 
    See `PyUnstable_EnableTryIncRef() documentation <https://docs.python.org/dev/c-api/object.html#c.PyUnstable_EnableTryIncRef>`__.

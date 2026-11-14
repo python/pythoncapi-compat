@@ -2543,7 +2543,9 @@ static inline int PyUnstable_Object_IsUniquelyReferenced(PyObject *obj)
 // gh-128926 added PyUnstable_TryIncRef() and PyUnstable_EnableTryIncRef() to
 // Python 3.14. Adapted from _Py_TryIncref() and _PyObject_SetMaybeWeakref().
 // Not available on PyPy: Py_REFCNT() semantics is different on PyPy.
-#if PY_VERSION_HEX < _Py_PACK_VERSION(3, 14) && !defined(PYPY_VERSION)
+// Not available on the limited C API.
+#if (PY_VERSION_HEX < _Py_PACK_VERSION(3, 14) \
+     && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
 static inline int PyUnstable_TryIncRef(PyObject *op)
 {
 #ifndef Py_GIL_DISABLED
