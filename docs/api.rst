@@ -23,6 +23,14 @@ Latest version of the header file:
 `pythoncapi_compat.h <https://raw.githubusercontent.com/python/pythoncapi-compat/main/pythoncapi_compat.h>`_.
 
 
+Python 3.16
+-----------
+
+.. c:function:: PyObject* PyDict_AsFrozenDictAndClear(PyObject *dict)
+
+   See `PyDict_AsFrozenDictAndClear() documentation  <https://docs.python.org/dev/c-api/dict.html#c.PyDict_AsFrozenDictAndClear>`__.
+
+
 Python 3.15
 -----------
 
