@@ -102,8 +102,8 @@ test_object(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 
     // Py_SET_REFCNT
     Py_SET_REFCNT(obj, Py_REFCNT(obj));
-#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 < _Py_PACK_VERSION(3, 10)
-    // Py_SET_TYPE
+    // Py_SET_TYPE. Not implemented in the abi3t.
+#ifndef Py_TARGET_ABI3T
     Py_SET_TYPE(obj, Py_TYPE(obj));
 #endif
     // Py_SET_SIZE
@@ -315,7 +315,7 @@ test_thread_state(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 static PyObject *
 test_interpreter(PyObject *Py_UNUSED(module), PyObject* Py_UNUSED(ignored))
 {
-    // On Windows,PyInterpreterState_Get() is not available in stable ABI 3.9,
+    // On Windows, PyInterpreterState_Get() is not available in stable ABI 3.9,
     // only in stable ABI 3.10. Don't test it on limited C API 3.9 on Unix to
     // make the test simpler.
 #if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 10)
@@ -2799,6 +2799,11 @@ module_exec(PyObject *module)
 #endif
 #ifdef Py_LIMITED_API
     if (PyModule_AddIntMacro(module, Py_LIMITED_API)) {
+        return -1;
+    }
+#endif
+#ifdef Py_TARGET_ABI3T
+    if (PyModule_AddIntMacro(module, Py_TARGET_ABI3T)) {
         return -1;
     }
 #endif

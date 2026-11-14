@@ -870,6 +870,8 @@ PyObject
 
    See `Py_SET_TYPE() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_TYPE>`__.
 
+   Not available on Free Threading with limited C API 3.15 or newer (abi3t).
+
 .. c:function:: void Py_SET_SIZE(PyVarObject *ob, Py_ssize_t size)
 
    See `Py_SET_SIZE() documentation <https://docs.python.org/dev/c-api/structures.html#c.Py_SET_SIZE>`__.

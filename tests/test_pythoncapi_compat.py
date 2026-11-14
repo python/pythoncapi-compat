@@ -166,13 +166,15 @@ def run_tests(build_dir, module_name, std):
     if VERBOSE:
         empty_line = False
         for attr in ('__cplusplus', 'PY_VERSION', 'PY_VERSION_HEX',
-                     'PYPY_VERSION', 'PYPY_VERSION_NUM', 'Py_LIMITED_API'):
+                     'PYPY_VERSION', 'PYPY_VERSION_NUM', 'Py_LIMITED_API',
+                     'Py_TARGET_ABI3T'):
             try:
                 value = getattr(testmod, attr)
             except AttributeError:
                 pass
             else:
-                if attr in ('PY_VERSION_HEX', 'Py_LIMITED_API', 'PYPY_VERSION_NUM'):
+                if attr in ('PY_VERSION_HEX', 'Py_LIMITED_API',
+                            'PYPY_VERSION_NUM', 'Py_TARGET_ABI3T'):
                     value = "0x%x" % value
                 print("%s: %s" % (attr, value))
                 empty_line = True
