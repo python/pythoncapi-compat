@@ -1414,21 +1414,33 @@ test_dict_setdefault(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 }
 
 
-#if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
+#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 15)) \
+     && !defined(PYPY_VERSION))
 static int
 test_long_import_export()
 {
-    // test import/export API
-    digit *digits;
+    // test PyLong import/export API
+
+    const PyLongLayout *layout = PyLong_GetNativeLayout();
+    assert(layout->digits_order == -1);
+    if (layout->digit_size != sizeof(uint32_t)) {
+        PyErr_SetString(PyExc_AssertionError,
+                        "unsupported digit size");
+        return -1;
+    }
+
+    uint32_t *digits;
     PyLongWriter *writer;
     static PyLongExport long_export;
 
+    // test PyLongWriter_Discard()
     writer = PyLongWriter_Create(1, 1, (void **)&digits);
     if (writer == NULL) {
         return -1;
     }
     PyLongWriter_Discard(writer);
 
+    // test PyLongWriter_Finish()
     writer = PyLongWriter_Create(1, 1, (void **)&digits);
     if (writer == NULL) {
         return -1;
@@ -1467,7 +1479,7 @@ test_long_import_export()
         return -1;
     }
     assert(long_export.value == 0);
-    digits = (digit*)long_export.digits;
+    digits = (uint32_t*)long_export.digits;
     assert(digits[0] == 1);
     assert(digits[1] == 0);
     assert(digits[2] == 0);
@@ -1476,9 +1488,6 @@ test_long_import_export()
     PyLong_FreeExport(&long_export);
     Py_DECREF(obj);
 
-    const PyLongLayout *layout = PyLong_GetNativeLayout();
-    assert(layout->digits_order == -1);
-    assert(layout->digit_size == sizeof(digit));
     return 0;
 }
 #endif
@@ -1519,7 +1528,8 @@ test_long_api(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
     assert(PyLong_IsNegative(obj) == 0);
     assert(PyLong_IsZero(obj) == 0);
 
-#if !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
+#if ((!defined(Py_LIMITED_API) || Py_LIMITED_API+0 >= _Py_PACK_VERSION(3, 15)) \
+     && !defined(PYPY_VERSION))
     if (test_long_import_export() < 0) {
         return NULL;
     }
