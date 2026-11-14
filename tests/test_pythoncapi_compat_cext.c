@@ -2593,6 +2593,7 @@ test_try_incref(PyObject *Py_UNUSED(module), PyObject *Py_UNUSED(args))
 #endif  // !defined(PYPY_VERSION) && !defined(Py_LIMITED_API)
 
 
+// Test PyUnstable_SetImmortal()
 #if (_Py_PACK_VERSION(3, 13) <= PY_VERSION_HEX \
      && !defined(PYPY_VERSION) && !defined(Py_LIMITED_API))
 static PyObject *
