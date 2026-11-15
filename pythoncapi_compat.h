@@ -2064,7 +2064,8 @@ _PyLong_DigitCount(const PyLongObject *op)
 #if PY_VERSION_HEX >= _Py_PACK_VERSION(3, 12)
     return (Py_ssize_t)(op->long_value.lv_tag >> 3);
 #else
-    return _PyLong_Sign((PyObject*)op) < 0 ? -Py_SIZE(op) : Py_SIZE(op);
+    Py_ssize_t size = Py_SIZE(op);
+    return Py_ABS(size);
 #endif
 }
 
@@ -2201,7 +2202,8 @@ PyLongWriter_Finish(PyLongWriter *writer)
     assert(Py_REFCNT(obj) == 1);
 
     // Normalize and get singleton if possible
-    while (i > 0 && _PyLong_GetDigits(self)[i-1] == 0) {
+    digit *digits = _PyLong_GetDigits(self);
+    while (i > 0 && digits[i-1] == 0) {
         --i;
     }
     if (i != j) {
@@ -2211,7 +2213,7 @@ PyLongWriter_Finish(PyLongWriter *writer)
         _PyLong_SetSignAndDigitCount(self, sign, i);
     }
     if (i <= 1) {
-        long val = sign * (long)(_PyLong_GetDigits(self)[0]);
+        long val = sign * (long)digits[0];
         Py_DECREF(obj);
         return PyLong_FromLong(val);
     }

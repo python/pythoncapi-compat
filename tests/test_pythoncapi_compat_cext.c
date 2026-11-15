@@ -1457,11 +1457,13 @@ test_long_import_export()
         return -1;
     }
     assert(long_export.value == -123);
+    assert(long_export.negative == 0);
+    assert(long_export.ndigits == 0);
     assert(long_export.digits == NULL);
     PyLong_FreeExport(&long_export);
     Py_DECREF(obj);
 
-    writer = PyLongWriter_Create(0, 5, (void **)&digits);
+    writer = PyLongWriter_Create(1, 5, (void **)&digits);
     if (writer == NULL) {
         return -1;
     }
@@ -1475,10 +1477,17 @@ test_long_import_export()
         return -1;
     }
 
+    PyObject *str = PyObject_Str(obj);
+    assert(str != NULL);
+    assert(PyUnicode_EqualToUTF8(str, "-1329227995784915872903807060280344577") == 1);
+    Py_DECREF(str);
+
     if (PyLong_Export(obj, &long_export) < 0) {
         return -1;
     }
     assert(long_export.value == 0);
+    assert(long_export.negative == 1);
+    assert(long_export.ndigits == 5);
     digits = (uint32_t*)long_export.digits;
     assert(digits[0] == 1);
     assert(digits[1] == 0);
