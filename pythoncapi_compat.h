@@ -1705,24 +1705,17 @@ PyUnicodeWriter_Format(PyUnicodeWriter *writer, const char *format, ...)
 #if PY_VERSION_HEX < _Py_PACK_VERSION(3, 14) || defined(Py_LIMITED_API)
 static inline int PyLong_GetSign(PyObject *obj, int *sign)
 {
-#ifndef Py_LIMITED_API
     if (!PyLong_Check(obj)) {
-        PYTHONCAPI_COMPAT_EXPECT_TYPE("expect int, got ", obj);
+        PYTHONCAPI_COMPAT_EXPECT_TYPE("expected int, got ", obj);
         return -1;
     }
 
+#ifndef Py_LIMITED_API
     *sign = _PyLong_Sign(obj);
     return 0;
 #else
     PyObject *zero = Py_GetConstant(Py_CONSTANT_ZERO);
-    int cmp;
-
-    if (!PyLong_Check(obj)) {
-        PYTHONCAPI_COMPAT_EXPECT_TYPE("expect int, got ", obj);
-        return -1;
-    }
-
-    cmp = PyObject_RichCompareBool(obj, zero, Py_GT);
+    int cmp = PyObject_RichCompareBool(obj, zero, Py_GT);
     if (cmp > 0) {
         *sign = 1;
         return 0;
@@ -1749,42 +1742,31 @@ static inline int PyLong_GetSign(PyObject *obj, int *sign)
 #if PY_VERSION_HEX < _Py_PACK_VERSION(3, 14) || defined(Py_LIMITED_API)
 static inline int PyLong_IsPositive(PyObject *obj)
 {
-#ifndef Py_LIMITED_API
     if (!PyLong_Check(obj)) {
         PYTHONCAPI_COMPAT_EXPECT_TYPE("expected int, got ", obj);
         return -1;
     }
+
+#ifndef Py_LIMITED_API
     return _PyLong_Sign(obj) == 1;
 #else
     PyObject *zero = Py_GetConstant(Py_CONSTANT_ZERO);
-
-    if (!PyLong_Check(obj)) {
-        PyErr_Format(PyExc_TypeError, "expect int, got %R", obj);
-        return -1;
-    }
-
     return PyObject_RichCompareBool(obj, zero, Py_GT);
 #endif
 }
 
 static inline int PyLong_IsNegative(PyObject *obj)
 {
-#ifndef Py_LIMITED_API
     if (!PyLong_Check(obj)) {
         PYTHONCAPI_COMPAT_EXPECT_TYPE("expected int, got ", obj);
         return -1;
     }
+
+#ifndef Py_LIMITED_API
     return _PyLong_Sign(obj) == -1;
 #else
     PyObject *zero = Py_GetConstant(Py_CONSTANT_ZERO);
-    int cmp;
-
-    if (!PyLong_Check(obj)) {
-        PYTHONCAPI_COMPAT_EXPECT_TYPE("expect int, got ", obj);
-        return -1;
-    }
-
-    cmp = PyObject_RichCompareBool(obj, zero, Py_LT);
+    int cmp = PyObject_RichCompareBool(obj, zero, Py_LT);
     if (cmp > 0) {
         return 1;
     }
@@ -1797,20 +1779,15 @@ static inline int PyLong_IsNegative(PyObject *obj)
 
 static inline int PyLong_IsZero(PyObject *obj)
 {
-#ifndef Py_LIMITED_API
     if (!PyLong_Check(obj)) {
         PYTHONCAPI_COMPAT_EXPECT_TYPE("expected int, got ", obj);
         return -1;
     }
+
+#ifndef Py_LIMITED_API
     return _PyLong_Sign(obj) == 0;
 #else
     PyObject *zero = Py_GetConstant(Py_CONSTANT_ZERO);
-
-    if (!PyLong_Check(obj)) {
-        PYTHONCAPI_COMPAT_EXPECT_TYPE("expect int, got ", obj);
-        return -1;
-    }
-
     return PyObject_RichCompareBool(obj, zero, Py_EQ);
 #endif
 }
@@ -1870,8 +1847,7 @@ static inline PyObject* PyBytes_Join(PyObject *sep, PyObject *iterable)
         return NULL;
     }
     if (!PyBytes_Check(sep)) {
-        PyErr_Format(PyExc_TypeError,
-                     "sep: expected bytes, got %T", sep);
+        PYTHONCAPI_COMPAT_EXPECT_TYPE("sep: expected bytes, got ", sep);
         return NULL;
     }
 
